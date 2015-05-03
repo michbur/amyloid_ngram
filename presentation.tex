@@ -50,11 +50,14 @@
 \usepackage{alltt}
 \usetheme{Warsaw}
 \usepackage{graphicx}
-\usepackage[utf8]{inputenc}
 \usepackage{amsfonts}
+\usepackage{indentfirst}
 \usepackage{amsmath}
 \usepackage[notocbib]{apacite}
-
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage[cp1250]{inputenc}
+\frenchspacing
 
 \setbeamertemplate{caption}{\centering\insertcaption\par}
 \setlength{\belowcaptionskip}{15pt}
@@ -66,14 +69,29 @@
 
 
 \date{}
-\author{Micha\l{}  Burdukiewicz\inst{1}, Piotr Sobczyk\inst{2}, }
+\author{Micha³  Burdukiewicz\inst{1}, Piotr Sobczyk\inst{2}}
 \institute{ 
-\inst{1} University of Wroc\l{}aw, Department of Genomics, Poland
+\inst{1} Zak³ad Genomiki, Uniwersytet Wroc³awski
 \and 
-\inst{2} Wroc\l{}aw University of Technology, Institute of Mathematics and Computer Science, Poland}
+\inst{2} Instytut Matematyki i Informatyki, Politechnika Wroc³awska}
 
-\title{n-grams (k-mers) and hidden semi_Markov models}
+\title{n-gramy w analizie sekwencji biologicznych}
 
+\begin{frame}
+\maketitle
+\end{frame}
+
+\begin{frame}
+\frametitle{Outline}
+\tableofcontents
+\end{frame}
+
+
+
+
+
+
+\section{n-gramy (k-mery)}
 
 \AtBeginSection[]
 {
@@ -83,26 +101,17 @@
 \end{frame}
 }
 
-
-
-\section{n-grams (k-mers)}
-
 \begin{frame}
-n-grams (k-tuples) are vectors of n characters derived from input sequence(s). They may form continuous sub-sequences or be discontinuous.  
-
-
-Important n-gram parameter is its position. Instead of just counting n-grams, one may want to count how many n-grams occur at a given position in multiple (e.g. related) sequences.
-
+n-gramy (k-mery, k-tuple) to wektory o d³ugoœci $n$ zawieraj¹ce znaki z sekwencji wejœciowych.
 
 \end{frame}
 
-
-
 \begin{frame}
 
 
+
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Sun May 03 22:38:45 2015
+% Sun May 03 23:30:35 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -114,14 +123,14 @@ S1 & C & T & T & A & G & C \\
   S3 & G & T & G & A & T & T \\ 
    \hline
 \end{tabular}
-\caption{Sample sequences.  S - sequence, P - position.} 
+\caption{Przyk³adowe sekwencje.  S - sekwencje, P - pozycja nukleotydu.} 
 \end{table}
 
 
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Sun May 03 22:38:45 2015
+% Sun May 03 23:30:35 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrr}
@@ -133,7 +142,7 @@ S1 & 1 & 2 & 1 & 2 \\
   S3 & 1 & 0 & 2 & 3 \\ 
    \hline
 \end{tabular}
-\caption{1-gram counts.} 
+\caption{Zliczenia 1-gramów.} 
 \end{table}
 
 
@@ -144,7 +153,7 @@ S1 & 1 & 2 & 1 & 2 \\
 
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Sun May 03 22:38:46 2015
+% Sun May 03 23:30:35 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -156,26 +165,26 @@ S1 & C & T & T & A & G & C \\
   S3 & G & T & G & A & T & T \\ 
    \hline
 \end{tabular}
-\caption{Sample sequences.  S - sequence, P - position.} 
+\caption{Przyk³adowe sekwencje.  S - sekwencje, P - pozycja nukleotydu.} 
 \end{table}
 
   
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Sun May 03 22:38:46 2015
+% Sun May 03 23:30:35 2015
 \begin{table}[ht]
 \centering
-\begin{tabular}{rrrrrrrrrrrrrrrrr}
+\begin{tabular}{rrrrrrrrr}
   \hline
- & AA & CA & GA & TA & AC & CC & GC & TC & AG & CG & GG & TG & AT & CT & GT & TT \\ 
+ & AA & CA & GA & TA & AC & CC & GC & TC \\ 
   \hline
-S1 & 0 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 1 & 0 & 1 \\ 
-  S2 & 0 & 1 & 1 & 0 & 1 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
-  S3 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 1 & 1 \\ 
+S1 & 0 & 0 & 0 & 1 & 0 & 0 & 1 & 0 \\ 
+  S2 & 0 & 1 & 1 & 0 & 1 & 0 & 0 & 0 \\ 
+  S3 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\ 
    \hline
 \end{tabular}
-\caption{2-gram counts.} 
+\caption{Zliczenia 2-gramów (fragment tabeli).} 
 \end{table}
 
 
