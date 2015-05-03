@@ -1,0 +1,185 @@
+\documentclass[10pt]{beamer}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usetheme{Warsaw}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[notocbib]{apacite}
+
+
+\setbeamertemplate{caption}{\centering\insertcaption\par}
+\setlength{\belowcaptionskip}{15pt}
+\renewcommand{\thetable}{}
+
+\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+\date{}
+\author{Micha\l{}  Burdukiewicz\inst{1}, Piotr Sobczyk\inst{2}, }
+\institute{ 
+\inst{1} University of Wroc\l{}aw, Department of Genomics, Poland
+\and 
+\inst{2} Wroc\l{}aw University of Technology, Institute of Mathematics and Computer Science, Poland}
+
+\title{n-grams (k-mers) and hidden semi_Markov models}
+
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>
+\frametitle{Outline}
+\tableofcontents[currentsection]
+\end{frame}
+}
+
+
+
+\section{n-grams (k-mers)}
+
+\begin{frame}
+n-grams (k-tuples) are vectors of n characters derived from input sequence(s). They may form continuous sub-sequences or be discontinuous.  
+
+
+Important n-gram parameter is its position. Instead of just counting n-grams, one may want to count how many n-grams occur at a given position in multiple (e.g. related) sequences.
+
+
+\end{frame}
+
+
+
+\begin{frame}
+
+
+% latex table generated in R 3.2.0 by xtable 1.7-4 package
+% Sun May 03 22:38:45 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{rllllll}
+  \hline
+ & P1 & P2 & P3 & P4 & P5 & P6 \\ 
+  \hline
+S1 & C & T & T & A & G & C \\ 
+  S2 & C & A & G & A & C & G \\ 
+  S3 & G & T & G & A & T & T \\ 
+   \hline
+\end{tabular}
+\caption{Sample sequences.  S - sequence, P - position.} 
+\end{table}
+
+
+
+  
+% latex table generated in R 3.2.0 by xtable 1.7-4 package
+% Sun May 03 22:38:45 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrr}
+  \hline
+ & A & C & G & T \\ 
+  \hline
+S1 & 1 & 2 & 1 & 2 \\ 
+  S2 & 2 & 2 & 2 & 0 \\ 
+  S3 & 1 & 0 & 2 & 3 \\ 
+   \hline
+\end{tabular}
+\caption{1-gram counts.} 
+\end{table}
+
+
+\end{frame}
+
+\begin{frame}
+
+
+
+% latex table generated in R 3.2.0 by xtable 1.7-4 package
+% Sun May 03 22:38:46 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{rllllll}
+  \hline
+ & P1 & P2 & P3 & P4 & P5 & P6 \\ 
+  \hline
+S1 & C & T & T & A & G & C \\ 
+  S2 & C & A & G & A & C & G \\ 
+  S3 & G & T & G & A & T & T \\ 
+   \hline
+\end{tabular}
+\caption{Sample sequences.  S - sequence, P - position.} 
+\end{table}
+
+  
+
+  
+% latex table generated in R 3.2.0 by xtable 1.7-4 package
+% Sun May 03 22:38:46 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrrrrrrrrrrrrr}
+  \hline
+ & AA & CA & GA & TA & AC & CC & GC & TC & AG & CG & GG & TG & AT & CT & GT & TT \\ 
+  \hline
+S1 & 0 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 1 & 0 & 1 \\ 
+  S2 & 0 & 1 & 1 & 0 & 1 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+  S3 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 1 & 1 \\ 
+   \hline
+\end{tabular}
+\caption{2-gram counts.} 
+\end{table}
+
+
+\end{frame}
+
+
+\end{document}

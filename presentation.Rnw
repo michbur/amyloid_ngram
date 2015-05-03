@@ -1,0 +1,117 @@
+\documentclass[10pt]{beamer}
+\usetheme{Warsaw}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[notocbib]{apacite}
+
+
+\setbeamertemplate{caption}{\centering\insertcaption\par}
+\setlength{\belowcaptionskip}{15pt}
+\renewcommand{\thetable}{}
+
+\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+
+\begin{document}
+
+
+\date{}
+\author{Micha\l{}  Burdukiewicz\inst{1}, Piotr Sobczyk\inst{2}, }
+\institute{ 
+\inst{1} University of Wroc\l{}aw, Department of Genomics, Poland
+\and 
+\inst{2} Wroc\l{}aw University of Technology, Institute of Mathematics and Computer Science, Poland}
+
+\title{n-grams (k-mers) and hidden semi_Markov models}
+
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>
+\frametitle{Outline}
+\tableofcontents[currentsection]
+\end{frame}
+}
+
+
+
+\section{n-grams (k-mers)}
+
+\begin{frame}
+n-grams (k-tuples) are vectors of n characters derived from input sequence(s). They may form continuous sub-sequences or be discontinuous.  
+
+
+Important n-gram parameter is its position. Instead of just counting n-grams, one may want to count how many n-grams occur at a given position in multiple (e.g. related) sequences.
+
+
+\end{frame}
+
+
+
+\begin{frame}
+
+
+<<echo = FALSE,message=FALSE,results='asis'>>=
+# the echo=5 tells knitr that I want all lines to run but only show #5
+library(reshape2)
+library(ggplot2)
+library(grid)
+library(biogram)
+library(xtable)
+
+set.seed(1)
+sample_seq <- matrix(sample(c("A", "C", "G", "T"), 18, replace = TRUE), nrow = 3)
+colnames(sample_seq) <- paste0("P", 1L:ncol(sample_seq))
+rownames(sample_seq) <- paste0("S", 1L:nrow(sample_seq))
+print(xtable(data.frame(sample_seq), caption = "Sample sequences.  S - sequence, P - position.", digits = 0))
+@
+
+
+  
+<<echo = FALSE,message=FALSE,results='asis'>>=
+unis <- count_ngrams(sample_seq, 1, c("A", "C", "G", "T"))
+unis <- data.frame(as.matrix(unis))
+colnames(unis) <- c("A", "C", "G", "T")
+rownames(unis) <- paste0("S", 1L:nrow(sample_seq))
+print(xtable(unis, caption = "1-gram counts.", digits = 0), include.rownames = TRUE)
+@
+
+\end{frame}
+
+\begin{frame}
+
+
+
+<<echo = FALSE,message=FALSE,results='asis'>>=
+# the echo=5 tells knitr that I want all lines to run but only show #5
+library(reshape2)
+library(ggplot2)
+library(biogram)
+library(xtable)
+
+set.seed(1)
+sample_seq <- matrix(sample(c("A", "C", "G", "T"), 18, replace = TRUE), nrow = 3)
+colnames(sample_seq) <- paste0("P", 1L:ncol(sample_seq))
+rownames(sample_seq) <- paste0("S", 1L:nrow(sample_seq))
+print(xtable(data.frame(sample_seq), caption = "Sample sequences.  S - sequence, P - position.", digits = 0))
+@
+  
+
+  
+<<echo = FALSE,message=FALSE,results='asis'>>=
+unis <- count_ngrams(sample_seq, 2, c("A", "C", "G", "T"))
+unis <- data.frame(as.matrix(unis))
+
+colnames(unis) <- sapply(colnames(unis), function(i) 
+                         paste0(substr(i, 0, 1), substr(i, 3, 3)))
+
+#colnames(unis) <- c("A", "C", "G", "T")
+rownames(unis) <- paste0("S", 1L:nrow(sample_seq))
+print(xtable(unis, caption = "2-gram counts.", digits = 0), include.rownames = TRUE)
+@
+
+\end{frame}
+
+
+\end{document}
