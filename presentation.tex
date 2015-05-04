@@ -93,6 +93,8 @@
 
 \section{n-gramy (k-mery)}
 
+\subsection{n-gramy (k-mery)}
+
 \AtBeginSection[]
 {
 \begin{frame}<beamer>
@@ -111,7 +113,7 @@ n-gramy (k-mery, k-tuple) to wektory o d³ugoœci $n$ zawieraj¹ce znaki z sekwencj
 
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Sun May 03 23:30:35 2015
+% Mon May 04 23:18:37 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -130,7 +132,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Sun May 03 23:30:35 2015
+% Mon May 04 23:18:37 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrr}
@@ -150,10 +152,8 @@ S1 & 1 & 2 & 1 & 2 \\
 
 \begin{frame}
 
-
-
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Sun May 03 23:30:35 2015
+% Mon May 04 23:18:37 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -172,7 +172,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Sun May 03 23:30:35 2015
+% Mon May 04 23:18:37 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -189,6 +189,178 @@ S1 & 0 & 0 & 0 & 1 & 0 & 0 & 1 & 0 \\
 
 
 \end{frame}
+
+\begin{frame}
+$$n_\text{max} = u^n$$
+
+$n_\text{max}$: liczba wszystkich mo¿liwych n-gramów
+
+$u$: liczba liter w alfabecie.
+
+$n$: d³ugoœæ n-gramu
+
+\end{frame}
+
+
+\begin{frame}
+
+
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-5-1} 
+
+
+\end{frame}
+
+\subsection{Informacja o pozycji}
+
+\begin{frame}
+
+n-gramy mog¹ byæ przypisan¹ informacjê o pozycjach na których wystêpuj¹.
+
+\end{frame}
+
+
+\begin{frame}
+
+% latex table generated in R 3.2.0 by xtable 1.7-4 package
+% Mon May 04 23:18:37 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{rllllll}
+  \hline
+ & P1 & P2 & P3 & P4 & P5 & P6 \\ 
+  \hline
+S1 & C & T & T & A & G & C \\ 
+  S2 & C & A & G & A & C & G \\ 
+  S3 & G & T & G & A & T & T \\ 
+   \hline
+\end{tabular}
+\caption{Przyk³adowe sekwencje.  S - sekwencje, P - pozycja nukleotydu.} 
+\end{table}
+
+  
+
+  
+% latex table generated in R 3.2.0 by xtable 1.7-4 package
+% Mon May 04 23:18:37 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrrrrr}
+  \hline
+ & 1\_A.A & 2\_A.A & 3\_A.A & 4\_A.A & 5\_A.A & 1\_C.A & 2\_C.A & 3\_C.A \\ 
+  \hline
+S1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+  S2 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 
+  S3 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+   \hline
+\end{tabular}
+\caption{Zliczenia 2-gramów z informacj¹ o pozycji (fragment tabeli).} 
+\end{table}
+
+
+\end{frame}
+
+\begin{frame}
+$$n_\text{max} = p \times u^n$$
+
+$n_\text{max}$: liczba wszystkich mo¿liwych n-gramów
+
+$p$: liczba mo¿liwych pozycji.
+
+$u$: liczba liter w alfabecie.
+
+$n$: d³ugoœæ n-gramu
+
+\end{frame}
+
+
+\begin{frame}
+
+
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-8-1} 
+
+\end{frame}
+
+\subsection{Nieci¹g³e n-gramy}
+
+\begin{frame}
+
+n-gramy mog¹ byæ nieci¹g³e - pomiêdzy elementami n-gramu mog¹ wystêpowaæ przerwy.
+
+\end{frame}
+
+
+\begin{frame}
+
+% latex table generated in R 3.2.0 by xtable 1.7-4 package
+% Mon May 04 23:18:38 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{rllllll}
+  \hline
+ & P1 & P2 & P3 & P4 & P5 & P6 \\ 
+  \hline
+S1 & C & T & T & A & G & C \\ 
+  S2 & C & A & G & A & C & G \\ 
+  S3 & G & T & G & A & T & T \\ 
+   \hline
+\end{tabular}
+\caption{Przyk³adowe sekwencje.  S - sekwencje, P - pozycja nukleotydu.} 
+\end{table}
+
+  
+
+  
+% latex table generated in R 3.2.0 by xtable 1.7-4 package
+% Mon May 04 23:18:38 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrrrrr}
+  \hline
+ & A\_A & C\_A & G\_A & T\_A & A\_C & C\_C & G\_C & T\_C \\ 
+  \hline
+S1 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 0 \\ 
+  S2 & 1 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\ 
+  S3 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\ 
+   \hline
+\end{tabular}
+\caption{Zliczenia 2-gramów z przerw¹ 1 (fragment tabeli).} 
+\end{table}
+
+
+\end{frame}
+
+\subsection{Wybór informatywnych n-gramów - QuiPT}
+
+\begin{frame}
+
+Wielowymiarowa przestrzeñ atrybutów jest filtrowana z pomoc¹ QuiPT (\textbf{Qui}ck \textbf{P}ermutation \textbf{T}est) ³¹cz¹cego zalety testów permutacyjnych (brak za³o¿eñ) z szybkoœci¹ wykonania.
+
+\end{frame}
+
+\begin{frame}
+W trakcie testu permutacyjnego oznaczenia klas s¹ losowo mieszane na potrzeby obliczania statystyki testowej.
+    
+\begin{center}
+\scalebox{0.85}{
+$      
+\textnormal{p-value} = \frac{N_{T_P > T_R}}{N}
+$
+}
+\end{center}
+
+gdzie $N_{T_P > T_R}$ to liczba losowañ, kiedy $T_P$ (permutowana statystyka testowa) mia³a wartoœæ krytyczniejsz¹ ni¿ $T_R$ (statystyka testowa dla niepermutowanych danych).
+      
+\end{frame}
+
+
+\subsection{n-gramy a ukryte modele Markowa}
+
+\begin{frame}
+
+
+
+\end{frame}
+
 
 
 \end{document}
