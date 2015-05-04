@@ -19,3 +19,19 @@ max_len <- max(sapply(split_raw, length))
 
 all_seqs <- t(sapply(split_raw, function(i)
   c(i, rep(NA, 10 - length(i)))))
+
+library(signalHsmm)
+library(biogram)
+library(seqinr)
+library(mlr)
+
+tar <- rep(c("pos", "neg"), sapply(raw_seqs, length))
+ng2 <- data.frame(as.matrix(count_ngrams(all_seqs, 1, a()[-1])))
+rf_dat <- cbind(ng2, tar = as.factor(tar))
+
+task_u <- makeClassifTask(id = "unigramy", data = rf_dat, target = "tar", positive = "pos")
+rf <- resample(learner = makeLearner("classif.randomForest", predict.type = "prob"), task = task_u, 
+               resampling = makeResampleDesc(method = "CV", iters = 5L, stratify = TRUE), 
+               #auc, sensitivity, specificity
+               measures = list(auc, tnr, tpr),
+               show.info = TRUE)
