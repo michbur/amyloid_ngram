@@ -24,14 +24,33 @@ library(signalHsmm)
 library(biogram)
 library(seqinr)
 library(mlr)
+source("randomForestsb.R") #all learners
 
 tar <- rep(c("pos", "neg"), sapply(raw_seqs, length))
-ng2 <- data.frame(as.matrix(count_ngrams(all_seqs, 1, a()[-1])))
-rf_dat <- cbind(ng2, tar = as.factor(tar))
 
-task_u <- makeClassifTask(id = "unigramy", data = rf_dat, target = "tar", positive = "pos")
-rf <- resample(learner = makeLearner("classif.randomForest", predict.type = "prob"), task = task_u, 
-               resampling = makeResampleDesc(method = "CV", iters = 5L, stratify = TRUE), 
-               #auc, sensitivity, specificity
-               measures = list(auc, tnr, tpr),
-               show.info = TRUE)
+
+# case 1 - 1-grams --------------------------
+
+ng_dat <- as.matrix(count_ngrams(all_seqs, 1, a()[-1]))
+rf_dat <- cbind(data.frame(ng_dat), tar = as.factor(tar))
+
+task_u <- makeClassifTask(id = "unigrams", data = rf_dat, target = "tar", positive = "pos") 
+results[[1]] <- benchmark(learner = makeLearner("classif.randomForestb", predict.type = "prob"), task = task_u, 
+                         resampling = makeResampleDesc(method = "CV", iters = 10L, stratify = TRUE), 
+                         #auc, sensitivity, specificity
+                         measures = list(auc, tnr, tpr),
+                         show.info = TRUE)
+
+# case 2 - binarized 1-grams --------------------------
+
+
+ng_dat <- as.matrix(count_ngrams(all_seqs, 1, a()[-1])) > 0
+storage.mode(ng_dat) <- "integer"
+rf_dat <- cbind(data.frame(ng_dat), tar = as.factor(tar))
+
+task_u <- makeClassifTask(id = "unigrams_binarized", data = rf_dat, target = "tar", positive = "pos")
+results[[2]] <- resample(learner = makeLearner("classif.randomForest", predict.type = "prob"), task = task_u, 
+                         resampling = makeResampleDesc(method = "CV", iters = 10L, stratify = TRUE), 
+                         #auc, sensitivity, specificity
+                         measures = list(auc, tnr, tpr),
+                         show.info = TRUE)
