@@ -24,33 +24,33 @@ library(signalHsmm)
 library(biogram)
 library(seqinr)
 library(mlr)
-source("randomForestsb.R") #all learners
+source("randomForestsb2.R") #all learners
 
 tar <- rep(c("pos", "neg"), sapply(raw_seqs, length))
 
 
 # case 1 - 1-grams --------------------------
 
-ng_dat <- as.matrix(count_ngrams(all_seqs, 1, a()[-1]))
-rf_dat <- cbind(data.frame(ng_dat), tar = as.factor(tar))
+rf_dat <- data.frame(all_seqs, tar = as.factor(tar))
+
+l1 <- makeLearner("classif.randomForestb", id = "1gram", predict.type = "prob", binarize = FALSE, n_gram = 1L, distance = 0)
+#RF, binarized data
+l2 <- makeLearner("classif.randomForestb", id = "1gram_bin", predict.type = "prob", binarize = TRUE, n_gram = 1L, distance = 0)
+
+l3 <- makeLearner("classif.randomForestb", id = "2gram_bin0", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 0)
+
+l4 <- makeLearner("classif.randomForestb", id = "2gram_bin1", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 1)
+
+l5 <- makeLearner("classif.randomForestb", id = "2gram_bin2", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 2)
+
+l6 <- makeLearner("classif.randomForestb", id = "2gram_bin2", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 3)
+
+l7 <- makeLearner("classif.randomForestb", id = "2gram_bin2", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 4)
 
 task_u <- makeClassifTask(id = "unigrams", data = rf_dat, target = "tar", positive = "pos") 
-results[[1]] <- benchmark(learner = makeLearner("classif.randomForestb", predict.type = "prob"), task = task_u, 
-                         resampling = makeResampleDesc(method = "CV", iters = 10L, stratify = TRUE), 
+results <- benchmark(learner = list(l1, l2, l3, l4, l6, l7), task = task_u, 
+                         resampling = makeResampleDesc(method = "CV", iters = 5L, stratify = TRUE), 
                          #auc, sensitivity, specificity
                          measures = list(auc, tnr, tpr),
                          show.info = TRUE)
 
-# case 2 - binarized 1-grams --------------------------
-
-
-ng_dat <- as.matrix(count_ngrams(all_seqs, 1, a()[-1])) > 0
-storage.mode(ng_dat) <- "integer"
-rf_dat <- cbind(data.frame(ng_dat), tar = as.factor(tar))
-
-task_u <- makeClassifTask(id = "unigrams_binarized", data = rf_dat, target = "tar", positive = "pos")
-results[[2]] <- resample(learner = makeLearner("classif.randomForest", predict.type = "prob"), task = task_u, 
-                         resampling = makeResampleDesc(method = "CV", iters = 10L, stratify = TRUE), 
-                         #auc, sensitivity, specificity
-                         measures = list(auc, tnr, tpr),
-                         show.info = TRUE)

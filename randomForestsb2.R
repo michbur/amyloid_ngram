@@ -19,16 +19,19 @@ makeRLearner.classif.randomForestb = function() {
       makeLogicalLearnerParam(id = "norm.votes", default = TRUE),
       makeLogicalLearnerParam(id = "keep.inbag", default = FALSE),
       #here goes our parameters
-      makeLogicalLearnerParam(id = "binarize", default = FALSE)
+      makeLogicalLearnerParam(id = "binarize", default = FALSE),
+      makeIntegerLearnerParam(id = "n_gram", default = 1L),
+      makeIntegerLearnerParam(id = "distance", default = 0L)
     ),
-    properties = c("twoclass", "multiclass", "numerics", "factors", "ordered", "prob"),
+    properties = c("twoclass", "multiclass", "numerics", "factors", "ordered", "prob", "missings"),
     name = "Random Forest",
     short.name = "rf"
   )
 }
 
 
-trainLearner.classif.randomForest_ngram = function(.learner, .task, .subset, .weights = NULL, classwt = NULL, cutoff, ...) {
+trainLearner.classif.randomForest_ngram = function(.learner, .task, .subset, .weights = NULL, classwt = NULL, 
+                                                   cutoff, binarize, n_gram, distance, ...) {
   f = getTaskFormula(.task)
   levs = .task$task.desc$class.levels
   n = length(levs)
@@ -41,9 +44,18 @@ trainLearner.classif.randomForest_ngram = function(.learner, .task, .subset, .we
   
   #what an ugly workaound! namin convention: tar for target vector
   dat <- getTaskData(.task, .subset)
-  binary_dat <- as.matrix(dat[, colnames(dat) != "tar"]) > 0
-  storage.mode(binary_dat) <- "integer"
-  dat <- data.frame(binary_dat, tar = dat[, "tar"])
+  
+  ng_dat <- as.matrix(count_ngrams(as.matrix(dat[, colnames(dat) != "tar"]), n_gram, a()[-1], distance))
+  
+  if(binarize) {
+    ng_dat <- ng_dat > 0
+    storage.mode(ng_dat) <- "integer"
+  }
+  dat <- data.frame(ng_dat, tar = dat[, "tar"])
+  #awful hack to make predict method work
+  binarize <<- binarize
+  n_gram <<- n_gram
+  distance <<- distance
   
   randomForest::randomForest(f, data = dat, classwt = classwt, cutoff = cutoff, ...)
 }
@@ -52,10 +64,13 @@ trainLearner.classif.randomForest_ngram = function(.learner, .task, .subset, .we
 predictLearner.classif.randomForest_ngram = function(.learner, .model, .newdata, ...) {
   type = ifelse(.learner$predict.type=="response", "response", "prob")
   
-  tmp_dat <- as.matrix(.newdata) > 0
-  storage.mode(tmp_dat) <- "integer"
+  ng_dat <- as.matrix(count_ngrams(as.matrix(.newdata), n_gram, a()[-1], distance))
   
-  predict(.model$learner.model, newdata = data.frame(tmp_dat), type = type, ...)
+  if(binarize) {
+    ng_dat <- ng_dat > 0
+    storage.mode(ng_dat) <- "integer"
+  }
+  
+  predict(.model$learner.model, newdata = data.frame(ng_dat), type = type, ...)
 }
-
 
