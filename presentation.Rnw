@@ -4,10 +4,10 @@
 \usepackage{amsfonts}
 \usepackage{indentfirst}
 \usepackage{amsmath}
-\usepackage[notocbib]{apacite}
 \usepackage[polish]{babel}
 \usepackage{polski}
 \usepackage[cp1250]{inputenc}
+\usepackage{natbib}
 \frenchspacing
 
 \setbeamertemplate{caption}{\centering\insertcaption\par}
@@ -56,6 +56,10 @@
 
 \begin{frame}
 n-gramy (k-mery, k-tuple) to wektory o d³ugoœci $n$ zawieraj¹ce znaki z sekwencji wejœciowych.
+
+\vspace{2cm}
+
+Pierwotnie analiza n-gramów rozwijana by³a na potrzeby analizy jêzyka naturalnego, ale ma równie¿ zastosowania w genomice~\citep{fang2011}, transkryptomice~\citep{wang2014} i proteomice~\citep{guo2014}.
 
 \end{frame}
 
@@ -279,14 +283,51 @@ gdzie $N_{T_P > T_R}$ to liczba losowañ, kiedy $T_P$ (permutowana statystyka tes
 \end{frame}
 
 
-\subsection{n-gramy a ukryte modele Markowa}
+\section{signalHSMM}
+
+\subsection{Peptydy sygna³owe}
 
 \begin{frame}
 
+\begin{figure}[ht]
+        \centering
+        \scalebox{0.4}{
+          \includegraphics{SP.png}
+        }
+\end{figure}
+
+      \begin{itemize}
+        \item n-region: g³ównie zasadowe aminokwasy~\citep{nielsen_prediction_1998},
+        \item h-region: silnie hydrofobowe reszty aminokwasy~\citep{nielsen_prediction_1998},
+        \item c-region: kilka polarnych aminokwasów bez ³adunku~\citep{jain_signal_1994}.
+      \end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+
+Istnieje szereg programów przewiduj¹cych wystêpowanie peptydu sygna³owego:
+\begin{itemize}
+\item signalP 4.1 (sieci neuronowe)~\cite{petersen_signalp_2011},
+\item PrediSi (Position Weight Matrix)~\cite{hiller_predisi:_2004},
+\item Signal-3L (k-najbliszych s¹siadów)~\cite{shen_signal-3l:_2007},
+\item Phobius (ukryte modele Markowa)~\cite{kall_combined_2004}.
+\end{itemize}
 
 
 \end{frame}
 
 
+
+\begin{frame}
+
+\tiny{
+      \bibliographystyle{apalike}
+      \bibliography{amyloid_present}
+    }
+
+
+\end{frame}
 
 \end{document}

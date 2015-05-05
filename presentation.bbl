@@ -1,0 +1,60 @@
+\begin{thebibliography}{}
+
+\bibitem[Fang et~al., 2011]{fang2011}
+Fang, Y.-C., Lai, P.-T., Dai, H.-J., and Hsu, W.-L. (2011).
+\newblock Meinfotext 2.0: gene methylation and cancer relation extraction from
+  biomedical literature.
+\newblock {\em BMC Bioinformatics}, 12(1):471.
+
+\bibitem[Guo et~al., 2014]{guo2014}
+Guo, S.-H., Deng, E.-Z., Xu, L.-Q., Ding, H., Lin, H., Chen, W., and Chou,
+  K.-C. (2014).
+\newblock inuc-pseknc: a sequence-based predictor for predicting nucleosome
+  positioning in genomes with pseudo k-tuple nucleotide composition.
+\newblock {\em Bioinformatics}, 30(11):1522--1529.
+
+\bibitem[Hiller et~al., 2004]{hiller_predisi:_2004}
+Hiller, K., Grote, A., Scheer, M., Münch, R., and Jahn, D. (2004).
+\newblock {PrediSi}: prediction of signal peptides and their cleavage
+  positions.
+\newblock {\em Nucleic Acids Research}, 32(suppl 2):W375–W379.
+
+\bibitem[Jain et~al., 1994]{jain_signal_1994}
+Jain, R.~G., Rusch, S.~L., and Kendall, D.~A. (1994).
+\newblock Signal peptide cleavage regions. functional limits on length and
+  topological implications.
+\newblock {\em The Journal of Biological Chemistry}, 269(23):16305–16310.
+
+\bibitem[Käll et~al., 2004]{kall_combined_2004}
+Käll, L., Krogh, A., and Sonnhammer, E. L.~L. (2004).
+\newblock A combined transmembrane topology and signal peptide prediction
+  method.
+\newblock {\em Journal of Molecular Biology}, 338(5):1027–1036.
+
+\bibitem[Nielsen and Krogh, 1998]{nielsen_prediction_1998}
+Nielsen, H. and Krogh, A. (1998).
+\newblock Prediction of signal peptides and signal anchors by a hidden markov
+  model.
+\newblock {\em Proceedings / ... International Conference on Intelligent
+  Systems for Molecular Biology ; {ISMB}. International Conference on
+  Intelligent Systems for Molecular Biology}, 6:122–130.
+
+\bibitem[Petersen et~al., 2011]{petersen_signalp_2011}
+Petersen, T.~N., Brunak, S., von Heijne, G., and Nielsen, H. (2011).
+\newblock {SignalP} 4.0: discriminating signal peptides from transmembrane
+  regions.
+\newblock {\em Nature Methods}, 8(10):785–786.
+
+\bibitem[Shen and Chou, 2007]{shen_signal-3l:_2007}
+Shen, H.-B. and Chou, K.-C. (2007).
+\newblock Signal-3l: A 3-layer approach for predicting signal peptides.
+\newblock {\em Biochemical and Biophysical Research Communications},
+  363(2):297–303.
+
+\bibitem[Wang et~al., 2014]{wang2014}
+Wang, Y., Liu, L., Chen, L., Chen, T., and Sun, F. (2014).
+\newblock Comparison of metatranscriptomic samples based on
+  <italic>k-</italic>tuple frequencies.
+\newblock {\em PLoS ONE}, 9(1):e84348.
+
+\end{thebibliography}
