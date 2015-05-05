@@ -43,9 +43,9 @@ l4 <- makeLearner("classif.randomForestb", id = "2gram_bin1", predict.type = "pr
 
 l5 <- makeLearner("classif.randomForestb", id = "2gram_bin2", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 2)
 
-l6 <- makeLearner("classif.randomForestb", id = "2gram_bin2", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 3)
+l6 <- makeLearner("classif.randomForestb", id = "2gram_bin3", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 3)
 
-l7 <- makeLearner("classif.randomForestb", id = "2gram_bin2", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 4)
+l7 <- makeLearner("classif.randomForestb", id = "2gram_bin4", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 4)
 
 task_u <- makeClassifTask(id = "unigrams", data = rf_dat, target = "tar", positive = "pos") 
 results <- benchmark(learner = list(l1, l2, l3, l4, l6, l7), task = task_u, 
