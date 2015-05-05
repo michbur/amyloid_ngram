@@ -53,4 +53,4 @@ results <- benchmark(learner = list(l1, l2, l3, l4, l6, l7), task = task_u,
                          #auc, sensitivity, specificity
                          measures = list(auc, tnr, tpr),
                          show.info = TRUE)
-
+save(results, file = "results.RData")
