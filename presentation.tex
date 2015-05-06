@@ -131,7 +131,7 @@ Pierwotnie analiza n-gramów rozwijana była na potrzeby analizy języka natural
 
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 09:37:40 2015
+% Wed May  6 11:15:30 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -150,7 +150,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 09:37:40 2015
+% Wed May  6 11:15:30 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrr}
@@ -171,7 +171,7 @@ S1 & 1 & 2 & 1 & 2 \\
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 09:37:40 2015
+% Wed May  6 11:15:30 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -190,7 +190,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 09:37:40 2015
+% Wed May  6 11:15:30 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -240,7 +240,7 @@ n-gramy mogą być przypisaną informację o pozycjach na których występują.
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 09:37:40 2015
+% Wed May  6 11:15:30 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -259,7 +259,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 09:37:40 2015
+% Wed May  6 11:15:30 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -310,7 +310,7 @@ n-gramy mogą być nieciągłe - pomiędzy elementami n-gramu mogą występować
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 09:37:41 2015
+% Wed May  6 11:15:31 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -329,7 +329,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 09:37:41 2015
+% Wed May  6 11:15:31 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -400,19 +400,19 @@ Istnieje szereg programów przewidujących występowanie peptydu sygnałowego:
 \item signalP 4.1 (sieci neuronowe)~\citep{petersen_signalp_2011},
 \item PrediSi (Position Weight Matrix)~\citep{hiller_predisi:_2004},
 \item Signal-3L (k-najbliszych sąsiadów)~\citep{shen_signal-3l:_2007},
-\item Phobius (ukryte modele Markowa)~\citep{kall_combined_2004}.
+\item Phobius (ukryte modele Markowskie)~\citep{kall_combined_2004}.
 \end{itemize}
 
 \end{frame}
 
-\subsection{Ukryte modele semi-Markowa}
+\subsection{Ukryte modele semi-Markowskie}
 
 
 \begin{frame}
       Założenia modelu:
       \begin{itemize}
         \item obserwowany rozkład aminokasów jest wynika z przebywania w określonym regionie (stanie),
-        \item długość regionu (czas trwania stanu) jest modelowana poprzez rozkład prawdopodobieństwa (inny niż rozkład geometryczny jak w ukrytych modelach Markowa).
+        \item długość regionu (czas trwania stanu) jest modelowana poprzez rozkład prawdopodobieństwa (inny niż rozkład geometryczny jak w ukrytych modelach Markowskich).
       \end{itemize}
     \end{frame}
 
@@ -457,8 +457,55 @@ Istnieje szereg programów przewidujących występowanie peptydu sygnałowego:
 
     \end{frame}
 
+\subsection{Porównanie z innymi programami}
+
+\begin{frame}
+    Zbiór danych do analizy porównawczej: 140 eukariotycznych białek z peptydem sygnałowym i 280 losowo wybranych eukariotycznych bialek bez peptydu sygnałowego dodanych po 2010 do bazy UniProt.
+    
+    \vspace{.5cm}
+    
+    signal.hsmm1987: wytrenowany na zbiorze 496 eukariotycznych białek z peptydem sygnałowym dodanych do bazy przed 1987.
+    
+    \vspace{.5cm}
+    
+    signal.hsmm2010: wytrenowany na zbiorze 3676 eukariotycznych białek z peptydem sygnałowym dodanych do bazy przed 2010.
+    \end{frame}
 
 
+
+    \begin{frame}
+      \begin{table}[ht]
+\centering
+\begin{tabular}{rcccc}
+  \hline
+ & AUC & H-measure & Gini index\\ 
+  \hline
+Phobius & 0.9643 & 0.8844 & 0.9286\\ 
+  PrediSi & 0.9411 & 0.8238 & 0.8821\\ 
+  signalP 4.1 (no tm) & 0.9679 & 0.8909 & 0.9357\\ 
+  signalP 4.1 (tm) & 0.9750 & 0.9261 & 0.9500\\ 
+  signalhsmm2010 & 0.9893 & 0.8963 & 0.9786\\ 
+  signalhsmm1987 & 0.9889 & 0.8994 & 0.9778\\ 
+   \hline
+\end{tabular}
+\end{table}
+    \end{frame}
+
+
+\section{Amyloidy}
+
+\subsection{Zbiór danych}
+
+\begin{frame}
+
+Zbiór danych: 146 amyloidów i 290 nieamyloidów~\citep{kotulska2014}.
+
+
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-11-1} 
+
+
+
+\end{frame}
 
 \begin{frame}
 

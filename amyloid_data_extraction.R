@@ -33,6 +33,8 @@ tar <- rep(c("pos", "neg"), sapply(raw_seqs, length))
 
 rf_dat <- data.frame(all_seqs, tar = as.factor(tar))
 
+save(rf_dat, file = "amyloid_seqs.RData")
+
 l1 <- makeLearner("classif.randomForestb", id = "1gram", predict.type = "prob", binarize = FALSE, n_gram = 1L, distance = 0)
 #RF, binarized data
 l2 <- makeLearner("classif.randomForestb", id = "1gram_bin", predict.type = "prob", binarize = TRUE, n_gram = 1L, distance = 0)
