@@ -1,0 +1,333 @@
+\documentclass[10pt]{beamer}
+\usetheme{Warsaw}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{indentfirst}
+\usepackage{amsmath}
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage[cp1250]{inputenc}
+\usepackage{natbib}
+\frenchspacing
+
+\setbeamertemplate{caption}{\centering\insertcaption\par}
+\setlength{\belowcaptionskip}{15pt}
+\renewcommand{\thetable}{}
+
+\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+
+\begin{document}
+
+
+\date{}
+\author{Micha³  Burdukiewicz\inst{1}, Piotr Sobczyk\inst{2}}
+\institute{ 
+\inst{1} Zak³ad Genomiki, Uniwersytet Wroc³awski
+\and 
+\inst{2} Instytut Matematyki i Informatyki, Politechnika Wroc³awska}
+
+\title{n-gramy w analizie sekwencji biologicznych}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+\begin{frame}
+\frametitle{Outline}
+\tableofcontents
+\end{frame}
+
+
+
+
+
+
+\section{n-gramy (k-mery)}
+
+\subsection{n-gramy (k-mery)}
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>
+\frametitle{Outline}
+\tableofcontents[currentsection]
+\end{frame}
+}
+
+\begin{frame}
+n-gramy (k-mery, k-tuple) to wektory o d³ugoœci $n$ zawieraj¹ce znaki z sekwencji wejœciowych.
+
+\vspace{2cm}
+
+Pierwotnie analiza n-gramów rozwijana by³a na potrzeby analizy jêzyka naturalnego, ale ma równie¿ zastosowania w genomice~\citep{fang2011}, transkryptomice~\citep{wang2014} i proteomice~\citep{guo2014}.
+
+\end{frame}
+
+\begin{frame}
+
+
+
+<<echo = FALSE,message=FALSE,results='asis'>>=
+library(reshape2)
+library(ggplot2)
+library(grid)
+library(biogram)
+library(xtable)
+
+set.seed(1)
+sample_seq <- matrix(sample(c("A", "C", "G", "T"), 18, replace = TRUE), nrow = 3)
+colnames(sample_seq) <- paste0("P", 1L:ncol(sample_seq))
+rownames(sample_seq) <- paste0("S", 1L:nrow(sample_seq))
+print(xtable(data.frame(sample_seq), caption = "Przyk³adowe sekwencje.  S - sekwencje, P - pozycja nukleotydu.", digits = 0))
+@
+
+
+  
+<<echo = FALSE,message=FALSE,results='asis'>>=
+unis <- count_ngrams(sample_seq, 1, c("A", "C", "G", "T"))
+unis <- data.frame(as.matrix(unis))
+colnames(unis) <- c("A", "C", "G", "T")
+rownames(unis) <- paste0("S", 1L:nrow(sample_seq))
+print(xtable(unis, caption = "Zliczenia 1-gramów.", digits = 0), include.rownames = TRUE)
+@
+
+\end{frame}
+
+\begin{frame}
+
+<<echo = FALSE,message=FALSE,results='asis'>>=
+# the echo=5 tells knitr that I want all lines to run but only show #5
+library(reshape2)
+library(ggplot2)
+library(biogram)
+library(xtable)
+library(grid)
+
+theme_presentation <- theme(plot.background=element_rect(fill = "transparent",
+                                                   colour = "transparent"),
+                      plot.margin = unit(c(1,1,1,1), "cm"),
+                      axis.text.x = element_text(size=9), 
+                      axis.text.y = element_text(size=9),
+                      axis.title.x = element_text(size=13, vjust = -1), 
+                      axis.title.y = element_text(size=13, vjust = 1),
+                      strip.text = element_text(size=13),
+                      legend.text = element_text(size=9), 
+                      legend.title = element_text(size=13),
+                      plot.title = element_text(size=20),
+                      panel.background = element_rect(fill = "transparent",colour = "black"),
+                      legend.background = element_rect(fill="NA"))
+
+set.seed(1)
+sample_seq <- matrix(sample(c("A", "C", "G", "T"), 18, replace = TRUE), nrow = 3)
+colnames(sample_seq) <- paste0("P", 1L:ncol(sample_seq))
+rownames(sample_seq) <- paste0("S", 1L:nrow(sample_seq))
+print(xtable(data.frame(sample_seq), caption = "Przyk³adowe sekwencje.  S - sekwencje, P - pozycja nukleotydu.", digits = 0))
+@
+  
+
+  
+<<echo = FALSE,message=FALSE,results='asis'>>=
+unis <- count_ngrams(sample_seq, 2, c("A", "C", "G", "T"))
+unis <- data.frame(as.matrix(unis))
+
+colnames(unis) <- sapply(colnames(unis), function(i) 
+                         paste0(substr(i, 0, 1), substr(i, 3, 3)))
+
+#colnames(unis) <- c("A", "C", "G", "T")
+rownames(unis) <- paste0("S", 1L:nrow(sample_seq))
+print(xtable(unis[, 1L:8], caption = "Zliczenia 2-gramów (fragment tabeli).", digits = 0), include.rownames = TRUE)
+@
+
+\end{frame}
+
+\begin{frame}
+$$n_\text{max} = u^n$$
+
+$n_\text{max}$: liczba wszystkich mo¿liwych n-gramów
+
+$u$: liczba liter w alfabecie.
+
+$n$: d³ugoœæ n-gramu
+
+\end{frame}
+
+
+\begin{frame}
+
+<<echo = FALSE,message=FALSE,results='asis',fig.height=5.5>>=
+n <- 1:6
+n_max <- 4^n
+
+dat <- data.frame(n, n_max)
+ggplot(dat, aes(x = n, y = n_max)) + 
+  geom_line(linetype="dotted", size=1.5) + 
+  geom_point(size=4, shape=21, fill = "black") +
+  scale_x_continuous(breaks = 0L:6) +
+  scale_y_continuous(expression(n["max"])) + 
+  theme_presentation
+@
+
+\end{frame}
+
+\subsection{Informacja o pozycji}
+
+\begin{frame}
+
+n-gramy mog¹ byæ przypisan¹ informacjê o pozycjach na których wystêpuj¹.
+
+\end{frame}
+
+
+\begin{frame}
+
+<<echo = FALSE,message=FALSE,results='asis'>>=
+print(xtable(data.frame(sample_seq), caption = "Przyk³adowe sekwencje.  S - sekwencje, P - pozycja nukleotydu.", digits = 0))
+@
+  
+
+  
+<<echo = FALSE,message=FALSE,results='asis'>>=
+unis <- count_ngrams(sample_seq, 2, c("A", "C", "G", "T"), pos = TRUE)
+unis <- data.frame(as.matrix(unis))
+
+colnames(unis) <- substr(colnames(unis), 2, 6)
+
+#colnames(unis) <- c("A", "C", "G", "T")
+rownames(unis) <- paste0("S", 1L:nrow(sample_seq))
+print(xtable(unis[, 1L:8], caption = "Zliczenia 2-gramów z informacj¹ o pozycji (fragment tabeli).", digits = 0), include.rownames = TRUE)
+@
+
+\end{frame}
+
+\begin{frame}
+$$n_\text{max} = p \times u^n$$
+
+$n_\text{max}$: liczba wszystkich mo¿liwych n-gramów
+
+$p$: liczba mo¿liwych pozycji.
+
+$u$: liczba liter w alfabecie.
+
+$n$: d³ugoœæ n-gramu
+
+\end{frame}
+
+
+\begin{frame}
+
+<<echo = FALSE,message=FALSE,results='asis',fig.height=5.5>>=
+dat <- melt(sapply(c(1, 2:5*5), function(i) i * n_max))
+dat[["Var2"]] <- factor(dat[["Var2"]])
+levels(dat[["Var2"]]) <- c(1, 2:5*5)
+colnames(dat) <- c("n", "p", "n_max")
+ggplot(dat, aes(x = n, y = n_max, fill = p, col = p)) + 
+  geom_line(linetype="dotted", size=1.5) + 
+  geom_point(size=4, shape=21) +
+  scale_x_continuous(breaks = 0L:6) +
+  scale_y_continuous(expression(n["max"])) + 
+  theme_presentation
+@
+\end{frame}
+
+\subsection{Nieci¹g³e n-gramy}
+
+\begin{frame}
+
+n-gramy mog¹ byæ nieci¹g³e - pomiêdzy elementami n-gramu mog¹ wystêpowaæ przerwy.
+
+\end{frame}
+
+
+\begin{frame}
+
+<<echo = FALSE,message=FALSE,results='asis'>>=
+print(xtable(data.frame(sample_seq), caption = "Przyk³adowe sekwencje.  S - sekwencje, P - pozycja nukleotydu.", digits = 0))
+@
+  
+
+  
+<<echo = FALSE,message=FALSE,results='asis'>>=
+unis <- count_ngrams(sample_seq, 2, c("A", "C", "G", "T"), d = 1)
+unis <- data.frame(as.matrix(unis))
+
+colnames(unis) <- decode_ngrams(colnames(unis))
+
+#colnames(unis) <- c("A", "C", "G", "T")
+rownames(unis) <- paste0("S", 1L:nrow(sample_seq))
+print(xtable(unis[, 1L:8], caption = "Zliczenia 2-gramów z przerw¹ 1 (fragment tabeli).", digits = 0), include.rownames = TRUE)
+@
+
+\end{frame}
+
+\subsection{Wybór informatywnych n-gramów - QuiPT}
+
+\begin{frame}
+
+Wielowymiarowa przestrzeñ atrybutów jest filtrowana z pomoc¹ QuiPT (\textbf{Qui}ck \textbf{P}ermutation \textbf{T}est) ³¹cz¹cego zalety testów permutacyjnych (brak za³o¿eñ) z szybkoœci¹ wykonania.
+
+\end{frame}
+
+\begin{frame}
+W trakcie testu permutacyjnego oznaczenia klas s¹ losowo mieszane na potrzeby obliczania statystyki testowej.
+    
+\begin{center}
+\scalebox{0.85}{
+$      
+\textnormal{p-value} = \frac{N_{T_P > T_R}}{N}
+$
+}
+\end{center}
+
+gdzie $N_{T_P > T_R}$ to liczba losowañ, kiedy $T_P$ (permutowana statystyka testowa) mia³a wartoœæ krytyczniejsz¹ ni¿ $T_R$ (statystyka testowa dla niepermutowanych danych).
+      
+\end{frame}
+
+
+\section{signalHSMM}
+
+\subsection{Peptydy sygna³owe}
+
+\begin{frame}
+
+\begin{figure}[ht]
+        \centering
+        \scalebox{0.4}{
+          \includegraphics{SP.png}
+        }
+\end{figure}
+
+      \begin{itemize}
+        \item n-region: g³ównie zasadowe aminokwasy~\citep{nielsen_prediction_1998},
+        \item h-region: silnie hydrofobowe reszty aminokwasy~\citep{nielsen_prediction_1998},
+        \item c-region: kilka polarnych aminokwasów bez ³adunku~\citep{jain_signal_1994}.
+      \end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+
+Istnieje szereg programów przewiduj¹cych wystêpowanie peptydu sygna³owego:
+\begin{itemize}
+\item signalP 4.1 (sieci neuronowe)~\cite{petersen_signalp_2011},
+\item PrediSi (Position Weight Matrix)~\cite{hiller_predisi:_2004},
+\item Signal-3L (k-najbliszych s¹siadów)~\cite{shen_signal-3l:_2007},
+\item Phobius (ukryte modele Markowa)~\cite{kall_combined_2004}.
+\end{itemize}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+
+\tiny{
+      \bibliographystyle{apalike}
+      \bibliography{amyloid_present}
+    }
+
+
+\end{frame}
+
+\end{document}
