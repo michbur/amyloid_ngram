@@ -43,9 +43,12 @@ get_perf_plot <- function(perf) {
 }
 
 
-preds <- getBMRPredictions(results, getBMRTaskIds(results), as.df = FALSE)[[1L]]
+library(mlr)
 library(checkmate)
 library(ROCR)
+
+
+preds <- getBMRPredictions(results, getBMRTaskIds(results), as.df = FALSE)[[1L]]
 
 assertList(preds, c("Prediction", "ResampleResult"), min.len = 1L)
 cargs = list(measure = "tpr", x.measure = "fpr")
@@ -53,7 +56,7 @@ perf.args = list()
 cargs = insert(cargs, perf.args)
 plot_preds <- lapply(preds, function(x) {
   cargs$prediction.obj = asROCRPrediction(x)
-  do.call(performance, cargs)
+  do.call(ROCR::performance, cargs)
 })
 
 
@@ -62,3 +65,23 @@ plot(plot_preds[[1]], avg = "threshold")
 plot_dat <- do.call(rbind, lapply(plot_preds, get_perf_plot))
 
 classif_nmes <- sapply(strsplit(rownames(plot_dat), ".", fixed = TRUE), function(i) i[1])
+
+#size of the n-gram
+ngram_size <- substr(classif_nmes, 0, 1)
+
+#binary ngrams?
+ngram_bin <- grepl("bin", classif_nmes)
+
+#distance
+dists <- as.numeric(sapply(classif_nmes, function(i) substr(i, nchar(i), nchar(i))))
+dists[is.na(dists)] <- "none"
+dists <- as.factor(dists)
+
+final_plot_dat <- cbind(plot_dat, dists = dists, bin = ngram_bin, n = ngram_size)
+rownames(final_plot_dat) <- NULL
+
+library(ggplot2)
+ggplot(final_plot_dat, aes(x = x, y = y, col = n, fill = dists)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ bin)
