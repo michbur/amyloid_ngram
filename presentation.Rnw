@@ -87,6 +87,23 @@ library(ggplot2)
 library(grid)
 library(biogram)
 library(xtable)
+library(seqinr)
+
+theme_presentation <- theme(plot.background=element_rect(fill = "transparent",
+                                                   colour = "transparent"),
+                      plot.margin = unit(c(1,1,1,1), "cm"),
+                      axis.text.x = element_text(size=9), 
+                      axis.text.y = element_text(size=9),
+                      axis.title.x = element_text(size=13, vjust = -1), 
+                      axis.title.y = element_text(size=13, vjust = 1),
+                      strip.text = element_text(size=13),
+                      legend.text = element_text(size=9), 
+                      legend.title = element_text(size=13),
+                      plot.title = element_text(size=20),
+                      panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
+                      panel.background = element_rect(fill = "transparent",colour = "black"),
+                      legend.background = element_rect(fill="NA"))
+
 
 set.seed(1)
 sample_seq <- matrix(sample(c("A", "C", "G", "T"), 18, replace = TRUE), nrow = 3)
@@ -110,32 +127,6 @@ print(xtable(unis, caption = "Zliczenia 1-gramów.", digits = 0), include.rownam
 \begin{frame}
 
 <<echo = FALSE,message=FALSE,results='asis'>>=
-# the echo=5 tells knitr that I want all lines to run but only show #5
-library(reshape2)
-library(ggplot2)
-library(biogram)
-library(xtable)
-library(grid)
-
-theme_presentation <- theme(plot.background=element_rect(fill = "transparent",
-                                                   colour = "transparent"),
-                      plot.margin = unit(c(1,1,1,1), "cm"),
-                      axis.text.x = element_text(size=9), 
-                      axis.text.y = element_text(size=9),
-                      axis.title.x = element_text(size=13, vjust = -1), 
-                      axis.title.y = element_text(size=13, vjust = 1),
-                      strip.text = element_text(size=13),
-                      legend.text = element_text(size=9), 
-                      legend.title = element_text(size=13),
-                      plot.title = element_text(size=20),
-                      panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
-                      panel.background = element_rect(fill = "transparent",colour = "black"),
-                      legend.background = element_rect(fill="NA"))
-
-set.seed(1)
-sample_seq <- matrix(sample(c("A", "C", "G", "T"), 18, replace = TRUE), nrow = 3)
-colnames(sample_seq) <- paste0("P", 1L:ncol(sample_seq))
-rownames(sample_seq) <- paste0("S", 1L:nrow(sample_seq))
 print(xtable(data.frame(sample_seq), caption = "Przykładowe sekwencje.  S - sekwencje, P - pozycja nukleotydu.", digits = 0))
 @
   
@@ -447,6 +438,33 @@ ggplot(lenghts, aes(x = len, fill = Amyloid)) +
 
 
 \end{frame}
+
+
+\begin{frame}
+
+
+<<echo = FALSE,message=FALSE,results='asis',fig.height=5.5>>=
+
+#table is wrong here, we should also divide by the length of sequence
+unis <- table_ngrams(as.matrix(rf_dat[, -11]), paste0(create_ngrams(1, a()[-1]), "_0"), target = as.numeric(rf_dat[, 11]) - 1)
+munis <- melt(unis)
+levels(munis[, "ngram"]) <- substr(levels(munis[, "ngram"]), 0, 1)
+munis[, "ngram"] <- factor(munis[, "ngram"], levels = levels(munis[, "ngram"])[order(abs(unis[, "target0"] - unis[, "target1"]), decreasing = TRUE)])
+levels(munis[, "variable"]) <- c("nie", "tak")
+ggplot(munis, aes(x = ngram, fill = variable, y = value)) + 
+  geom_bar(position = "dodge", stat="identity") +
+  scale_fill_hue("Amyloid", l=70, c=150) +
+  scale_x_discrete("1-gram") +
+  scale_y_continuous("Wystandaryzowana częstość") +
+  theme_presentation
+
+
+@
+
+
+\end{frame}
+
+
 
 \begin{frame}
 
