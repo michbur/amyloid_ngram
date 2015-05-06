@@ -449,18 +449,34 @@ ggplot(lenghts, aes(x = len, fill = Amyloid)) +
 unis <- table_ngrams(as.matrix(rf_dat[, -11]), paste0(create_ngrams(1, a()[-1]), "_0"), target = as.numeric(rf_dat[, 11]) - 1)
 munis <- melt(unis)
 levels(munis[, "ngram"]) <- substr(levels(munis[, "ngram"]), 0, 1)
-munis[, "ngram"] <- factor(munis[, "ngram"], levels = levels(munis[, "ngram"])[order(abs(unis[, "target0"] - unis[, "target1"]), decreasing = TRUE)])
+#munis[, "ngram"] <- factor(munis[, "ngram"], levels = levels(munis[, "ngram"])[order(abs(unis[, "target0"] - unis[, "target1"]), decreasing = TRUE)])
 levels(munis[, "variable"]) <- c("nie", "tak")
 ggplot(munis, aes(x = ngram, fill = variable, y = value)) + 
   geom_bar(position = "dodge", stat="identity") +
   scale_fill_hue("Amyloid", l=70, c=150) +
   scale_x_discrete("1-gram") +
-  scale_y_continuous("Wystandaryzowana częstość") +
+  scale_y_continuous("Liczba 1-gramów") +
   theme_presentation
-
-
 @
 
+\end{frame}
+
+
+\begin{frame}
+
+<<echo = FALSE,message=FALSE,results='asis',fig.height=5.5>>=
+unis <- table_ngrams(as.matrix(rf_dat[, -11]), paste0(create_ngrams(1, a()[-1]), "_0"), target = as.numeric(rf_dat[, 11]) - 1)
+munis <- melt(unis)
+levels(munis[, "ngram"]) <- substr(levels(munis[, "ngram"]), 0, 1)
+#munis[, "ngram"] <- factor(munis[, "ngram"], levels = levels(munis[, "ngram"])[order(abs(unis[, "target0"] - unis[, "target1"]), decreasing = TRUE)])
+levels(munis[, "variable"]) <- c("nie", "tak")
+ggplot(munis, aes(x = ngram, fill = variable, y = value)) + 
+  geom_bar(position = "dodge", stat="identity") +
+  scale_fill_hue("Amyloid", l=70, c=150) +
+  scale_x_discrete("1-gram") +
+  scale_y_continuous("Liczba 1-gramów") +
+  theme_presentation
+@
 
 \end{frame}
 
