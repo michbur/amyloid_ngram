@@ -92,14 +92,14 @@ library(seqinr)
 theme_presentation <- theme(plot.background=element_rect(fill = "transparent",
                                                    colour = "transparent"),
                       plot.margin = unit(c(1,1,1,1), "cm"),
-                      axis.text.x = element_text(size=9), 
-                      axis.text.y = element_text(size=9),
-                      axis.title.x = element_text(size=13, vjust = -1), 
-                      axis.title.y = element_text(size=13, vjust = 1),
-                      strip.text = element_text(size=13),
-                      legend.text = element_text(size=9), 
-                      legend.title = element_text(size=13),
-                      plot.title = element_text(size=20),
+                      axis.text.x = element_text(size=8), 
+                      axis.text.y = element_text(size=8),
+                      axis.title.x = element_text(size=12, vjust = -1), 
+                      axis.title.y = element_text(size=12, vjust = 1),
+                      strip.text = element_text(size=12),
+                      legend.text = element_text(size=8), 
+                      legend.title = element_text(size=12),
+                      plot.title = element_text(size=19),
                       panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
                       panel.background = element_rect(fill = "transparent",colour = "black"),
                       legend.background = element_rect(fill="NA"))
@@ -467,7 +467,11 @@ unis <- table_ngrams(as.matrix(rf_dat[, -11]), paste0(create_ngrams(1, a()[-1]),
 
 lengths <- 10 - apply(rf_dat[, -11], 1, function(i) sum(is.na(i)))
 
-sapply(levels(rf_dat[, 11]), function(i) sum(lengths[rf_dat[, 11] == i]))
+#number of amino acids
+n_aa <- sapply(levels(rf_dat[, 11]), function(i) sum(lengths[rf_dat[, 11] == i]))
+unis[["target0"]] <- unis[["target0"]]/n_aa["neg"]
+unis[["target1"]] <- unis[["target1"]]/n_aa["pos"]
+
 
 munis <- melt(unis)
 levels(munis[, "ngram"]) <- substr(levels(munis[, "ngram"]), 0, 1)
@@ -479,12 +483,50 @@ ggplot(munis, aes(x = ngram, fill = variable, y = value)) +
   geom_bar(position = "dodge", stat="identity") +
   scale_fill_hue("Amyloid", l=70, c=150) +
   scale_x_discrete("1-gram") +
-  scale_y_continuous("Liczba 1-gramów") +
+  scale_y_continuous("Częstość 1-gramów") +
   theme_presentation
 @
 
 \end{frame}
 
+
+\begin{frame}
+
+<<echo = FALSE,message=FALSE,warning=FALSE,results='asis',fig.height=5.5>>=
+
+bigrams <- cbind(as.matrix(count_ngrams(as.matrix(rf_dat[, -11]), 2, a()[-1], d = 0)),
+                 as.matrix(count_ngrams(as.matrix(rf_dat[, -11]), 2, a()[-1], d = 1)),
+                 as.matrix(count_ngrams(as.matrix(rf_dat[, -11]), 2, a()[-1], d = 2)),
+                 as.matrix(count_ngrams(as.matrix(rf_dat[, -11]), 2, a()[-1], d = 3)),
+                 as.matrix(count_ngrams(as.matrix(rf_dat[, -11]), 2, a()[-1], d = 4))) > 0
+storage.mode(bigrams) <- "integer"
+
+test_bis <- test_features(as.numeric(rf_dat[, 11]) - 1, 
+                          bigrams)
+imp_bigrams <- cut(test_bis, breaks = c(0, 0.001, 1))[[1]]
+
+bis <- table_ngrams(as.matrix(rf_dat[, -11]), cut(test_bis, breaks = c(0, 0.05, 1))[[1]], target = as.numeric(rf_dat[, 11]) - 1)
+
+lengths_bis <- 9 - apply(rf_dat[, -11], 1, function(i) sum(is.na(i)))
+n_bigrams <- sapply(levels(rf_dat[, 11]), function(i) sum(lengths_bis[rf_dat[, 11] == i]))
+
+bis[["target0"]] <- bis[["target0"]]/n_bigrams["neg"]
+bis[["target1"]] <- bis[["target1"]]/n_bigrams["pos"]
+
+
+mbis <- melt(bis)
+#levels(mbis[, "ngram"]) <- decode_ngrams(levels(mbis[, "ngram"]))
+levels(mbis[, "variable"]) <- c("nie", "tak")
+levels(mbis[, "variable"]) <- c("nie", "tak")
+ggplot(mbis, aes(x = ngram, fill = variable, y = value)) + 
+  geom_bar(position = "dodge", stat="identity") +
+  scale_fill_hue("Amyloid", l=70, c=150) +
+  scale_x_discrete("2-gram") +
+  scale_y_continuous("Częstość istotnych 2-gramów") +
+  theme_presentation
+@
+
+\end{frame}
 
 
 \end{frame}

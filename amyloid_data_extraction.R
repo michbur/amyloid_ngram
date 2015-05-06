@@ -35,22 +35,23 @@ rf_dat <- data.frame(all_seqs, tar = as.factor(tar))
 
 save(rf_dat, file = "amyloid_seqs.RData")
 
+
+
+
 l1 <- makeLearner("classif.randomForestb", id = "1gram", predict.type = "prob", binarize = FALSE, n_gram = 1L, distance = 0)
 #RF, binarized data
 l2 <- makeLearner("classif.randomForestb", id = "1gram_bin", predict.type = "prob", binarize = TRUE, n_gram = 1L, distance = 0)
 
-l3 <- makeLearner("classif.randomForestb", id = "2gram_bin0", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 0)
+#lerners for 2-grams
+learners <- unlist(lapply(c(TRUE, FALSE), function(single_binarize)
+  lapply(0L:4, function(distance)
+    makeLearner("classif.randomForestb", id = paste0("2gram_", ifelse(single_binarize, "bin", ""), distance), 
+                predict.type = "prob", binarize = single_binarize, n_gram = 2L, distance = distance))),
+  recursive = FALSE)
 
-l4 <- makeLearner("classif.randomForestb", id = "2gram_bin1", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 1)
-
-l5 <- makeLearner("classif.randomForestb", id = "2gram_bin2", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 2)
-
-l6 <- makeLearner("classif.randomForestb", id = "2gram_bin3", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 3)
-
-l7 <- makeLearner("classif.randomForestb", id = "2gram_bin4", predict.type = "prob", binarize = TRUE, n_gram = 2L, distance = 4)
 
 task_u <- makeClassifTask(id = "unigrams", data = rf_dat, target = "tar", positive = "pos") 
-results <- benchmark(learner = list(l1, l2, l3, l4, l6, l7), task = task_u, 
+results <- benchmark(learner = c(list(l1), list(l2), learners), task = task_u, 
                          resampling = makeResampleDesc(method = "CV", iters = 5L, stratify = TRUE), 
                          #auc, sensitivity, specificity
                          measures = list(auc, tnr, tpr),
