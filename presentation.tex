@@ -131,7 +131,7 @@ Pierwotnie analiza n-gramów rozwijana była na potrzeby analizy języka natural
 
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 16:35:45 2015
+% Thu May  7 09:02:21 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -150,7 +150,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 16:35:46 2015
+% Thu May  7 09:02:21 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrr}
@@ -171,7 +171,7 @@ S1 & 1 & 2 & 1 & 2 \\
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 16:35:46 2015
+% Thu May  7 09:02:21 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -190,7 +190,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 16:35:46 2015
+% Thu May  7 09:02:21 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -240,7 +240,7 @@ n-gramy mogą być przypisaną informację o pozycjach na których występują.
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 16:35:46 2015
+% Thu May  7 09:02:21 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -259,7 +259,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 16:35:46 2015
+% Thu May  7 09:02:21 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -310,7 +310,7 @@ n-gramy mogą być nieciągłe - pomiędzy elementami n-gramu mogą występować
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 16:35:46 2015
+% Thu May  7 09:02:21 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -329,7 +329,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Wed May  6 16:35:46 2015
+% Thu May  7 09:02:21 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -529,6 +529,19 @@ Zbiór danych: 146 amyloidów i 290 nieamyloidów~\citep{kotulska2014}.
 
 \begin{frame}
 
+\begin{itemize}
+\item Duże różnice w częstościach aminokwasów pozwalają na użycie n-gramów.
+\item Nierówne długości peptydów wykluczają użycie n-gramów z informacją o pozycji.
+\end{itemize}
+
+\end{frame}
+
+
+
+\subsection{Analiza n-gramów}
+
+\begin{frame}
+%czy możemy binaryzowac n-gramy?
 
 \includegraphics[width=\maxwidth]{figure/unnamed-chunk-14-1} 
 
@@ -536,7 +549,14 @@ Zbiór danych: 146 amyloidów i 290 nieamyloidów~\citep{kotulska2014}.
 \end{frame}
 
 
+\begin{frame}
+
+
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-15-1} 
+
+
 \end{frame}
+
 
 \begin{frame}
 
