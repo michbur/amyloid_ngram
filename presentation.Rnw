@@ -506,7 +506,11 @@ ggplot(munis, aes(x = ngram, fill = variable, y = value)) +
 
 \begin{frame}
 
-QuiPT wymaga binarnych danych. Czy można zbinaryzować 
+Czy można zbinaryzować zliczenia 1- i 2-gramów bez utraty zbyt dużej ilości informacji?
+
+\vspace{2cm}
+
+W 5-krotnej walidacji krzyżowej porównano 6 klasyfikatorów (lasy losowe) dla 1-gramów i 2-gramów (rozważane przerwy: 0 - 4) dla zliczeń zwykłych i zbinaryzowanych.
 
 \end{frame}
 
@@ -522,10 +526,36 @@ ggplot(final_plot_dat, aes(x = x, y = y, col = Binaryzacja, fill = Binaryzacja))
   geom_point(size=2, shape=21, alpha = 0.5) +
   facet_wrap(~ dists) +
   theme_presentation +
-  theme(legend.position="bottom")
+  theme(legend.position="bottom") +
+  ggtitle("Krzywe ROC")
 @
 
 \end{frame}
+
+
+\begin{frame}
+%czy możemy binaryzowac n-gramy?
+<<echo = FALSE,message=FALSE,warning=FALSE,results='asis'>>=
+load("results.RData")
+library(mlr)
+dat <- getBMRAggrPerformances(results, as.df = TRUE)[, -1]
+
+ngram_bin <- factor(grepl("bin", as.character(dat[["learner.id"]])))
+levels(ngram_bin ) <- c("nie", "tak")
+ngram_size <- substr(as.character(dat[["learner.id"]]), 0, 1)
+dists <- as.numeric(sapply(as.character(dat[["learner.id"]]), function(i) substr(i, nchar(i), nchar(i))))
+dists[is.na(dists)] <- "NA"
+dists <- factor(dists)
+
+res <- cbind(ngram_size, dists, ngram_bin, dat[, -1])[c(1L, 2L, 8L, 3L, 9L, 4L, 10L, 5L, 11L, 6L, 12L, 7L), ]
+colnames(res) <- c("n", "Długość przerwy", "Binaryzacja", "AUC", "TNR", "TPR")
+
+print(xtable(res, caption = "Ocena predykcji klasyfikatorów"), include.rownames = FALSE)
+@
+
+\end{frame}
+
+
 
 \begin{frame}
 <<echo = FALSE,message=FALSE,warning=FALSE,results='asis',fig.height=5.5>>=
