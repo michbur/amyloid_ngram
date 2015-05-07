@@ -74,14 +74,17 @@ ngram_bin <- grepl("bin", classif_nmes)
 
 #distance
 dists <- as.numeric(sapply(classif_nmes, function(i) substr(i, nchar(i), nchar(i))))
-dists[is.na(dists)] <- "none"
-dists <- as.factor(dists)
+dists[is.na(dists)] <- "NA"
+dists <- paste0("Przerwa: ", dists)
+dists <- factor(dists, levels = c("Przerwa: NA", "Przerwa: 0", "Przerwa: 1", "Przerwa: 2", "Przerwa: 3", "Przerwa: 4"))
 
-final_plot_dat <- cbind(plot_dat, dists = dists, bin = ngram_bin, n = ngram_size)
+final_plot_dat <- cbind(plot_dat, dists = dists, Binaryzacja = ngram_bin, n = ngram_size)
 rownames(final_plot_dat) <- NULL
 
 library(ggplot2)
-ggplot(final_plot_dat, aes(x = x, y = y, col = n, fill = dists)) +
+ggplot(final_plot_dat, aes(x = x, y = y, col = Binaryzacja, fill = Binaryzacja)) +
   geom_line() +
-  geom_point() +
-  facet_wrap(~ bin)
+  scale_x_continuous("TPR") + 
+  scale_y_continuous("TFR") +
+  geom_point(size=4, shape=21, alpha = 0.5) +
+  facet_wrap(~ dists)
