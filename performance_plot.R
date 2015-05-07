@@ -47,6 +47,7 @@ library(mlr)
 library(checkmate)
 library(ROCR)
 
+load("results.RData")
 
 preds <- getBMRPredictions(results, getBMRTaskIds(results), as.df = FALSE)[[1L]]
 
@@ -91,22 +92,3 @@ ggplot(final_plot_dat, aes(x = x, y = y, col = Binaryzacja, fill = Binaryzacja))
   scale_y_continuous("TFR") +
   geom_point(size=4, shape=21, alpha = 0.5) +
   facet_wrap(~ dists)
-
-
-
-#head(results[[1]][[4]][["pred"]][["data"]])
-
-single_learner <- results[[1]][[4]]
-
-library(dplyr)
-
-
-
-competent <- do.call(cbind, lapply(results[[1]], function(single_learner) 
-  single_learner[["pred"]][["data"]] %>% group_by(id) %>% summarise(competent = truth == response) %>% 
-    ungroup %>% select(competent)
-))
-
-colnames(competent) <- sapply(results[[1]], function(single_learner) single_learner[["learner.id"]])
-
-
