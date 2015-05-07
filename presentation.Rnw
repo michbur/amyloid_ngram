@@ -69,7 +69,9 @@
 }
 
 \begin{frame}
+\begin{block}{Definicja}
 n-gramy (k-mery, k-tuple) to wektory o długości $n$ zawierające znaki z sekwencji wejściowych.
+\end{block}
 
 \vspace{2cm}
 
@@ -463,7 +465,7 @@ Aby polepszyć precyzję predykcji miejsca cięcia planujemy wykorzystać k-mery
 \begin{itemize}
 \item Utworzone zostaną spozycjonowane 4-mery z dystansami
 \item \textbf{biogram} wybierze istotne k-mery
-\item Zostaną one do modelu jak na schemacie obok
+\item Zostaną one dodane do modelu jak na schemacie obok
 \end{itemize}
 \end{columns}
  \end{frame}
