@@ -99,7 +99,7 @@ theme_presentation <- theme(plot.background=element_rect(fill = "transparent",
                       strip.text = element_text(size=11),
                       legend.text = element_text(size=7), 
                       legend.title = element_text(size=11),
-                      plot.title = element_text(size=18),
+                      plot.title = element_text(size=17),
                       panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
                       panel.background = element_rect(fill = "transparent",colour = "black"),
                       legend.background = element_rect(fill="NA"))
@@ -493,15 +493,23 @@ ggplot(munis, aes(x = ngram, fill = variable, y = value)) +
 \begin{frame}
 
 \begin{itemize}
-\item Duże różnice w częstościach aminokwasów pozwalają na użycie n-gramów.
-\item Nierówne długości peptydów wykluczają użycie n-gramów z informacją o pozycji.
+\item Duże różnice w częstościach aminokwasów sugerują użycie n-gramów.
+\item Nierówne długości peptydów wykluczają n-gramy z informacją o pozycji.
 \end{itemize}
 
 \end{frame}
 
 
 
-\subsection{Analiza n-gramów}
+\subsection{Wybór n-gramów}
+
+
+\begin{frame}
+
+QuiPT wymaga binarnych danych. Czy można zbinaryzować 
+
+\end{frame}
+
 
 \begin{frame}
 %czy możemy binaryzowac n-gramy?
@@ -519,35 +527,27 @@ ggplot(final_plot_dat, aes(x = x, y = y, col = Binaryzacja, fill = Binaryzacja))
 
 \end{frame}
 
+\begin{frame}
+<<echo = FALSE,message=FALSE,warning=FALSE,results='asis',fig.height=5.5>>=
+load("aoc.RData")
+
+ggplot(aoc, aes(x = dists, y = count, fill = tar)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_hue("Amyloid", l=70, c=150) +
+  scale_x_discrete("Przerwa") +
+  scale_y_continuous("Częstość petydów") +
+  ggtitle("Wpływ binaryzacji danych na \n zmianę obszaru kompetencji klasyfikatorów") + 
+  theme_presentation
+@
+
+\end{frame}
+
 
 \begin{frame}
 
 <<echo = FALSE,message=FALSE,warning=FALSE,results='asis',fig.height=5.5>>=
+load("bigram_analysis.RData")
 
-bigrams <- cbind(as.matrix(count_ngrams(as.matrix(rf_dat[, -11]), 2, a()[-1], d = 0)),
-                 as.matrix(count_ngrams(as.matrix(rf_dat[, -11]), 2, a()[-1], d = 1)),
-                 as.matrix(count_ngrams(as.matrix(rf_dat[, -11]), 2, a()[-1], d = 2)),
-                 as.matrix(count_ngrams(as.matrix(rf_dat[, -11]), 2, a()[-1], d = 3)),
-                 as.matrix(count_ngrams(as.matrix(rf_dat[, -11]), 2, a()[-1], d = 4))) > 0
-storage.mode(bigrams) <- "integer"
-
-test_bis <- test_features(as.numeric(rf_dat[, 11]) - 1, 
-                          bigrams)
-imp_bigrams <- cut(test_bis, breaks = c(0, 0.001, 1))[[1]]
-
-bis <- table_ngrams(as.matrix(rf_dat[, -11]), cut(test_bis, breaks = c(0, 0.05, 1))[[1]], target = as.numeric(rf_dat[, 11]) - 1)
-
-lengths_bis <- 9 - apply(rf_dat[, -11], 1, function(i) sum(is.na(i)))
-n_bigrams <- sapply(levels(rf_dat[, 11]), function(i) sum(lengths_bis[rf_dat[, 11] == i]))
-
-bis[["target0"]] <- bis[["target0"]]/n_bigrams["neg"]
-bis[["target1"]] <- bis[["target1"]]/n_bigrams["pos"]
-
-
-mbis <- melt(bis)
-#levels(mbis[, "ngram"]) <- decode_ngrams(levels(mbis[, "ngram"]))
-levels(mbis[, "variable"]) <- c("nie", "tak")
-levels(mbis[, "variable"]) <- c("nie", "tak")
 ggplot(mbis, aes(x = ngram, fill = variable, y = value)) + 
   geom_bar(position = "dodge", stat="identity") +
   scale_fill_hue("Amyloid", l=70, c=150) +

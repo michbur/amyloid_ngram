@@ -32,7 +32,12 @@ diffs_c <- cbind(abs(filter(comp_dat, bin == FALSE) %>% select(value) - filter(c
       filter(comp_dat, bin == FALSE) %>% select(-value))
 
 aoc <- diffs_c %>% group_by(dists, tar) %>% summarise(count = sum(value)) %>% data.frame
+aoc[aoc[["tar"]] == "neg", "count"] <- filter(aoc, tar == "neg") %>% select(count) / sum(tar == "neg")
+aoc[aoc[["tar"]] == "pos", "count"] <- filter(aoc, tar == "pos") %>% select(count) / sum(tar == "pos")
+aoc[["dists"]] <- factor(aoc[["dists"]], levels = c("NA", 0L:4))
+levels(aoc[["tar"]]) <- c("Nie", "Tak")
 save(aoc, file = "aoc.RData")
+
 
 library(ggplot2)
 
