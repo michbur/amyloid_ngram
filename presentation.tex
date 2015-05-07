@@ -87,7 +87,7 @@
 \institute{ 
 \inst{1} Zakład Genomiki, Uniwersytet Wrocławski
 \and 
-\inst{2} Instytut Matematyki i Informatyki, Politechnika Wrocławska}
+\inst{2} Katedra Matematyki, Politechnika Wrocławska}
 
 \title{n-gramy w analizie sekwencji biologicznych}
 
@@ -131,7 +131,7 @@ Pierwotnie analiza n-gramów rozwijana była na potrzeby analizy języka natural
 
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 13:31:37 2015
+% Thu May  7 18:42:11 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -150,7 +150,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 13:31:37 2015
+% Thu May  7 18:42:11 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrr}
@@ -171,7 +171,7 @@ S1 & 1 & 2 & 1 & 2 \\
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 13:31:37 2015
+% Thu May  7 18:42:11 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -190,7 +190,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 13:31:37 2015
+% Thu May  7 18:42:11 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -240,7 +240,7 @@ n-gramy mogą być przypisaną informację o pozycjach na których występują.
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 13:31:37 2015
+% Thu May  7 18:42:14 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -259,7 +259,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 13:31:37 2015
+% Thu May  7 18:42:15 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -310,7 +310,7 @@ n-gramy mogą być nieciągłe - pomiędzy elementami n-gramu mogą występować
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 13:31:37 2015
+% Thu May  7 18:42:15 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -329,7 +329,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 13:31:37 2015
+% Thu May  7 18:42:15 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -351,23 +351,33 @@ S1 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 0 \\
 
 \begin{frame}
 
-Wielowymiarowa przestrzeń atrybutów jest filtrowana z pomocą QuiPT (\textbf{Qui}ck \textbf{P}ermutation \textbf{T}est) łączącego zalety testów permutacyjnych (brak założeń) z szybkością wykonania.
+\begin{itemize}
+\item <+-> Przed budową właściwego modelu, np. lasu losowego lub svm, należy dokonać wstępnej redukcji liczby zmiennych \vspace{1cm}
+\item <+-> Wielowymiarowa przestrzeń atrybutów filtrowana za pomocą testu statystycznego \vspace{1cm}
+\item <+-> W tym celu stosujemy QuiPT (\textbf{Qui}ck \textbf{P}ermutation \textbf{T}est)
+\end{itemize}
 
 \end{frame}
 
 \begin{frame}
-W trakcie testu permutacyjnego oznaczenia klas są losowo mieszane na potrzeby obliczania statystyki testowej.
+W teście permutacyjnym oznaczenia klas są losowo mieszane na potrzeby obliczania statystyki testowej.
     
 \begin{center}
 \scalebox{0.85}{
 $      
-\textnormal{p-value} = \frac{N_{T_P > T_R}}{N}
+\textnormal{p-value} = \frac{N_{T_P > T_R}}{N},
 $
 }
 \end{center}
 
-gdzie $N_{T_P > T_R}$ to liczba losowań, kiedy $T_P$ (permutowana statystyka testowa) miała wartość krytyczniejszą niż $T_R$ (statystyka testowa dla niepermutowanych danych).
-      
+gdzie $N_{T_P > T_R}$ to liczba losowań, kiedy $T_P$ (permutowana statystyka testowa) miała wartość 
+krytyczniejszą niż $T_R$ (statystyka testowa dla niespermutowanych danych).
+\pause
+\begin{block}{QuiPT} 
+Powyższy test permutacyjny jest równoważny dwustronnemu dokładnemu testowi Fishera. 
+Ponieważ nasze wektory związane z n-gramami są bardzo rzadkie (wiele zer), 
+to uzyskujemy bardzo istotne przyspieszenie i poprawę jakości obliczanych p-wartości.
+\end{block}
 \end{frame}
 
 
@@ -491,7 +501,55 @@ Phobius & 0.9643 & 0.8844 & 0.9286\\
 \end{table}
     \end{frame}
 
+\subsection{Dodanie informacja o k-merach}
 
+ \begin{frame}
+\begin{columns}[t,onlytextwidth]
+\column{.65\textwidth}
+\begin{figure}
+    \centering
+    \resizebox{6.5cm}{!}{%
+    \begin{tikzpicture}[->,>=stealth',shorten >=2pt,auto,node distance=4.5cm, thick]
+      \tikzstyle{line} = [draw=black, color=blue!30!black!50, line width=4.5mm, -latex']
+      \tikzstyle{main node} = [circle,fill=blue!20,draw, minimum size = 2.2cm, font=\itshape,
+         align=center,  top color=white, bottom color=blue!50!black!70 ] %font=\sffamily\small\bfseries,
+      %nodes
+      \node[main node]            (start')   []  					{Start};	     
+      \node[main node, bottom color=purple!70!black!70] 	(nregion') 	[right of=start',xshift=-25mm, yshift=35mm] 	{n-region};
+      \node[main node, bottom color=pink!70!black!70] 	(hregion') 	[right of=nregion',xshift=-25mm,yshift=35mm] 	{h-region};
+      \node[main node, bottom color=gray!70!black!70] 	(cregion') 	[right of=hregion',xshift=-10mm,yshift=-25mm] 	{c-region};
+      \node[main node, bottom color=green!70!black!70] 	(mature') 	[below of=hregion',xshift=15mm, yshift=-90mm] 	{Mature protein};
+      
+      \node[main node, bottom color=yellow!70!black!70]   (kmer1) 	[below of=cregion',xshift=35mm,yshift=30mm] 	{Aminoacid 1};
+      \node[main node, bottom color=yellow!70!black!70]   (kmer2) 	[below of=kmer1,xshift=-5mm,yshift=5mm] 	{Aminoacid 2};
+      \node[main node, bottom color=yellow!70!black!70]   (kmer3) 	[below of=kmer2,xshift=-5mm,yshift=5mm] 	{Aminoacid 3};
+      %lines
+      \path [line] (start')   edge node [left, color=black] {} (nregion');
+      \path [line] (nregion') edge node [below, color=black] { } (hregion');
+      \path [line] (hregion') edge node [below, color=black] { } (cregion');
+      \path [line] (cregion') to[out=230,in=90] (mature');
+      \draw [line] (start') to[out=300,in=180] (mature');
+      
+      \draw [line] (cregion') edge node [below, color=black] { } (kmer1);
+      \draw [line] (kmer1) edge node [left, color=black] {} (kmer2);
+      \draw [line] (kmer2) edge node [left, color=black] {} (kmer3);
+      \draw [line] (kmer3) edge node [left, color=black] {} (mature');
+      
+      %\draw [decorate,line width=3pt,decoration={brace,amplitude=10pt}] ([xshift=5mm, yshift=5mm]kmer1) -- ([yshift=-25mm]kmer3) node [black,midway,xshift=0.6cm] {\footnotesize $P_1$};
+      \draw[decoration={brace,amplitude=10pt, raise=5pt},decorate, line width=2pt]  
+      ([yshift=1mm]kmer1.east) -- ([yshift=-5mm]kmer3.east) node [black,midway,xshift=0.6cm] {\large \color{yellow!50!black!90} k-mer};
+    \end{tikzpicture} }
+    \end{figure}
+\column{.35\textwidth}
+Aby polepszyć precyzję predykcji miejsca cięcia planujemy wykorzystać k-mery.
+\begin{itemize}
+\item Utworzone zostaną spozycjonowane 4-mery z dystansami
+\item \textbf{biogram} wybierze istotne k-mery
+\item Zostaną one do modelu jak na schemacie obok
+\end{itemize}
+\end{columns}
+ \end{frame}
+ 
 \section{Amyloidy}
 
 \subsection{Zbiór danych}
@@ -564,7 +622,7 @@ W 5-krotnej walidacji krzyżowej porównano 6 klasyfikatorów (lasy losowe) dla 
 \begin{frame}
 %czy możemy binaryzowac n-gramy?
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 13:31:42 2015
+% Thu May  7 18:42:18 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{lllrrr}
