@@ -56,10 +56,10 @@ pair_dat <- cbind(do.call(rbind, lapply(1L:nrow(binary_pairs), function(i) {
 })), dists = c(rep("NA", nrow(competent)), as.vector(sapply(0L:4, rep, nrow(competent)))))
 
 pair_dat[["normal"]] <- as.factor(pair_dat[["normal"]])
-levels(pair_dat[["normal"]]) <- c("Nie", "Tak")
+levels(pair_dat[["normal"]]) <- c("nie", "tak")
 
 pair_dat[["binary"]] <- as.factor(pair_dat[["binary"]])
-levels(pair_dat[["binary"]]) <- c("Nie", "Tak")
+levels(pair_dat[["binary"]]) <- c("nie", "tak")
 
 pair_dat[["dists"]] <- factor(pair_dat[["dists"]], levels = c("NA", 0:4))
 levels(pair_dat[["dists"]]) <- paste0("Przerwa: ", levels(pair_dat[["dists"]]))

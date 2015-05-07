@@ -622,8 +622,8 @@ ggplot(pair_dat, aes(x = normal, y =  binary, col = tar, fill = tar)) +
   geom_point(position = "jitter", size=3, shape=21, alpha = 0.5) + 
   scale_colour_hue("Amyloid", l=70, c=150) +
   scale_fill_hue("Amyloid", l=70, c=150) + 
-  scale_x_discrete("Zliczenia n-gramów") +
-  scale_y_discrete("Zbinaryzowane n-gramy") + 
+  scale_x_discrete("Predykcja dla zliczeń n-gramów") +
+  scale_y_discrete("Predykcja dla zbinaryzowanych zliczeń n-gramów") + 
   facet_wrap(~ dists)
 @
 

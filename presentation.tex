@@ -118,7 +118,9 @@
 }
 
 \begin{frame}
+\begin{block}{Definicja}
 n-gramy (k-mery, k-tuple) to wektory o długości $n$ zawierające znaki z sekwencji wejściowych.
+\end{block}
 
 \vspace{2cm}
 
@@ -131,7 +133,7 @@ Pierwotnie analiza n-gramów rozwijana była na potrzeby analizy języka natural
 
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 18:42:11 2015
+% Thu May 07 22:08:25 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -150,7 +152,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 18:42:11 2015
+% Thu May 07 22:08:25 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrr}
@@ -171,7 +173,7 @@ S1 & 1 & 2 & 1 & 2 \\
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 18:42:11 2015
+% Thu May 07 22:08:25 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -190,7 +192,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 18:42:11 2015
+% Thu May 07 22:08:25 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -240,7 +242,7 @@ n-gramy mogą być przypisaną informację o pozycjach na których występują.
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 18:42:14 2015
+% Thu May 07 22:08:25 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -259,7 +261,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 18:42:15 2015
+% Thu May 07 22:08:26 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -310,7 +312,7 @@ n-gramy mogą być nieciągłe - pomiędzy elementami n-gramu mogą występować
 \begin{frame}
 
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 18:42:15 2015
+% Thu May 07 22:08:26 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -329,7 +331,7 @@ S1 & C & T & T & A & G & C \\
 
   
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 18:42:15 2015
+% Thu May 07 22:08:26 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
@@ -545,7 +547,7 @@ Aby polepszyć precyzję predykcji miejsca cięcia planujemy wykorzystać k-mery
 \begin{itemize}
 \item Utworzone zostaną spozycjonowane 4-mery z dystansami
 \item \textbf{biogram} wybierze istotne k-mery
-\item Zostaną one do modelu jak na schemacie obok
+\item Zostaną one dodane do modelu jak na schemacie obok
 \end{itemize}
 \end{columns}
  \end{frame}
@@ -562,24 +564,15 @@ Zbiór danych: 146 amyloidów i 290 nieamyloidów~\citep{kotulska2014}.
 \includegraphics[width=\maxwidth]{figure/unnamed-chunk-11-1} 
 
 
-
 \end{frame}
 
 
-\begin{frame}
 
+
+\begin{frame}
 
 
 \includegraphics[width=\maxwidth]{figure/unnamed-chunk-12-1} 
-
-
-\end{frame}
-
-
-\begin{frame}
-
-
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-13-1} 
 
 
 \end{frame}
@@ -613,7 +606,7 @@ W 5-krotnej walidacji krzyżowej porównano 6 klasyfikatorów (lasy losowe) dla 
 \begin{frame}
 %czy możemy binaryzowac n-gramy?
 
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-14-1} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-13-1} 
 
 
 \end{frame}
@@ -622,7 +615,7 @@ W 5-krotnej walidacji krzyżowej porównano 6 klasyfikatorów (lasy losowe) dla 
 \begin{frame}
 %czy możemy binaryzowac n-gramy?
 % latex table generated in R 3.2.0 by xtable 1.7-4 package
-% Thu May  7 18:42:18 2015
+% Thu May 07 22:08:28 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{lllrrr}
@@ -653,11 +646,18 @@ n & Długość przerwy & Binaryzacja & AUC & TNR & TPR \\
 
 \begin{frame}
 
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-16-1} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-15-1} 
 
 
 \end{frame}
 
+
+\begin{frame}
+
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-16-1} 
+
+
+\end{frame}
 
 \begin{frame}
 
