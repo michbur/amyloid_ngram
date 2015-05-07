@@ -496,28 +496,9 @@ ggplot(lenghts, aes(x = len, fill = Amyloid)) +
 
 @
 
-
 \end{frame}
 
 
-\begin{frame}
-
-
-<<echo = FALSE,message=FALSE,results='asis',fig.height=5.5>>=
-unis <- table_ngrams(as.matrix(rf_dat[, -11]), paste0(create_ngrams(1, a()[-1]), "_0"), target = as.numeric(rf_dat[, 11]) - 1)
-munis <- melt(unis)
-levels(munis[, "ngram"]) <- substr(levels(munis[, "ngram"]), 0, 1)
-#munis[, "ngram"] <- factor(munis[, "ngram"], levels = levels(munis[, "ngram"])[order(abs(unis[, "target0"] - unis[, "target1"]), decreasing = TRUE)])
-levels(munis[, "variable"]) <- c("nie", "tak")
-ggplot(munis, aes(x = ngram, fill = variable, y = value)) + 
-  geom_bar(position = "dodge", stat="identity") +
-  scale_fill_hue("Amyloid", l=70, c=150) +
-  scale_x_discrete("1-gram") +
-  scale_y_continuous("Liczba 1-gramów") +
-  theme_presentation
-@
-
-\end{frame}
 
 
 \begin{frame}
@@ -632,6 +613,21 @@ ggplot(aoc, aes(x = dists, y = count, fill = tar)) +
 
 \end{frame}
 
+
+\begin{frame}
+<<echo = FALSE,message=FALSE,warning=FALSE,results='asis',fig.height=5.5>>=
+load("pair_dat.RData")
+
+ggplot(pair_dat, aes(x = normal, y =  binary, col = tar, fill = tar)) +
+  geom_point(position = "jitter", size=3, shape=21, alpha = 0.5) + 
+  scale_colour_hue("Amyloid", l=70, c=150) +
+  scale_fill_hue("Amyloid", l=70, c=150) + 
+  scale_x_discrete("Zliczenia n-gramów") +
+  scale_y_discrete("Zbinaryzowane n-gramy") + 
+  facet_wrap(~ dists)
+@
+
+\end{frame}
 
 \begin{frame}
 

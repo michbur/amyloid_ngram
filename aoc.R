@@ -43,3 +43,35 @@ library(ggplot2)
 
 ggplot(aoc, aes(x = dists, y = count, fill = tar)) +
   geom_bar(stat = "identity", position = "dodge")
+
+
+# plot proposed by Piotr
+
+binary_pairs <- rbind(c(1, 2), cbind(3L:7, 3L:7+5))
+
+pair_dat <- cbind(do.call(rbind, lapply(1L:nrow(binary_pairs), function(i) {
+  res <- data.frame(competent[, binary_pairs[i, ]], tar = tar, peptide = 1L:nrow(competent))
+  colnames(res) <- c("binary", "normal", "tar", "peptide")
+  res
+})), dists = c(rep("NA", nrow(competent)), as.vector(sapply(0L:4, rep, nrow(competent)))))
+
+pair_dat[["normal"]] <- as.factor(pair_dat[["normal"]])
+levels(pair_dat[["normal"]]) <- c("Nie", "Tak")
+
+pair_dat[["binary"]] <- as.factor(pair_dat[["binary"]])
+levels(pair_dat[["binary"]]) <- c("Nie", "Tak")
+
+pair_dat[["dists"]] <- factor(pair_dat[["dists"]], levels = c("NA", 0:4))
+levels(pair_dat[["dists"]]) <- paste0("Przerwa: ", levels(pair_dat[["dists"]]))
+
+levels(pair_dat[["tar"]]) <- c("nie", "tak")
+
+save(pair_dat, file = "pair_dat.RData")
+
+ggplot(pair_dat, aes(x = normal, y =  binary, col = tar, fill = tar)) +
+  geom_point(position = "jitter", size=3, shape=21, alpha = 0.5) + 
+  scale_colour_hue("Amyloid", l=70, c=150) +
+  scale_fill_hue("Amyloid", l=70, c=150) + 
+  scale_x_discrete("Zliczenia n-gramów") +
+  scale_y_discrete("Zbinaryzowane n-gramy") + 
+  facet_wrap(~ dists)
