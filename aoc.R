@@ -72,6 +72,24 @@ ggplot(pair_dat, aes(x = normal, y =  binary, col = tar, fill = tar)) +
   geom_point(position = "jitter", size=3, shape=21, alpha = 0.5) + 
   scale_colour_hue("Amyloid", l=70, c=150) +
   scale_fill_hue("Amyloid", l=70, c=150) + 
-  scale_x_discrete("Zliczenia n-gramów") +
+  scale_x_discrete("Zliczenia n-gram?w") +
   scale_y_discrete("Zbinaryzowane n-gramy") + 
   facet_wrap(~ dists)
+
+
+library(dplyr)
+
+pair_dat2 <- pair_dat %>% group_by(binary, normal, tar, dists) %>% summarise(count = n()) %>% ungroup
+
+ggplot(pair_dat2, aes(x = normal, y =  binary, col = tar, fill = tar, size = count)) +
+  geom_point(shape=21, alpha = 0.5) + 
+  scale_colour_hue("Amyloid", l=70, c=150) +
+  scale_fill_hue("Amyloid", l=70, c=150) + 
+  scale_x_discrete("Zliczenia n-gram?w") +
+  scale_y_discrete("Zbinaryzowane n-gramy") + 
+  facet_wrap(~ dists)
+
+pair_dat2[pair_dat2[, "tar"] == "nie", "count"] <- pair_dat2[pair_dat2[, "tar"] == "nie", "count"]/290
+pair_dat2[pair_dat2[, "tar"] == "tak", "count"] <- pair_dat2[pair_dat2[, "tar"] == "tak", "count"]/146
+
+save(pair_dat2, file = "pair_dat.RData")

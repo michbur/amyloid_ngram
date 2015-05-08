@@ -591,10 +591,10 @@ dists <- factor(dists)
 
 
 res <- cbind(ngram_size, dists, ngram_bin, dat[, -1])[c(1L, 2L, 8L, 3L, 9L, 4L, 10L, 5L, 11L, 6L, 12L, 7L), ]
-colnames(res) <- c("n", "Długość przerwy", "Binaryzacja", "AUC", "TNR", "TPR")
+colnames(res) <- c("n", "Przerwa", "Binaryzacja", "AUC", "TNR", "TPR")
 rws <- seq(1, nrow(res), by = 2)
 col <- rep("\\rowcolor[gray]{0.85}", length(rws))
-print(xtable(res, caption = "Ocena predykcji klasyfikatorów"), include.rownames = FALSE, booktabs = TRUE,
+print(xtable(res, caption = "Ocena predykcji klasyfikatorów.", digits = 4), include.rownames = FALSE, booktabs = TRUE,
 add.to.row = list(pos = as.list(rws), command = col))
 @
 
@@ -610,7 +610,7 @@ ggplot(aoc, aes(x = dists, y = count, fill = tar)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_fill_hue("Amyloid", l=70, c=150) +
   scale_x_discrete("Przerwa") +
-  scale_y_continuous("Częstość petydów") +
+  scale_y_continuous("Częstość petydów inaczej zaklasyfikowanych") +
   ggtitle("Wpływ binaryzacji danych na \n zmianę obszaru kompetencji klasyfikatorów") + 
   theme_presentation
 @
@@ -622,13 +622,15 @@ ggplot(aoc, aes(x = dists, y = count, fill = tar)) +
 <<echo = FALSE,message=FALSE,warning=FALSE,results='asis',fig.height=5.5>>=
 load("pair_dat.RData")
 
-ggplot(pair_dat, aes(x = normal, y =  binary, col = tar, fill = tar)) +
-  geom_point(position = "jitter", size=3, shape=21, alpha = 0.5) + 
+ggplot(pair_dat2, aes(x = normal, y =  binary, col = tar, fill = tar, size = count)) +
+  geom_point(shape=21, alpha = 0.5, colour = "black") + 
   scale_colour_hue("Amyloid", l=70, c=150) +
   scale_fill_hue("Amyloid", l=70, c=150) + 
   scale_x_discrete("Predykcja amyloidu (zliczenia n-gramów)") +
   scale_y_discrete("Predykcja amyloidu (zbinaryzowane zliczenia n-gramów)") + 
-  facet_wrap(~ dists)
+  scale_size_continuous("Częstość \npeptydów", range = c(5, 18)) +
+  facet_wrap(~ dists) + 
+  theme_presentation
 @
 
 \end{frame}
@@ -642,7 +644,7 @@ ggplot(mbis, aes(x = ngram, fill = variable, y = value)) +
   geom_bar(position = "dodge", stat="identity") +
   scale_fill_hue("Amyloid", l=70, c=150) +
   scale_x_discrete("2-gram") +
-  scale_y_continuous("Częstość istotnych 2-gramów (p-value < 0.01") +
+  scale_y_continuous("Częstość istotnych 2-gramów (p-value < 0.01)") +
   theme_presentation
 @
 
