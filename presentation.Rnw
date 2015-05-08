@@ -624,11 +624,10 @@ load("pair_dat.RData")
 
 ggplot(pair_dat2, aes(x = normal, y =  binary, col = tar, fill = tar, size = count)) +
   geom_point(shape=21, alpha = 0.5, colour = "black") + 
-  scale_colour_hue("Amyloid", l=70, c=150) +
-  scale_fill_hue("Amyloid", l=70, c=150) + 
+  scale_fill_hue("Amyloid", l=60, c=150) + 
   scale_x_discrete("Predykcja amyloidu (zliczenia n-gramów)") +
   scale_y_discrete("Predykcja amyloidu (zbinaryzowane zliczenia n-gramów)") + 
-  scale_size_continuous("Częstość \npeptydów", range = c(5, 18)) +
+  scale_size_continuous("Częstość \npeptydów", range = c(4, 19)) +
   facet_wrap(~ dists) + 
   theme_presentation
 @
