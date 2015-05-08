@@ -654,10 +654,10 @@ ggplot(mbis, aes(x = ngram, fill = variable, y = value)) +
 \begin{frame}
 
 \begin{enumerate}
-\item W oparciu o wyniki poprzedniej analizy zliczono następujace n-gramy: 1-gramy, 2-gramy (przerwy od 0 do 3) i 3-gramy (przerwy od 0 do 1). 
+\item W oparciu o wyniki poprzedniej analizy zliczono następujace n-gramy: 1-gramy, 2-gramy (przerwy od 0 do 3) i 3-gramy (wszystkie kombinacje przerw od 0 do 1). 
 \item Wszystkie n-gramy (oprócz 1-gramów) zbinaryzowano. 
 \item Metodą QuiPT wybrano $214$ z $25600$ potencjalnych n-gramów ($0.0083$). 
-\item Wszystkie 1-gramy i wybrane 2 oraz 3-gramy użyto podczas 5-krotnej walidacji krzyżowej.
+\item Wszystkie 1-gramy i wybrane 2 oraz 3-gramy użyto podczas 5-krotnej walidacji krzyżowej lasu losowego.
 \end{enumerate}
 
 \end{frame}
