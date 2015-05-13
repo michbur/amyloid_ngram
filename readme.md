@@ -1,12 +1,17 @@
 Readme
 ========================================================
 
-Date: maj 12 2015
+Date: maj 13 2015
 
 ### List of files
 
+
+```
+## Michal, you slacker! File(s): all_sizes.csv, analyze_ngrams_function.R, bigger6.csv, ngram_analysis.R, only6.csv, report1.html, report1.Rmd do not have a proper description.
+```
+
 <!-- html table generated in R 3.2.0 by xtable 1.7-4 package -->
-<!-- Tue May 12 08:53:31 2015 -->
+<!-- Wed May 13 20:30:17 2015 -->
 <table border=1>
 <tr> <th> File name </th> <th> Description </th> <th> Sourced files </th>  </tr>
   <tr> <td> amyloid_neg.fasta </td> <td> Negative (non-amyloid) sequences. </td> <td>  </td> </tr>
