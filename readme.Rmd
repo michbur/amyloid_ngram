@@ -18,7 +18,15 @@ known_files <- list(readme = list(file_name = "readme.Rmd",
                     amyloid_pos = list(file_name = "amyloid_pos.fasta",
                                        descr = "Positive (amyloid) sequences."),
                     amyloid_neg = list(file_name = "amyloid_neg.fasta",
-                                          descr = "Negative (non-amyloid) sequences.")
+                                          descr = "Negative (non-amyloid) sequences."),
+                    analyze_ngrams_function = list(file_name = "analyze_ngrams_function.R",
+                                                   descr = "A function that extracts important n-grams and calculate their frequency."),
+                    ngram_analysis = list(file_name = "ngram_analysis.R",
+                                          descr = "Analysis of n-grams extracted from amyloids. The analysis was performed separately for several groups of peptides."), 
+                    report1 = list(file_name = "report1.Rmd",
+                                   descr = "First report containing results from ngram_analysis.R"),
+                    parsed_report1 = list(file_name = "report1.html",
+                                   descr = "Parsed report1.Rmd")
 )
 
 known_files_names <- sapply(known_files, function(i) i[["file_name"]])
