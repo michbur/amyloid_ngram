@@ -1,7 +1,7 @@
 library(seqinr)
 
-seq_pos <- read.fasta("amyloid_pos.fasta")
-seq_neg <- read.fasta("amyloid_neg.fasta")
+seq_pos <- read.fasta("amyloid_pos.fasta", seqtype = "AA")
+seq_neg <- read.fasta("amyloid_neg.fasta", seqtype = "AA")
 
 max_len <- max(sapply(c(seq_pos, seq_neg), length))
 
