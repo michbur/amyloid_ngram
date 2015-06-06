@@ -14,7 +14,7 @@ pos_data6 <- which(sapply(seq_pos, length) == 6)
 pos_datan6 <- which(sapply(seq_pos, length) != 6)
 
 
-coded_pos <- lapply(aa_groups[1L:2], function(single_group) {
+coded_pos <- lapply(aa_groups, function(single_group) {
   bitrigrams <- as.matrix(count_multigrams(ns = c(1, rep(2, 4), rep(3, 3)), 
                                            ds = list(0, 0, 1, 2, 3, c(0, 0), c(0, 1), c(1, 0)),
                                            seq = degenerate(as.matrix(pos_data), single_group),
@@ -27,7 +27,7 @@ coded_pos <- lapply(aa_groups[1L:2], function(single_group) {
   })
 
   
-coded_neg <- lapply(aa_groups[1L:2], function(single_group) {
+coded_neg <- lapply(aa_groups, function(single_group) {
   bitrigrams <- as.matrix(count_multigrams(ns = c(1, rep(2, 4), rep(3, 3)), 
                                            ds = list(0, 0, 1, 2, 3, c(0, 0), c(0, 1), c(1, 0)),
                                            seq = degenerate(as.matrix(neg_data), single_group),
@@ -65,5 +65,7 @@ fold_res <- pblapply(1L:50, function(dummy) {
     })
   })
 })
+
+
 
 save(fold_res, file = "amyloid_fold_res")
