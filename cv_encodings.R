@@ -40,7 +40,7 @@ coded_neg <- lapply(aa_groups, function(single_group) {
 })
 
 
-fold_res <- pblapply(1L:50, function(dummy) {
+fold_res <- pblapply(1L:100, function(dummy) {
   pos_ids <- cvFolds(sum(targets == 1), K = 5)
   neg_ids <- cvFolds(sum(targets != 1), K = 5)
   lapply(1L:5, function(fold) {
@@ -66,38 +66,38 @@ fold_res <- pblapply(1L:50, function(dummy) {
   })
 })
 
-fold_res6 <- pblapply(1L:50, function(dummy) {
-  
-  fold_list <- lapply(list(pos_6, !pos_6, neg_6, !neg_6), function(single_n) {
-    folded <- cvFolds(sum(single_n), K = 5)
-    cbind(id = which(single_n)[folded[["subsets"]]], which = folded[["which"]])
-  })
-  
-  lapply(1L:5, function(fold) {
-    lapply(1L:length(aa_groups), function(group_id) {
-      train_pos <- as.matrix(coded_pos[[group_id]])[fold_list[[1]][fold_list[[1]][, "which"] != fold, "id"], ]
-      train_neg <- as.matrix(coded_neg[[group_id]])[fold_list[[3]][fold_list[[3]][, "which"] != fold, "id"], ]
-      
-      test_pos <- rbind(as.matrix(coded_pos[[group_id]])[fold_list[[1]][fold_list[[1]][, "which"] == fold, "id"], ],
-                        as.matrix(coded_pos[[group_id]])[fold_list[[2]][fold_list[[2]][, "which"] == fold, "id"], ])
-      test_neg <- rbind(as.matrix(coded_neg[[group_id]])[fold_list[[3]][fold_list[[3]][, "which"] == fold, "id"], ], 
-                        as.matrix(coded_neg[[group_id]])[fold_list[[4]][fold_list[[4]][, "which"] == fold, "id"], ])
-      
-      test_bis <- test_features(c(rep(1, nrow(train_pos)), rep(0, nrow(train_neg))),
-                                rbind(train_pos, train_neg))
-      imp_bigrams <- cut(test_bis, breaks = c(0, 0.05, 1))[[1]]
-      
-      
-      model_cv <- randomForest(x = rbind(train_pos, train_neg)[, imp_bigrams], 
-                               as.factor(c(rep(1, nrow(train_pos)), rep(0, nrow(train_neg)))))
-      
-      preds <- cbind(predict(model_cv, rbind(test_pos, test_neg), type = "prob")[, 2], 
-                     c(rep(1, nrow(test_pos)), rep(0, nrow(test_neg))))
-      preds
-    })
-  })
-})
+# fold_res6 <- pblapply(1L:50, function(dummy) {
+#   
+#   fold_list <- lapply(list(pos_6, !pos_6, neg_6, !neg_6), function(single_n) {
+#     folded <- cvFolds(sum(single_n), K = 5)
+#     cbind(id = which(single_n)[folded[["subsets"]]], which = folded[["which"]])
+#   })
+#   
+#   lapply(1L:5, function(fold) {
+#     lapply(1L:length(aa_groups), function(group_id) {
+#       train_pos <- as.matrix(coded_pos[[group_id]])[fold_list[[1]][fold_list[[1]][, "which"] != fold, "id"], ]
+#       train_neg <- as.matrix(coded_neg[[group_id]])[fold_list[[3]][fold_list[[3]][, "which"] != fold, "id"], ]
+#       
+#       test_pos <- rbind(as.matrix(coded_pos[[group_id]])[fold_list[[1]][fold_list[[1]][, "which"] == fold, "id"], ],
+#                         as.matrix(coded_pos[[group_id]])[fold_list[[2]][fold_list[[2]][, "which"] == fold, "id"], ])
+#       test_neg <- rbind(as.matrix(coded_neg[[group_id]])[fold_list[[3]][fold_list[[3]][, "which"] == fold, "id"], ], 
+#                         as.matrix(coded_neg[[group_id]])[fold_list[[4]][fold_list[[4]][, "which"] == fold, "id"], ])
+#       
+#       test_bis <- test_features(c(rep(1, nrow(train_pos)), rep(0, nrow(train_neg))),
+#                                 rbind(train_pos, train_neg))
+#       imp_bigrams <- cut(test_bis, breaks = c(0, 0.05, 1))[[1]]
+#       
+#       
+#       model_cv <- randomForest(x = rbind(train_pos, train_neg)[, imp_bigrams], 
+#                                as.factor(c(rep(1, nrow(train_pos)), rep(0, nrow(train_neg)))))
+#       
+#       preds <- cbind(predict(model_cv, rbind(test_pos, test_neg), type = "prob")[, 2], 
+#                      c(rep(1, nrow(test_pos)), rep(0, nrow(test_neg))))
+#       preds
+#     })
+#   })
+# })
 
 
 
-save(fold_res, fold_res6, file = "amyloid_fold_res")
+save(fold_res, file = "amyloid_fold_res")
