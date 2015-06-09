@@ -1,14 +1,13 @@
 load("aa_nprop.RData")
 
-traits <- list(size = c(30, 36, 54, 201),
-               polarity = 202,
-               hydroph = c(1, 26, 33, 57, 147),
+traits <- list(size = c(30, 36, 54),
+               hydroph = c(1, 26, 33, 57),
                solvent = c(19, 65, 199))
 
 grouping_properties <- t(aa_nprop[unlist(traits), ])
 
 #second one is without polarity
-all_traits_combn_list <- list(expand.grid(traits), expand.grid(traits[ -2]))
+all_traits_combn_list <- list(expand.grid(traits))
 
 aa_groups <- unlist(unlist(lapply(all_traits_combn_list, function(all_traits_combn)
   lapply(3L:5, function(single_k)

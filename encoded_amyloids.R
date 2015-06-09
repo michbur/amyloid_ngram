@@ -3,9 +3,8 @@ library(biogram)
 pos_data <- all_seqs[as.logical(targets), ]
 neg_data <- all_seqs[!as.logical(targets), ]
 
-seq_lengths <- apply(pos_data, 1, function(i) length(i) - sum(is.na(i)))
-pos_6 <- sapply(seq_pos, length) == 6
-neg_6 <- sapply(seq_neg, length) != 6
+pos_6 <- apply(pos_data, 1, function(i) length(i) - sum(is.na(i))) == 6
+neg_6 <- apply(neg_data, 1, function(i) length(i) - sum(is.na(i))) == 6
 
 
 coded_pos <- lapply(aa_groups, function(single_group) {

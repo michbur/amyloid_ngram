@@ -9,7 +9,7 @@ library(randomForest)
 library(pbapply)
 
 
-fold_res <- pblapply(1L:100, function(dummy) {
+fold_res <- pblapply(1L:4, function(dummy) {
   pos_ids <- cvFolds(sum(targets == 1), K = 5)
   neg_ids <- cvFolds(sum(targets != 1), K = 5)
   lapply(1L:5, function(fold) {
@@ -21,7 +21,7 @@ fold_res <- pblapply(1L:100, function(dummy) {
       test_neg <- as.matrix(coded_neg[[group_id]])[neg_ids[[5]] == fold, ]
       
       test_bis <- test_features(c(rep(1, sum(pos_ids[[5]] != fold)), rep(0, sum(neg_ids[[5]] != fold))),
-                                rbind(train_pos, train_neg))
+                                rbind(train_pos, train_neg), adjust = NULL)
       imp_bigrams <- cut(test_bis, breaks = c(0, 0.05, 1))[[1]]
       
       
@@ -35,7 +35,7 @@ fold_res <- pblapply(1L:100, function(dummy) {
   })
 })
 
-fold_res6 <- pblapply(1L:100, function(dummy) {
+fold_res6 <- pblapply(1L:4, function(dummy) {
   
   fold_list <- lapply(list(pos_6, !pos_6, neg_6, !neg_6), function(single_n) {
     folded <- cvFolds(sum(single_n), K = 5)
@@ -53,8 +53,8 @@ fold_res6 <- pblapply(1L:100, function(dummy) {
                         as.matrix(coded_neg[[group_id]])[fold_list[[4]][fold_list[[4]][, "which"] == fold, "id"], ])
       
       test_bis <- test_features(c(rep(1, nrow(train_pos)), rep(0, nrow(train_neg))),
-                                rbind(train_pos, train_neg))
-      imp_bigrams <- cut(test_bis, breaks = c(0, 0.05, 1))[[1]]
+                                rbind(train_pos, train_neg), adjust = NULL)
+      imp_bigrams <- cut(test_bis, breaks = c(0, 0.1, 1))[[1]]
       
       
       model_cv <- randomForest(x = rbind(train_pos, train_neg)[, imp_bigrams], 
