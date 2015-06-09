@@ -54,7 +54,7 @@ fold_res6 <- pblapply(1L:4, function(dummy) {
       
       test_bis <- test_features(c(rep(1, nrow(train_pos)), rep(0, nrow(train_neg))),
                                 rbind(train_pos, train_neg), adjust = NULL)
-      imp_bigrams <- cut(test_bis, breaks = c(0, 0.1, 1))[[1]]
+      imp_bigrams <- cut(test_bis, breaks = c(0, 0.05, 1))[[1]]
       
       
       model_cv <- randomForest(x = rbind(train_pos, train_neg)[, imp_bigrams], 
