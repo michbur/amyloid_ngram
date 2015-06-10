@@ -6,7 +6,6 @@ traits <- list(size = c(30, 36, 54),
 
 grouping_properties <- t(aa_nprop[unlist(traits), ])
 
-#second one is without polarity
 all_traits_combn_list <- list(expand.grid(traits))
 
 aa_groups <- unlist(unlist(lapply(all_traits_combn_list, function(all_traits_combn)
