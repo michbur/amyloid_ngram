@@ -23,6 +23,17 @@ perf_rep <- function(folds)
 perf6 <- perf_rep(fold_res6)
 perf <- perf_rep(fold_res)
 
+perf6 %>%
+  filter(measure == "AUC") %>%
+  group_by(encoding) %>%
+  summarize(mAUC = mean(value), minAUC = min(value), maxAUC = max(value)) %>%
+  filter(mAUC > quantile(mAUC, 0.9)) %>%
+  droplevels %>%
+  ggplot(aes(x = mAUC, y = encoding)) +
+  geom_point(colour = "red", size = 8) +
+  geom_point(aes(x = minAUC, y = encoding), size = 5) + 
+  geom_point(aes(x = maxAUC, y = encoding), size = 5)
+
 
 
 
@@ -117,7 +128,7 @@ p <- ggplot(neigh, aes(x = train, y = perc, fill = train)) +
   scale_y_continuous("Frequency") + 
   cool_theme
 
-save(neigh, p, file = "report2.RData")
+save(aa_groups, perf6, perf, best6, best, neigh, p, file = "report2.RData")
 
 # print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1), textGrob("", rot = -90, vjust = 1),
 #                   p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5), 

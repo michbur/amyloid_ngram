@@ -5,14 +5,107 @@ date: "10 czerwca 2015"
 output: html_document
 ---
 
-
-
-```{r, echo = FALSE, message = FALSE, fig.width =28, fig.height=35}
+```{r, echo = FALSE, message = FALSE}
 load("report2.RData")
 #library(ggvis)
 library(dplyr)
 library(ggplot2)
 library(gridExtra)
+library(xtable)
+
+size_mod <- -5
+
+cool_theme <- theme(plot.background=element_rect(fill = "transparent",
+                                                 colour = "transparent"),
+                    panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
+                    panel.background = element_rect(fill = "transparent",colour = "black"),
+                    legend.background = element_rect(fill="NA"),
+                    legend.position = "bottom",
+                    axis.text = element_text(size=12 + size_mod),
+                    axis.title.x = element_text(size=16 + size_mod, vjust = -1), 
+                    axis.title.y = element_text(size=16 + size_mod, vjust = 1),
+                    strip.text = element_text(size=17 + size_mod, face = "bold"),
+                    legend.text = element_text(size=13 + size_mod), 
+                    legend.title = element_text(size=17 + size_mod),
+                    plot.title = element_text(size=23 + size_mod))
+
+```
+
+
+```{r, echo = FALSE, message = FALSE}
+perf6 %>%
+  filter(measure == "AUC") %>%
+  group_by(encoding) %>%
+  summarize(mAUC = mean(value), minAUC = min(value), maxAUC = max(value)) %>%
+  filter(mAUC > quantile(mAUC, 0.9)) %>%
+  droplevels %>%
+  ggplot(aes(x = mAUC, y = encoding)) +
+  geom_point(colour = "red", size = 8) +
+  geom_point(aes(x = minAUC, y = encoding), size = 5) + 
+  geom_point(aes(x = maxAUC, y = encoding), size = 5) +
+  scale_y_discrete("Encoding ID") +
+  scale_x_continuous("AUC") + 
+  cool_theme +
+  ggtitle("Best encodings - hexamers")
+```
+
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+lapply(best6, function(single_encoding)
+  do.call(rbind, lapply(single_encoding, function(single_group)
+    data.frame(Group = paste0(toupper(single_group), collapse = ", ")))) %>%
+    xtable %>%
+    print(type = "html"))
+
+```
+
+
+```{r, echo = FALSE, message = FALSE}
+
+perf %>%
+  filter(measure == "AUC") %>%
+  group_by(encoding) %>%
+  summarize(mAUC = mean(value), minAUC = min(value), maxAUC = max(value)) %>%
+  filter(mAUC > quantile(mAUC, 0.9)) %>%
+  droplevels %>%
+  ggplot(aes(x = mAUC, y = encoding)) +
+  geom_point(colour = "red", size = 8) +
+  geom_point(aes(x = minAUC, y = encoding), size = 5) + 
+  geom_point(aes(x = maxAUC, y = encoding), size = 5) +
+  scale_y_discrete("Encoding ID") +
+  scale_x_continuous("AUC") + 
+  cool_theme +
+  ggtitle("Best encodings - hexamers")
+
+```
+
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+lapply(best, function(single_encoding) 
+  do.call(rbind, lapply(single_encoding, function(single_group)
+    data.frame(Group = paste0(toupper(single_group), collapse = ", ")))) %>%
+    xtable(caption = "Bla") %>%
+    print(type = "html")
+)
+
+```
+
+```{r, echo = FALSE, message = FALSE, fig.width =28, fig.height=35}
+size_mod <- 5
+
+cool_theme <- theme(plot.background=element_rect(fill = "transparent",
+                                                 colour = "transparent"),
+                    panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
+                    panel.background = element_rect(fill = "transparent",colour = "black"),
+                    legend.background = element_rect(fill="NA"),
+                    legend.position = "bottom",
+                    axis.text = element_text(size=12 + size_mod),
+                    axis.title.x = element_text(size=16 + size_mod, vjust = -1), 
+                    axis.title.y = element_text(size=16 + size_mod, vjust = 1),
+                    strip.text = element_text(size=17 + size_mod, face = "bold"),
+                    legend.text = element_text(size=13 + size_mod), 
+                    legend.title = element_text(size=17 + size_mod),
+                    plot.title = element_text(size=23 + size_mod))
 
 
 print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1, gp=gpar(fontsize=28)), textGrob("", rot = -90, vjust = 1),
