@@ -1,0 +1,38 @@
+---
+title: "Raport 2"
+author: "Michal Burdukiewicz, Piotr Sobczyk"
+date: "10 czerwca 2015"
+output: html_document
+---
+
+
+
+```{r, echo = FALSE, message = FALSE, fig.width =28, fig.height=35}
+load("report2.RData")
+#library(ggvis)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+
+
+print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1, gp=gpar(fontsize=28)), textGrob("", rot = -90, vjust = 1),
+                  p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5, gp=gpar(fontsize=28)), 
+                  ncol = 2, nrow = 2, widths = c(0.94, 0.05), heights = c(0.05, 0.92),
+                  main = textGrob("Differences in amino acid grouping", gp=gpar(fontsize=28), 
+                                  vjust = 1)))
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE, fig.width=28, fig.height=35}
+
+p <- p +  coord_cartesian(ylim = c(0, 0.45))
+
+print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1, gp=gpar(fontsize=28)), textGrob("", rot = -90, vjust = 1),
+                  p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5, gp=gpar(fontsize=28)), 
+                  ncol = 2, nrow = 2, widths = c(0.94, 0.05), heights = c(0.05, 0.92),
+                  main = textGrob("Differences in amino acid grouping (0.45 cut)", gp=gpar(fontsize=28), 
+                                  vjust = 1)))
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

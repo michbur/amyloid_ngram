@@ -1,10 +1,11 @@
 library(hmeasure)
 library(reshape2)
 library(seqinr)
-library(ggvis)
+#library(ggvis)
 library(dplyr)
 library(magrittr)
 library(ggplot2)
+library(gridExtra)
 
 source("aa_encodings.R")
 load("amyloid_fold_res.RData")
@@ -77,6 +78,9 @@ neigh <- rbind(get_neigh(best) %>% cbind(train = rep("all-mers", nrow(.)), .),
                get_neigh(best6) %>% cbind(train = rep("hexamers", nrow(.)), .),
                get_neigh(aa_groups) %>% cbind(train = rep("background", nrow(.)), .))
 
+levels(neigh[["aa"]]) <- toupper(levels(neigh[["aa"]]))
+levels(neigh[["n_aa"]]) <- toupper(levels(neigh[["n_aa"]]))
+
 #unreadable               
 # ggplot(neigh, aes(x = n_aa, y = perc, fill = train)) +
 #   geom_bar(stat = "identity", position = "dodge") +
@@ -87,24 +91,47 @@ neigh <- rbind(get_neigh(best) %>% cbind(train = rep("all-mers", nrow(.)), .),
 #   coord_polar() +
 #   facet_wrap(~ n_aa)
 
+size_mod <- 5
+
+
 cool_theme <- theme(plot.background=element_rect(fill = "transparent",
                                                  colour = "transparent"),
                     panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
                     panel.background = element_rect(fill = "transparent",colour = "black"),
-                    legend.background = element_rect(fill="NA"))
+                    legend.background = element_rect(fill="NA"),
+                    legend.position = "bottom",
+                    axis.text = element_text(size=12 + size_mod),
+                    axis.title.x = element_text(size=16 + size_mod, vjust = -1), 
+                    axis.title.y = element_text(size=16 + size_mod, vjust = 1),
+                    strip.text = element_text(size=17 + size_mod, face = "bold"),
+                    legend.text = element_text(size=13 + size_mod), 
+                    legend.title = element_text(size=17 + size_mod),
+                    plot.title = element_text(size=23 + size_mod))
 
 
-ggplot(neigh, aes(x = train, y = perc, fill = train)) +
+p <- ggplot(neigh, aes(x = train, y = perc, fill = train)) +
   geom_bar(stat = "identity") +
   facet_grid(n_aa ~ aa) + 
-  scale_x_discrete("Amino acid", labels = c("", "", "")) + 
+  scale_x_discrete("", labels = c("", "", "")) + 
   scale_fill_discrete("Training set") + 
   scale_y_continuous("Frequency") + 
   cool_theme
+
+save(neigh, p, file = "report2.RData")
+
+# print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1), textGrob("", rot = -90, vjust = 1),
+#                   p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5), 
+#                   ncol = 2, nrow = 2, widths = c(0.94, 0.05), heights = c(0.05, 0.92),
+#                   main = textGrob("Differences in amino acid grouping", gp=gpar(fontsize=20), 
+#                                   vjust = 1)))
+#  
+# p <- p +  coord_cartesian(ylim = c(0, 0.5))
+# 
+# 
+# print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1), textGrob("", rot = -90, vjust = 1),
+#                   p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5), 
+#                   ncol = 2, nrow = 2, widths = c(0.94, 0.05), heights = c(0.05, 0.92),
+#                   main = textGrob("Differences in amino acid grouping", gp=gpar(fontsize=20), 
+#                                   vjust = 1)))  
+
   
-ggplot(neigh, aes(x = train, y = perc, fill = train)) +
-  geom_bar(stat = "identity") +
-  facet_grid(n_aa ~ aa) + 
-  scale_x_discrete(labels = c("", "", "")) + 
-  coord_cartesian(ylim = c(0, 0.5)) +
-  cool_theme
