@@ -87,13 +87,24 @@ neigh <- rbind(get_neigh(best) %>% cbind(train = rep("all-mers", nrow(.)), .),
 #   coord_polar() +
 #   facet_wrap(~ n_aa)
 
-ggplot(neigh, aes(x = train, y = perc, fill = train)) +
-  geom_bar(stat = "identity", position = "stack") +
-  facet_grid(n_aa ~ aa) + 
-  scale_x_discrete(labels = c("", "", "")) +
-  theme(plot.background=element_rect(fill = "transparent",
-                                     colour = "transparent"),
-        panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
-        panel.background = element_rect(fill = "transparent",colour = "black"),
-        legend.background = element_rect(fill="NA"))
+cool_theme <- theme(plot.background=element_rect(fill = "transparent",
+                                                 colour = "transparent"),
+                    panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
+                    panel.background = element_rect(fill = "transparent",colour = "black"),
+                    legend.background = element_rect(fill="NA"))
 
+
+ggplot(neigh, aes(x = train, y = perc, fill = train)) +
+  geom_bar(stat = "identity") +
+  facet_grid(n_aa ~ aa) + 
+  scale_x_discrete("Amino acid", labels = c("", "", "")) + 
+  scale_fill_discrete("Training set") + 
+  scale_y_continuous("Frequency") + 
+  cool_theme
+  
+ggplot(neigh, aes(x = train, y = perc, fill = train)) +
+  geom_bar(stat = "identity") +
+  facet_grid(n_aa ~ aa) + 
+  scale_x_discrete(labels = c("", "", "")) + 
+  coord_cartesian(ylim = c(0, 0.5)) +
+  cool_theme
