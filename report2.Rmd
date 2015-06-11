@@ -5,6 +5,12 @@ date: "10 czerwca 2015"
 output: html_document
 ---
 
+# Najlepsze kodowania
+
+Dla każdego kodowania przprowadzono 5-krotną walidację krzyżową. Walidację potwórzono 4 razy (4 z powodu ograniczeń obliczeniowych). Obliczenia zostały przeprowadzone uwzględniając dwie strategie uczenia: tylko hexamery w zbiorze uczącycm (etykiety hexamers na rysunkach i w tabelach) oraz sekwencje o dowolnej długości w zbiorze uczącym (etykieta all-mers na rysunkach i w tabelach).
+
+## Heksamery
+
 ```{r, echo = FALSE, message = FALSE}
 load("report2.RData")
 #library(ggvis)
@@ -27,7 +33,7 @@ cool_theme <- theme(plot.background=element_rect(fill = "transparent",
                     strip.text = element_text(size=17 + size_mod, face = "bold"),
                     legend.text = element_text(size=13 + size_mod), 
                     legend.title = element_text(size=17 + size_mod),
-                    plot.title = element_text(size=23 + size_mod))
+                    plot.title = element_text(size=20 + size_mod))
 
 ```
 
@@ -49,16 +55,20 @@ perf6 %>%
   ggtitle("Best encodings - hexamers")
 ```
 
+Na rysunku powyżej przedstawiono średnie AUC dla klasyfikatorów uczonych dla heksamerów (czerwone kropki) oraz minimalną i maksymalną wartość AUC. Wybrano 10% najlepszych kodowań.
 
 ```{r, echo = FALSE, message = FALSE, results='asis'}
-lapply(best6, function(single_encoding)
-  do.call(rbind, lapply(single_encoding, function(single_group)
+tmp <- lapply(1L:length(best6), function(single_encoding)
+  do.call(rbind, lapply(best6[[single_encoding]], function(single_group)
     data.frame(Group = paste0(toupper(single_group), collapse = ", ")))) %>%
-    xtable %>%
+    xtable(caption = paste0("Kodowanie ", names(best)[single_encoding], ".")) %>%
     print(type = "html"))
 
 ```
 
+Wszystkie najlepsze kodowania zawierają 5 grup.
+
+## Sekwencje o dowolnej długości
 
 ```{r, echo = FALSE, message = FALSE}
 
@@ -79,53 +89,43 @@ perf %>%
 
 ```
 
+Na rysunku powyżej przedstawiono średnie AUC dla klasyfikatorów uczonych dla heksamerów (czerwone kropki) oraz minimalną i maksymalną wartość AUC. Wybrano 10% najlepszych kodowań.
 
 ```{r, echo = FALSE, message = FALSE, results='asis'}
-lapply(best, function(single_encoding) 
-  do.call(rbind, lapply(single_encoding, function(single_group)
+tmp <- lapply(1L:length(best), function(single_encoding)
+  do.call(rbind, lapply(best[[single_encoding]], function(single_group)
     data.frame(Group = paste0(toupper(single_group), collapse = ", ")))) %>%
-    xtable(caption = "Bla") %>%
-    print(type = "html")
-)
+    xtable(caption = paste0("Kodowanie ", names(best)[single_encoding], ".")) %>%
+    print(type = "html"))
 
 ```
 
+Pond połowa najlepszych kodowań zawiera 5 grup, pozostałe mniej.
+
+
+# Porównanie najlepszych kodowań
+
 ```{r, echo = FALSE, message = FALSE, fig.width =28, fig.height=35}
-size_mod <- 5
-
-cool_theme <- theme(plot.background=element_rect(fill = "transparent",
-                                                 colour = "transparent"),
-                    panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
-                    panel.background = element_rect(fill = "transparent",colour = "black"),
-                    legend.background = element_rect(fill="NA"),
-                    legend.position = "bottom",
-                    axis.text = element_text(size=12 + size_mod),
-                    axis.title.x = element_text(size=16 + size_mod, vjust = -1), 
-                    axis.title.y = element_text(size=16 + size_mod, vjust = 1),
-                    strip.text = element_text(size=17 + size_mod, face = "bold"),
-                    legend.text = element_text(size=13 + size_mod), 
-                    legend.title = element_text(size=17 + size_mod),
-                    plot.title = element_text(size=23 + size_mod))
-
 
 print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1, gp=gpar(fontsize=28)), textGrob("", rot = -90, vjust = 1),
                   p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5, gp=gpar(fontsize=28)), 
                   ncol = 2, nrow = 2, widths = c(0.94, 0.05), heights = c(0.05, 0.92),
-                  main = textGrob("Differences in amino acid grouping", gp=gpar(fontsize=28), 
+                  main = textGrob("Differences in amino acid grouping", gp=gpar(fontsize=32), 
                                   vjust = 1)))
 ```
 
-You can also embed plots, for example:
+Rysunek powyżej przedstawia różnice w grupowaniu aminokwasów dla najlepszych grupowań. Wysokość słupka odpowiada częstotliwości z jaką aminokwas $a_1$ był zaliczany do tej samej grupy, co aminokwas $a_2$. Grupa "background" oznacza wszystkie możliwe kodowania.
+
 
 ```{r, echo=FALSE, fig.width=28, fig.height=35}
 
-p <- p +  coord_cartesian(ylim = c(0, 0.45))
+p <- p +  coord_cartesian(ylim = c(0, 0.40))
 
 print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1, gp=gpar(fontsize=28)), textGrob("", rot = -90, vjust = 1),
                   p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5, gp=gpar(fontsize=28)), 
                   ncol = 2, nrow = 2, widths = c(0.94, 0.05), heights = c(0.05, 0.92),
-                  main = textGrob("Differences in amino acid grouping (0.45 cut)", gp=gpar(fontsize=28), 
+                  main = textGrob("Differences in amino acid grouping (0.40 cut)", gp=gpar(fontsize=32), 
                                   vjust = 1)))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Ten sam wykres, co powyżej. Z uwagi na to, że arginina i lizyna występują razem bardzo często utrudniając obserwację zmienności dla innych par aminokwasów, wszystkie wykresy przycięto do wartości częstości 0.40.

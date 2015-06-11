@@ -65,12 +65,13 @@ get_best <- function(agg_perf)
   select(encoding) %>%
   unlist %>%
   as.character %>% 
-  as.numeric %>%
-  extract(aa_groups, .)
+  as.numeric
 
-best6 <- perf6 %>% get_best
-best <- perf %>% get_best
+best6 <- aa_groups[get_best(perf6)]
+names(best6) <- get_best(perf6)
 
+best <- aa_groups[get_best(perf)]
+names(best) <- get_best(perf)
 #get neighbours of amino acid in groupings
 #aa - amino acid
 get_neigh <- function(group_list) 
