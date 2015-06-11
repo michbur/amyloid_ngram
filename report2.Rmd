@@ -2,17 +2,15 @@
 title: "Raport 2"
 author: "Michal Burdukiewicz, Piotr Sobczyk"
 date: "10 czerwca 2015"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    theme: united
 ---
-
-# Najlepsze kodowania
-
-Dla każdego kodowania przprowadzono 5-krotną walidację krzyżową. Walidację potwórzono 4 razy (4 z powodu ograniczeń obliczeniowych). Obliczenia zostały przeprowadzone uwzględniając dwie strategie uczenia: tylko hexamery w zbiorze uczącycm (etykiety hexamers na rysunkach i w tabelach) oraz sekwencje o dowolnej długości w zbiorze uczącym (etykieta all-mers na rysunkach i w tabelach).
-
-## Heksamery
 
 ```{r, echo = FALSE, message = FALSE}
 load("report2.RData")
+load("prop_names.RData")
 #library(ggvis)
 library(dplyr)
 library(ggplot2)
@@ -37,6 +35,126 @@ cool_theme <- theme(plot.background=element_rect(fill = "transparent",
 
 ```
 
+# Porównanie istotnych n-gramów z Gasior2014 i analiz biogram
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+kot_pairs <- c("SF", "GV", "S_V", "Y_N", "F_L", "T_V",
+               sapply(list(c("S", "I"),
+                           c("Y", "Y"),
+                           c("L", "Y"),
+                           c("I", "I"),
+                           c("V", "I"),
+                           c("L", "I"),
+                           c("N", "Y")), function(i) paste(i, collapse = "__")),
+               sapply(list(c("S", "I"),
+                           c("Y", "Q"),
+                           c("R", "R"),
+                           c("T", "I"),
+                           c("V", "I"),
+                           c("L", "I"),
+                           c("L", "V"),
+                           c("I", "I"),
+                           c("I", "F"),
+                           c("Y", "R"),
+                           c("Y", "I")), function(i) paste(i, collapse = "___")))
+kot_ngrams <- tolower(code_ngrams(kot_pairs))
+
+dat <- read.csv2("all_sizes.csv")[, -1]
+#kot_ngrams[!(kot_ngrams %in% dat[["ngram"]])]
+
+print(xtable(dat[dat[["ngram"]] %in% kot_ngrams[kot_ngrams %in% dat[["ngram"]]], ], caption = "n-gramy z Gasior2014, które pojawiają się w analizie n-gram"), type = "html")
+```
+
+n-gramy z gasior2014, które się nie pojawiają w tabeli: `r paste0(kot_ngrams[!(kot_ngrams %in% dat[["ngram"]])], collapse = ",  ")`.
+
+# Generowanie kodowań aminokwasów
+
+## Cechy wybrane do badań
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+traits_list <- all_traits_combn_list[[1]]
+prop_tables <- apply(traits_list, 2, function(single_column) {
+  prop_table <- data.frame(Property = unique(prop_names[[1]][single_column]))
+  levels(prop_table[["Property"]]) <- sub("\t", " ", levels(prop_table[["Property"]]))
+  prop_table
+})
+
+tmp <- sapply(1L:3, function(i)
+  print(xtable(prop_tables[[i]], caption = paste0("Cechy wykorzystane do tworzenia kodowań - parametr  ", colnames(traits_list)[i], "."), digits = 0), type = "html"))
+```
+
+## Zróżnicowanie międzyaminokwasowe wybranych cech
+
+```{r, echo = FALSE, message = FALSE, , fig.width = 12}
+sizes <- grouping_properties[, paste0("P", unique(traits_list[, "size"]))]
+msizes <- melt(sizes)
+
+levels(msizes[["Var2"]]) <- c("Size", "Molecular weight", "Volume")
+
+ggplot(msizes, aes(x = Var1, fill = Var2, y = value)) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_discrete("Variable") +
+  scale_x_discrete("Amino acid") +
+  scale_y_continuous("Value") +
+  theme(legend.position="bottom") +
+  cool_theme + 
+  ggtitle("Parameter: size")
+
+
+
+sizes <- grouping_properties[, paste0("P", unique(traits_list[, "hydroph"]))]
+msizes <- melt(sizes)
+
+levels(msizes[["Var2"]]) <- c("Hydrophobicity index", "Normalized average hydroph", "Consensus normalized hydroph", 
+                              "Hydrophilicity value")
+
+ggplot(msizes, aes(x = Var1, fill = Var2, y = value)) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_discrete("Variable") +
+  scale_x_discrete("Amino acid") +
+  scale_y_continuous("Value") +
+  theme(legend.position="bottom") +
+  cool_theme + 
+  ggtitle("Parameter: hydrophobicity")
+
+
+
+sizes <- grouping_properties[, paste0("P", unique(traits_list[, "solvent"]))]
+msizes <- melt(sizes)
+
+levels(msizes[["Var2"]]) <- c("Accessible surface area (folded)", "Average accessible surface", "Hydration potential")
+
+ggplot(msizes, aes(x = Var1, fill = Var2, y = value)) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_discrete("Variable") +
+  scale_x_discrete("Amino acid") +
+  scale_y_continuous("Value") +
+  theme(legend.position="bottom") +
+  cool_theme + 
+  ggtitle("Parameter: solvent accessibility")
+```
+
+
+## Sposób tworzenia kodowań.
+
+1. Z bazy AAIndex (release 10_2013) wybrano 10 cech reprezentujących różne właściwości aminokwasów: wielkość, hydrofobowość i dostępność dla rozpuszczalnika. 
+2. Cechy znormalizowano między 0 i 1.
+3. Wszystkie możliwe kombinacje tych cech (1 jedna z każdego rodzaju) zgrupowano (dystans euklidesowski, metoda "complete"). 
+4. Każde zgrupowanie podzielono na 3, 4 i 5 grup. 
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+tmp <- t(apply(all_traits_combn_list[[1]], 1, function(i) paste0(" P", i)))
+colnames(tmp) <- colnames(all_traits_combn_list[[1]])
+print(xtable(tmp, digits = 0, caption = "Wszystkie kombinacje cech."), type = "html")
+```
+
+Podczas badań nie uwzględniono polarności z względu na trudności w wyskalowaniu.
+
+# Najlepsze kodowania
+
+Dla każdego kodowania przprowadzono 5-krotną walidację krzyżową. Walidację powtórzono 4 razy (4 z powodu ograniczeń obliczeniowych). Obliczenia zostały przeprowadzone uwzględniając dwie strategie uczenia: tylko heksamery w zbiorze uczącycm (etykiety hexamers na rysunkach i w tabelach) oraz sekwencje o dowolnej długości w zbiorze uczącym (etykieta all-mers na rysunkach i w tabelach).
+
+## Heksamery
 
 ```{r, echo = FALSE, message = FALSE}
 perf6 %>%
@@ -68,6 +186,20 @@ tmp <- lapply(1L:length(best6), function(single_encoding)
 
 Wszystkie najlepsze kodowania zawierają 5 grup.
 
+```{r, echo = FALSE, message = FALSE, results='asis'}
+traits_list <- rbind(all_traits_combn_list[[1]], all_traits_combn_list[[1]], all_traits_combn_list[[1]])
+prop_tables <- apply(traits_list[as.numeric(names(best6)) - 2, ], 2, function(single_column) {
+  prop_table <- data.frame(table(prop_names[[1]][single_column], dnn = "Property"))
+  levels(prop_table[["Property"]]) <- sub("\t", " ", levels(prop_table[["Property"]]))
+  prop_table
+})
+
+tmp <- sapply(1L:3, function(i)
+  print(xtable(prop_tables[[i]], caption = paste0("Zliczenie cech wykorzystywanych przez najlepsze kodowania - parametr ", colnames(traits_list)[i], ".")), type = "html"))
+```
+
+
+
 ## Sekwencje o dowolnej długości
 
 ```{r, echo = FALSE, message = FALSE}
@@ -85,7 +217,7 @@ perf %>%
   scale_y_discrete("Encoding ID") +
   scale_x_continuous("AUC") + 
   cool_theme +
-  ggtitle("Best encodings - hexamers")
+  ggtitle("Best encodings - all-mers")
 
 ```
 
@@ -100,31 +232,43 @@ tmp <- lapply(1L:length(best), function(single_encoding)
 
 ```
 
-Pond połowa najlepszych kodowań zawiera 5 grup, pozostałe mniej.
+Ponad połowa najlepszych kodowań zawiera 5 grup, pozostałe mniej.
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+traits_list <- rbind(all_traits_combn_list[[1]], all_traits_combn_list[[1]], all_traits_combn_list[[1]])
+prop_tables <- apply(traits_list[as.numeric(names(best)) - 2, ], 2, function(single_column) {
+  prop_table <- data.frame(table(prop_names[[1]][single_column], dnn = "Property"))
+  levels(prop_table[["Property"]]) <- sub("\t", " ", levels(prop_table[["Property"]]))
+  prop_table
+})
+
+tmp <- sapply(1L:3, function(i)
+  print(xtable(prop_tables[[i]], caption = paste0("Zliczenie cech wykorzystywanych przez najlepsze kodowania - parametr ", colnames(traits_list)[i], ".")), type = "html"))
+```
 
 
 # Porównanie najlepszych kodowań
 
-```{r, echo = FALSE, message = FALSE, fig.width =28, fig.height=35}
+```{r, echo = FALSE, message = FALSE, fig.width =12, fig.height=14}
 
-print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1, gp=gpar(fontsize=28)), textGrob("", rot = -90, vjust = 1),
-                  p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5, gp=gpar(fontsize=28)), 
+print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1, gp=gpar(fontsize=18)), textGrob("", rot = -90, vjust = 1),
+                  p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5, gp=gpar(fontsize=18)), 
                   ncol = 2, nrow = 2, widths = c(0.94, 0.05), heights = c(0.05, 0.92),
-                  main = textGrob("Differences in amino acid grouping", gp=gpar(fontsize=32), 
+                  main = textGrob("Differences in amino acid grouping", gp=gpar(fontsize=28), 
                                   vjust = 1)))
 ```
 
 Rysunek powyżej przedstawia różnice w grupowaniu aminokwasów dla najlepszych grupowań. Wysokość słupka odpowiada częstotliwości z jaką aminokwas $a_1$ był zaliczany do tej samej grupy, co aminokwas $a_2$. Grupa "background" oznacza wszystkie możliwe kodowania.
 
 
-```{r, echo=FALSE, fig.width=28, fig.height=35}
+```{r, echo=FALSE, fig.width=12, fig.height=14}
 
 p <- p +  coord_cartesian(ylim = c(0, 0.40))
 
-print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1, gp=gpar(fontsize=28)), textGrob("", rot = -90, vjust = 1),
-                  p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5, gp=gpar(fontsize=28)), 
+print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1, gp=gpar(fontsize=18)), textGrob("", rot = -90, vjust = 1),
+                  p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5, gp=gpar(fontsize=18)), 
                   ncol = 2, nrow = 2, widths = c(0.94, 0.05), heights = c(0.05, 0.92),
-                  main = textGrob("Differences in amino acid grouping (0.40 cut)", gp=gpar(fontsize=32), 
+                  main = textGrob("Differences in amino acid grouping (0.40 cut)", gp=gpar(fontsize=29), 
                                   vjust = 1)))
 ```
 

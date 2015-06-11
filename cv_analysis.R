@@ -103,7 +103,7 @@ levels(neigh[["n_aa"]]) <- toupper(levels(neigh[["n_aa"]]))
 #   coord_polar() +
 #   facet_wrap(~ n_aa)
 
-size_mod <- 5
+size_mod <- -5
 
 
 cool_theme <- theme(plot.background=element_rect(fill = "transparent",
@@ -129,7 +129,7 @@ p <- ggplot(neigh, aes(x = train, y = perc, fill = train)) +
   scale_y_continuous("Frequency") + 
   cool_theme
 
-save(aa_groups, perf6, perf, best6, best, neigh, p, file = "report2.RData")
+save(aa_groups, perf6, perf, best6, best, neigh, p, all_traits_combn_list, grouping_properties, file = "report2.RData")
 
 # print(arrangeGrob(textGrob("Amino acid symbol", vjust = 1), textGrob("", rot = -90, vjust = 1),
 #                   p, textGrob("Neighbourly amino acid symbol", rot = -90, vjust = 1.5), 
