@@ -9,7 +9,7 @@ grouping_properties <- t(aa_nprop[unlist(traits), ])
 all_traits_combn_list <- list(expand.grid(traits))
 
 aa_groups <- unlist(unlist(lapply(all_traits_combn_list, function(all_traits_combn)
-  lapply(3L:5, function(single_k)
+  lapply(3L:6, function(single_k)
     lapply(1L:nrow(all_traits_combn), function(single_trait_combn) {
       cl <- hclust(dist(t(aa_nprop[unlist(all_traits_combn[single_trait_combn, ]), ])))
       gr <- cutree(cl, k = single_k)
