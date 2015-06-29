@@ -1,5 +1,8 @@
-data("aaindex")
+library(seqinr)
 library(dplyr)
+
+data("aaindex")
+
 
 aa_props <- sapply(aaindex, function(i) i[["I"]])
 
@@ -21,7 +24,7 @@ prop_MK %>% filter(property == "hydrophobicity") %>% arrange(desc(years))
 traits <- prop_MK %>% filter(property != "hydrophobicity") %>% select(X) %>%
   unlist %>% c(., c("494", "529", "528")) %>% as.numeric
 
-prop_MK %>% filter(X %in% traits) %>% nrow
+best_props <- prop_MK %>% filter(X %in% traits)
 
 grouping_properties <- t(aa_nprop[unlist(traits), ])
 
