@@ -1,4 +1,4 @@
-;name;property;;;
+;name;property;chosen;;
 1;alpha-CH chemical shifts (Andersen et al., 1992);;;;
 2;Hydrophobicity index (Argos et al., 1982);hydrophobicity;1;;
 3;Signal sequence helical potential (Argos et al., 1982);helix;;;
@@ -543,4 +543,3 @@
 542;Optimized relative partition energies - method D (Miyazawa-Jernigan, 1999);;;;
 543;Hydrophobicity index (Engelman et al., 1986);hydrophobicity;1;;
 544;Hydrophobicity index (Fasman, 1989);hydrophobicity;1;;
-;;;20;;

@@ -1,6 +1,6 @@
 source("read_data.R")
 
-source("aa_encodings.R") #creates encodings for data
+source("aa_encodings2.R") #creates encodings for data
 
 source("encoded_amyloids2.R") #codes amyloids and saves them
 
@@ -43,7 +43,6 @@ fold_res <- lapply(c(6, 10, 15), function(constant) {
                              sapply(coded_pos[[group_id]][fold_list[[2]][fold_list[[2]][, "which"] == fold, "id"]], nrow))
         ngram_prots_neg <- c(sapply(coded_neg[[group_id]][fold_list[[3]][fold_list[[3]][, "which"] == fold, "id"]], nrow),
                              sapply(coded_neg[[group_id]][fold_list[[4]][fold_list[[4]][, "which"] == fold, "id"]], nrow))
-        browser()
         
         preds <- cbind(predict(model_cv, rbind(test_pos, test_neg), type = "prob")[, 2], 
                        c(rep(1, nrow(test_pos)), rep(0, nrow(test_neg))),

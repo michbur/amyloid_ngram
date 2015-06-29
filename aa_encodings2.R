@@ -1,4 +1,25 @@
-load("aa_nprop.RData")
+data("aaindex")
+library(dplyr)
+
+aa_props <- sapply(aaindex, function(i) i[["I"]])
+
+aa_nprops <- apply(aa_props, 2, function(i) {
+  res <- i - min(i, na.rm = TRUE)
+  res/max(res, na.rm = TRUE)
+})
+
+prop_MK <- read.csv2("AA_index_mk2.csv") %>% filter(!is.na(chosen))
+
+years <- prop_MK %>% select(name) %>% unlist %>% as.character %>% sapply(function(i) 
+  strsplit(last(strsplit(i, ", ")[[1]]), ")", fixed = TRUE)[[1]][1])
+
+prop_MK <- cbind(prop_MK, years = years)
+
+prop_MK %>% filter(property == "hydrophobicity") %>% arrange(desc(years))
+#c("494", "529", "528")
+
+prop_ids <- prop_MK %>% filter(property != "hydrophobicity") %>% select(X) %>%
+  unlist %>% c(., c("494", "529", "528")) %>% as.numeric
 
 traits <- list(size = c(30, 36, 54),
                hydroph = c(1, 26, 33, 57),
