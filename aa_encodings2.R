@@ -18,12 +18,10 @@ prop_MK <- cbind(prop_MK, years = years)
 prop_MK %>% filter(property == "hydrophobicity") %>% arrange(desc(years))
 #c("494", "529", "528")
 
-prop_ids <- prop_MK %>% filter(property != "hydrophobicity") %>% select(X) %>%
+traits <- prop_MK %>% filter(property != "hydrophobicity") %>% select(X) %>%
   unlist %>% c(., c("494", "529", "528")) %>% as.numeric
 
-traits <- list(size = c(30, 36, 54),
-               hydroph = c(1, 26, 33, 57),
-               solvent = c(19, 65, 199))
+prop_MK %>% filter(X %in% traits) %>% nrow
 
 grouping_properties <- t(aa_nprop[unlist(traits), ])
 
