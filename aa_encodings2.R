@@ -5,11 +5,14 @@ data("aaindex")
 
 
 aa_props <- sapply(aaindex, function(i) i[["I"]])
+tableA <- read.table("tableA.csv", sep = ";", dec = ".", head = TRUE)
 
-aa_nprops <- apply(aa_props, 2, function(i) {
+aa_nprop <- t(apply(cbind(aa_props, tableA[tableA[["X"]] %>% as.character %>% aaa %>% order, 2L:3]), 2, function(i) {
   res <- i - min(i, na.rm = TRUE)
   res/max(res, na.rm = TRUE)
-})
+}))
+
+colnames(aa_nprop) <- a(colnames(aa_nprop))
 
 prop_MK <- read.csv2("AA_index_mk2.csv") %>% filter(!is.na(chosen))
 
@@ -18,15 +21,20 @@ years <- prop_MK %>% select(name) %>% unlist %>% as.character %>% sapply(functio
 
 prop_MK <- cbind(prop_MK, years = years)
 
-prop_MK %>% filter(property == "hydrophobicity") %>% arrange(desc(years))
+#prop_MK %>% filter(property == "hydrophobicity") %>% arrange(desc(years))
 #c("494", "529", "528")
 
-traits <- prop_MK %>% filter(property != "hydrophobicity") %>% select(X) %>%
-  unlist %>% c(., c("494", "529", "528")) %>% as.numeric
 
-best_props <- prop_MK %>% filter(X %in% traits)
 
-grouping_properties <- t(aa_nprop[unlist(traits), ])
+traits <- list(size = 515,
+               hydroph = c(494, 529, 528),
+               solvent = c(319, 211, 512),
+               polarity = c(22, 321),
+               interactivity = 545:546)
+
+
+
+grouping_properties <- aa_nprop[unlist(traits), ]
 
 all_traits_combn_list <- list(expand.grid(traits))
 
@@ -41,6 +49,12 @@ aa_groups <- unlist(unlist(lapply(all_traits_combn_list, function(all_traits_com
       agg_gr
     }))), recursive = FALSE), recursive = FALSE)
 
+aa_groups <- sapply(aa_groups, function(i) {
+  res <- sapply(i, sort)
+  res[order(lengths(res))]
+  })
+
+aa_groups <- aa_groups[!duplicated(t(sapply(aa_groups, unlist)))]
 
 aa1 = list(`1` = c("g", "a", "p", "v", "l", "i", "m"), 
            `2` = c("k", "r", "h"), 
