@@ -1,6 +1,7 @@
 .Rproj.user
 .Rhistory
 .RData
+amyloid_ngram.Rproj
 amyloid2015.Rproj
 index.Rmd
 presentation-concordance.tex
@@ -11,4 +12,3 @@ presentation.out
 presentation.snm
 presentation.synctex.gz
 presentation.toc
-

@@ -1,0 +1,67 @@
+Readme
+========================================================
+
+Date: `r format(Sys.Date(), format="%B %d %Y")`
+
+### List of files
+
+```{r,echo=FALSE,results='asis'}
+library(xtable)
+
+#list of descriptions
+known_files <- list(readme = list(file_name = "readme.Rmd",
+                                  descr = "A template for automatically generated readme. Date and list of file included."),
+                    parsed_readme = list(file_name = "readme.md",
+                                         descr = paste0("Parsed readme.Rmd")),
+                    read_data = list(file_name = "read_data.R",
+                                 descr = "Read data from .fasta files"),
+                    amyloid_pos = list(file_name = "amyloid_pos.fasta",
+                                       descr = "Positive (amyloid) sequences."),
+                    amyloid_neg = list(file_name = "amyloid_neg.fasta",
+                                          descr = "Negative (non-amyloid) sequences."),
+                    analyze_ngrams_function = list(file_name = "analyze_ngrams_function.R",
+                                                   descr = "A function that extracts important n-grams and calculate their frequency."),
+                    ngram_analysis = list(file_name = "ngram_analysis.R",
+                                          descr = "Analysis of n-grams extracted from amyloids. The analysis was performed separately for several groups of peptides."), 
+                    report1 = list(file_name = "report1.Rmd",
+                                   descr = "First report containing results from ngram_analysis.R"),
+                    parsed_report1 = list(file_name = "report1.html",
+                                   descr = "Parsed report1.Rmd")
+)
+
+known_files_names <- sapply(known_files, function(i) i[["file_name"]])
+
+#all files in repo that aren't in gitignore
+repo_files <- sort(setdiff(list.files(), readLines(".gitignore")[- grep("^\\.", readLines(".gitignore"))]))
+
+if(!all(repo_files %in% known_files_names)) {
+  message(paste0("Michal, you slacker! File(s): ",
+                 paste(repo_files[!repo_files %in% known_files_names], collapse = ", "), 
+                 " do not have a proper description."))
+  repo_files <- repo_files[repo_files %in% known_files_names]
+}
+
+sourced_files <- sapply(lapply(repo_files, function(single_file) {
+  all_lines <- readLines(single_file)
+  source_lines <- grep("^source\\(", all_lines, fixed = FALSE)
+  file_names <- if(length(source_lines) > 0) {
+    #source allows to call only one file, so maybe we can presume that
+    #in single line we have only single source call
+    #I doubt someone would be goung source("xyz"); source("zyx") and so on in a single line
+    
+    vapply(all_lines[source_lines], function(single_line)
+      strsplit(strsplit(single_line, 'source("', fixed = TRUE)[[1]][[2]],
+               '\"')[[1]][[1]], "a")
+  } else {
+    ""
+  }
+}), paste0, collapse = ", ")
+
+files_table <- data.frame(repo_files, sapply(repo_files, function(i) known_files[[which(i == known_files_names)]][["descr"]]), sourced_files)
+colnames(files_table) <- c("File name", "Description", "Sourced files")
+print(xtable(files_table), type = "html", include.rownames = FALSE)
+```
+
+### Repository rules
+1. Each file must have a desctiption in readme using the R code in *readme.Rmd*.
+2. Use comments frequently.

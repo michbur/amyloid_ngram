@@ -1,0 +1,106 @@
+---
+title: "n-gramy uzyskane z sekwencji amyloid"
+author: "Michal Burdukiewicz, Piotr Sobczyk"
+date: "13.05.2015"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+# Schemat eksperymentów
+
+1. Pozyskanie sekwencji z bazy AmyLoad.
+2. Odczytanie wszystkich możliwych 1-, 2- (przerwa między elementami od 0 do 3) i 3-gramów (przerwy między słowami to wszystkie możliwe kombinacje 0 i 1).
+3. Wyodrębnienie istotnych n-gramów (p-value mniejsze niż 0.001) za pomocą QuiPT.
+4. Badania przeprowadzono osobno dla trzech grup sekwencji:
+ + wszystkich sekwencji, 
+ + wyłącznie heksamerów,
+ + wszystkich peptydów dłuższych niż 6 aminokwasów.
+
+Na obrazkach n-gramy są uporządkowane względem różnicy w częstościach między amyloidami i nieamyloidami.
+
+# Opisy tabel
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE,results='asis',fig.height=58}
+library(knitr)
+dat <- read.csv2("all_sizes.csv")[, -1]
+kable(dat[300L:305, ], caption = "ngram: ngram w notacji biogram. target0 - zliczenia n-gramów dla nieamyloidów. target1 - zliczenia n-gramów dla amyloidu. ftarget0 - częstość n-gramy dla nieamyloidu. ftarget1 - częstość n-gramy dla amyloidu. decoded - n-gram w notacji czytelnej dla człowieka.")
+```
+
+
+# Wszystkie peptydy
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE,results='asis',fig.height=58}
+library(ggplot2)
+library(reshape2)
+
+dat <- read.csv2("all_sizes.csv")[, -1]
+
+mdat <- melt(dat[, c("ftarget0", "ftarget1", "decoded")])
+
+mdat[[1]] <- factor(as.character(mdat[[1]]), levels = dat[["decoded"]][order(dat[["ftarget1"]] - dat[["ftarget0"]])])
+
+levels(mdat[[1]]) <- toupper(levels(mdat[[1]]))
+
+levels(mdat[[2]]) <- c("Nie", "Tak")
+ggplot(mdat, aes(x = decoded, y = value, fill = variable)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  scale_x_discrete("Istotne n-gramy") +
+  scale_y_continuous("Częstość") + 
+  scale_fill_discrete("Amyloid") +
+  coord_flip() +
+  theme(legend.position="bottom")
+
+```
+
+
+# Tylko heksagramy
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE,results='asis',fig.height=28}
+library(ggplot2)
+library(reshape2)
+
+dat <- read.csv2("only6.csv")[, -1]
+
+mdat <- melt(dat[, c("ftarget0", "ftarget1", "decoded")])
+
+mdat[[1]] <- factor(as.character(mdat[[1]]), levels = dat[["decoded"]][order(dat[["ftarget1"]] - dat[["ftarget0"]])])
+
+levels(mdat[[1]]) <- toupper(levels(mdat[[1]]))
+
+levels(mdat[[2]]) <- c("Nie", "Tak")
+ggplot(mdat, aes(x = decoded, y = value, fill = variable)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  scale_x_discrete("Istotne n-gramy") +
+  scale_y_continuous("Częstość") + 
+  scale_fill_discrete("Amyloid") +
+  coord_flip() +
+  theme(legend.position="bottom")
+
+```
+
+# Peptydy dłuższe niż heksagramy
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE,results='asis',fig.height=28}
+library(ggplot2)
+library(reshape2)
+
+dat <- read.csv2("bigger6.csv")[, -1]
+
+mdat <- melt(dat[, c("ftarget0", "ftarget1", "decoded")])
+
+mdat[[1]] <- factor(as.character(mdat[[1]]), levels = dat[["decoded"]][order(dat[["ftarget1"]] - dat[["ftarget0"]])])
+
+levels(mdat[[1]]) <- toupper(levels(mdat[[1]]))
+
+levels(mdat[[2]]) <- c("Nie", "Tak")
+ggplot(mdat, aes(x = decoded, y = value, fill = variable)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  scale_x_discrete("Istotne n-gramy") +
+  scale_y_continuous("Częstość") + 
+  scale_fill_discrete("Amyloid") +
+  coord_flip() +
+  theme(legend.position="bottom")
+
+```

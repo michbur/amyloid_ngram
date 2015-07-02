@@ -1,0 +1,25 @@
+---
+title: "Raport 3"
+author: "Michal Burdukiewicz, Piotr Sobczyk"
+date: "2 lipca 2015"
+output: 
+  html_document:
+    toc: true
+    theme: united
+---
+
+# Porównanie wybranych cech aminokwasów
+
+Narzędzie: https://michbur.shinyapps.io/propapp
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+library(xtable)
+load("report3.RData")
+
+colnames(res) <- c("Length of sequences in training set", "Encoding", "Mean AUC")
+
+print(xtable(res, caption = "Wyniki pracy dla nowego algorytmu. Walidacja krzyżowa 5-krotna, 8 powtórzeń.", digits = 4), type = "html")
+
+```
+
+
