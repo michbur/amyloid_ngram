@@ -26,5 +26,16 @@ names(plot_id) <- plot_names
 
 save(plot_values, mplot_values, plot_id, file = "./property_app/properties.RData")
 
-
-
+#input$checkProp
+# tmp <- c(1, 2, 3)
+# 
+# library(ggdendro)
+# cl <- hclust(dist(plot_values[, as.numeric(tmp)]))
+# gr <- cutree(cl, k = 3)
+# 
+# ddata <- dendro_data(dhc, type = "rectangle")
+# p <- ggplot(segment(ddata)) + 
+#   geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) + 
+#   coord_flip() + 
+#   scale_y_reverse(expand = c(0.2, 0))
+p
