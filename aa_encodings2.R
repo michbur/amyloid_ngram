@@ -49,6 +49,7 @@ aa_groups <- unlist(unlist(lapply(all_traits_combn_list, function(all_traits_com
       agg_gr
     }))), recursive = FALSE), recursive = FALSE)
 
+#perform for each group length separately
 aa_groups <- sapply(aa_groups, function(i) {
   res <- sapply(i, sort)
   res[order(lengths(res))]
