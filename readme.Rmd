@@ -5,7 +5,7 @@ Date: `r format(Sys.Date(), format="%B %d %Y")`
 
 ### List of files
 
-```{r,echo=FALSE,results='asis'}
+```{r,echo=FALSE,results='asis',warning=FALSE}
 library(xtable)
 
 #list of descriptions
@@ -26,7 +26,19 @@ known_files <- list(readme = list(file_name = "readme.Rmd",
                     report1 = list(file_name = "report1.Rmd",
                                    descr = "First report containing results from ngram_analysis.R"),
                     parsed_report1 = list(file_name = "report1.html",
-                                   descr = "Parsed report1.Rmd")
+                                   descr = "Parsed report1.Rmd"),
+                    aa_encodings2 = list(file_name = "aa_encodings2.R",
+                                   descr = "Amino acid encodings used in the report3. Uses AAIndex database."),
+                    aa_encodings = list(file_name = "aa_encodings.R",
+                                   descr = "Amino acid encodings used in the report2. Uses some older variant AAIndex database (?)."),
+                    AA_index_mk2 = list(file_name = "AA_index_mk2.csv",
+                                   descr = "Properties from AAIndex annotated by MK."),
+                    aa_nprop = list(file_name = "aa_nprop.RData",
+                                   descr = "Normalized values of properties from AAIndex."),
+                    aa_properties = list(file_name = "aa_properties.R",
+                                   descr = "Extract from seqinr package AAIndex data, annotate it partially and save."),
+                    all_sizes = list(file_name = "all_sizes.csv",
+                                   descr = "Created by ngram_analysis.R, contains important n-grams and their properties in amyloids and non-amyloids.")
 )
 
 known_files_names <- sapply(known_files, function(i) i[["file_name"]])
