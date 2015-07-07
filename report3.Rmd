@@ -12,6 +12,8 @@ output:
 
 Narzędzie: https://michbur.shinyapps.io/propapp
 
+# Wyniki badań
+
 ```{r, echo = FALSE, message = FALSE, results='asis'}
 library(xtable)
 load("report3.RData")

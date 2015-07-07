@@ -38,7 +38,7 @@ grouping_properties <- aa_nprop[unlist(traits), ]
 
 all_traits_combn_list <- list(expand.grid(traits))
 
-aa_groups <- unlist(unlist(lapply(all_traits_combn_list, function(all_traits_combn)
+aa_groups <- unlist(lapply(all_traits_combn_list, function(all_traits_combn)
   lapply(3L:6, function(single_k)
     lapply(1L:nrow(all_traits_combn), function(single_trait_combn) {
       cl <- hclust(dist(t(aa_nprop[unlist(all_traits_combn[single_trait_combn, ]), ])))
@@ -47,15 +47,20 @@ aa_groups <- unlist(unlist(lapply(all_traits_combn_list, function(all_traits_com
       agg_gr <- lapply(unique(gr), function(single_group) names(gr[gr == single_group]))
       names(agg_gr) <- 1L:length(agg_gr)
       agg_gr
-    }))), recursive = FALSE), recursive = FALSE)
+    }))), recursive = FALSE)
 
 #perform for each group length separately
-aa_groups <- sapply(aa_groups, function(i) {
-  res <- sapply(i, sort)
-  res[order(lengths(res))]
+aa_id <- lapply(aa_groups, function(j) {
+  sort_gr <- lapply(j, function(i) {
+    res <- sapply(i, sort)
+    res[order(lengths(res))]
   })
+  !duplicated(t(sapply(sort_gr, unlist)))
+})
 
-aa_groups <- aa_groups[!duplicated(t(sapply(aa_groups, unlist)))]
+aa_groups <- unlist(lapply(1L:length(aa_id), function(i) {
+  aa_groups[[i]][aa_id[[i]]]
+}), recursive = FALSE)
 
 aa1 = list(`1` = c("g", "a", "p", "v", "l", "i", "m"), 
            `2` = c("k", "r", "h"), 
