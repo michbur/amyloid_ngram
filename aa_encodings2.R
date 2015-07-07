@@ -74,3 +74,6 @@ aa2 = list(`1` = c("g", "a", "p", "v", "l", "i", "m", "f"),
 
 
 aa_groups <- c(list(aa2), list(aa1), aa_groups)
+
+groups_summary <- cbind(chosen = unlist(aa_id), do.call(rbind, lapply(3L:6, function(i) 
+  cbind(n = rep(i, nrow(all_traits_combn_list[[1]])), all_traits_combn_list[[1]]))))
