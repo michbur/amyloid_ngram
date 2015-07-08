@@ -80,7 +80,7 @@ colnames(chosen_traits) <- nice_names
 chosen_traits_tab <- apply(chosen_traits, 2, function(i) data.frame(table(i)))
 lapply(1L:length(chosen_traits_tab), function(i) {
   colnames(chosen_traits_tab[[i]]) <- c(nice_names[i], "Frequency")
-  chosen_traits_tab[[1]]
+  chosen_traits_tab[[i]][[1]] <- rownames(aa_nprop)[chosen_traits_tab[[i]][[1]]]
   chosen_traits_tab[[i]]
 })
 
