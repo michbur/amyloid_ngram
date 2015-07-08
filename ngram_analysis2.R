@@ -11,6 +11,9 @@ library(dplyr)
 source("aa_encodings2.R")
 load("amyloid_fold_res2.RData")
 
+
+head(fold_res[[1]][[1]][[1]][[1]][[1]])
+
 len_cv <- lapply(fold_res, function(single_length) {
   rep_cv <- lapply(single_length, function(single_rep) {
     fold_cv <- lapply(single_rep, function(single_fold) {
@@ -43,8 +46,10 @@ len_cv2[["fold"]] <- as.factor(len_cv2[["fold"]])
 
 
 res <- len_cv2 %>% group_by(len, enc, repetition, fold) %>% summarize(mAUC = mean(AUC)) %>%
-  group_by(len, enc) %>% summarize(mAUC = mean(mAUC)) %>%
-  filter(mAUC > quantile(mAUC, 0.95)) 
-res <- res[order(res[["mAUC"]], decreasing = TRUE), ]
+  group_by(len, enc) %>% summarize(mAUC = mean(mAUC)) %>% ungroup 
+
+#
+
+
 
 save(res, file = "report3.RData")

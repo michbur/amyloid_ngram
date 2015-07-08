@@ -15,13 +15,39 @@ Narzędzie: https://michbur.shinyapps.io/propapp
 # Wyniki badań
 
 ```{r, echo = FALSE, message = FALSE, results='asis'}
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
 library(xtable)
+
+size_mod <- -5
+cool_theme <- theme(plot.background=element_rect(fill = "transparent",
+                                                 colour = "transparent"),
+                    panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
+                    panel.background = element_rect(fill = "transparent",colour = "black"),
+                    legend.background = element_rect(fill="NA"),
+                    legend.position = "bottom",
+                    axis.text = element_text(size=12 + size_mod),
+                    axis.title.x = element_text(size=16 + size_mod, vjust = -1), 
+                    axis.title.y = element_text(size=16 + size_mod, vjust = 1),
+                    strip.text = element_text(size=17 + size_mod, face = "bold"),
+                    legend.text = element_text(size=13 + size_mod), 
+                    legend.title = element_text(size=17 + size_mod),
+                    plot.title = element_text(size=20 + size_mod))
+
 load("report3.RData")
 
-colnames(res) <- c("Length of sequences in training set", "Encoding", "Mean AUC")
+tmp <- res %>% arrange(desc(mAUC)) %>% slice(1L:15)
+colnames(tmp) <- c("Length of sequences in training set", "Encoding", "Mean AUC")
 
-print(xtable(res, caption = "Wyniki pracy dla nowego algorytmu. Walidacja krzyżowa 5-krotna, 8 powtórzeń.", digits = 4), type = "html")
+print(xtable(tmp, caption = "Wyniki pracy dla nowego algorytmu. Walidacja krzyżowa 5-krotna, 8 powtórzeń.", digits = 4), type = "html")
 
 ```
 
+```{r, echo = FALSE, message = FALSE, results='asis', fig.width=18}
+ggplot(res, aes(x = enc, y = mAUC)) +
+  geom_point() +
+  facet_wrap(~len, ncol = 3) + cool_theme
+
+```
 
