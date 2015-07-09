@@ -48,7 +48,7 @@ tmp <- apply(chosen_traits[, -1], 2, function(i)
   ggplot(melt(aa_nprop[unique(i), ]), aes(y = value, x = Var2, fill = Var1)) +
     geom_bar(position = "dodge", stat = "identity") + scale_x_discrete("Amino acid") +
     scale_fill_discrete("Property") + cool_theme)
-nice_names <- c("n", "Hydrophobicity", "Solvent accessibility",
+nice_names <- c("Hydrophobicity", "Solvent accessibility",
                 "Polarity", "Interactivity")
 for(i in 1L:4)
   print(tmp[[i]] + ggtitle(nice_names[i]))
