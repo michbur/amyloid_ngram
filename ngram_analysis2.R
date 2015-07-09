@@ -46,7 +46,8 @@ len_cv2[["fold"]] <- as.factor(len_cv2[["fold"]])
 
 
 res <- len_cv2 %>% group_by(len, enc, repetition, fold) %>% summarize(mAUC = mean(AUC)) %>%
-  group_by(len, enc) %>% summarize(mAUC = mean(mAUC)) %>% ungroup 
+  group_by(len, enc) %>% summarize(mAUC = mean(mAUC)) %>% ungroup %>% 
+  cbind(., n = as.factor(rep(c(4, 4, groups_summary[groups_summary[["chosen"]], "n"]), 3)))
 
 #best 5 encodings for each length
 res %>% group_by(len) %>% arrange(desc(mAUC)) %>% slice(1L:5)
@@ -88,5 +89,5 @@ lapply(1L:length(chosen_traits_tab), function(i) {
 apply(chosen_traits[, -1], 2, function(i)
   melt(aa_nprop[unique(i), ]))
 
-
+res <- res[, c(1, 4, 2, 3)]
 save(res, file = "report3.RData")

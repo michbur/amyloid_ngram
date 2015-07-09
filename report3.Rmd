@@ -8,12 +8,7 @@ output:
     theme: united
 ---
 
-# Porównanie wybranych cech aminokwasów
-
-Narzędzie: https://michbur.shinyapps.io/propapp
-
-# Wyniki badań
-
+# Schemat algorytmu
 ```{r, echo = FALSE, message = FALSE, results='asis'}
 library(dplyr)
 library(ggplot2)
@@ -34,20 +29,97 @@ cool_theme <- theme(plot.background=element_rect(fill = "transparent",
                     legend.text = element_text(size=13 + size_mod), 
                     legend.title = element_text(size=17 + size_mod),
                     plot.title = element_text(size=20 + size_mod))
-
+source("aa_encodings2.R")
 load("report3.RData")
+```
 
+1. Pozyskanie sekwencji z bazy AmyLoad.  
+1. Stworzono 144 kodowania w oparciu o wybrane cechy fizykochemiczne.  
+1. Wybrano 93 unikalne kodowania (unikalne - różniące się co najmniej jednym aminokwasem).  
+4. Dla każdego kodowania odczytanie wszystkich możliwych 1-, 2- (przerwa między elementami od 0 do 3) i 3-gramów (przerwy między słowami to wszystkie możliwe kombinacje 0 i 1).
+5. Przeprowadzono walidację krzyżowaną na trzech zbiorach uczących: 6 (heksamery), <11 (sekwencje krótsze niż 11 aminokwasów), <16 (sekwencje krótsze niż 16).
+1. Walidację krzyżową powtórzono 8 razy.
+
+
+# Właściwości aminokwasów
+```{r, echo = FALSE, message = FALSE, results='asis'}
+
+tmp <- apply(chosen_traits[, -1], 2, function(i)
+  ggplot(melt(aa_nprop[unique(i), ]), aes(y = value, x = Var2, fill = Var1)) +
+    geom_bar(position = "dodge", stat = "identity") + scale_x_discrete("Amino acid") +
+    scale_fill_discrete("Property") + cool_theme)
+nice_names <- c("n", "Hydrophobicity", "Solvent accessibility",
+                "Polarity", "Interactivity")
+for(i in 1L:4)
+  print(tmp[[i]] + ggtitle(nice_names[i]))
+  
+```
+
+# Najlepsze kodowanie
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
 tmp <- res %>% arrange(desc(mAUC)) %>% slice(1L:15)
-colnames(tmp) <- c("Length of sequences in training set", "Encoding", "Mean AUC")
+colnames(tmp) <- c("Length of sequences in training set", "Number of clusters", "Encoding", "Mean AUC")
 
 print(xtable(tmp, caption = "Wyniki pracy dla nowego algorytmu. Walidacja krzyżowa 5-krotna, 8 powtórzeń.", digits = 4), type = "html")
 
 ```
 
-```{r, echo = FALSE, message = FALSE, results='asis', fig.width=18}
-ggplot(res, aes(x = enc, y = mAUC)) +
-  geom_point() +
-  facet_wrap(~len, ncol = 3) + cool_theme
+
+```{r, echo = FALSE, message = FALSE, results='asis',fig.height=13}
+ggplot(res, aes(y = enc, x = mAUC, colour = len, shape = n)) +
+  geom_point(size = 3) + cool_theme +
+  scale_y_discrete("Encoding id") +
+  scale_x_continuous("Mean AUC") + scale_colour_discrete("Training length")
 
 ```
 
+Wpływ kodowania na AUC. Kolorami zaznaczono rodzaje grup treningowych, a kształtem punktu liczbę klastrów w kodowaniu.
+
+```{r, echo = FALSE, message = FALSE, results='asis',fig.height=10}
+above080 <- res %>% group_by(enc) %>% summarize(minAUC = min(mAUC)) %>% filter(minAUC > 0.8) %>% 
+  select(enc) %>% unlist
+ggplot(res %>% filter(enc %in% above080), aes(y = enc, x = mAUC, colour = len, shape = n)) +
+  geom_point(size = 3) + cool_theme +
+  scale_y_discrete("Encoding id") +
+  scale_x_continuous("Mean AUC") + scale_colour_discrete("Training length")
+
+```
+
+Wpływ kodowania na AUC. Kolorami zaznaczono rodzaje grup treningowych, a kształtem punktu liczbę klastrów w kodowaniu. Na rysunku przedstawiono wyłącznie kodowania, gdzie dla wszystkich grup treningowych wartość AUC przekraczała 0.8.
+
+Interesujące kodowania:  
+* 3 i 37: kodowania dla których heksagramy były najlepszym zbiorem uczącym,  
+* 91: najlepsze kodowanie, ale z dużą różnicą dla zbioru uczącego. 
+
+# Najlepsze kodowanie dla danej kombinacji zbioru uczącego i liczby grup
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+tmp <- res %>% group_by(len, n) %>% arrange(desc(mAUC)) %>% slice(1L)
+colnames(tmp) <- c("Length of sequences in training set", "Number of clusters", "Encoding", "Mean AUC")
+
+print(xtable(tmp, caption = "Najlepsze kodowania dla danej kombinacji zbioru ucącego i liczby grup.", digits = 4), type = "html")
+
+```
+
+Żadne kodowanie się nie powtarza.
+
+```{r, echo = FALSE, message = FALSE, results='asis',fig.width=10}
+tmp <- res %>% group_by(len, n) %>% arrange(desc(mAUC)) %>% slice(1L:10) %>% ungroup %>% select(enc) %>% 
+  unlist %>% table %>% data.frame %>% filter(Freq > 0)
+tmp <- droplevels(tmp)
+#levels(tmp[["."]]) <- levels(tmp[["."]])[order(tmp[["Freq"]], decreasing = TRUE)]
+
+ggplot(tmp, aes(x = ., y = Freq)) +
+  geom_bar(stat = "identity", position = "dodge") + cool_theme
+```
+
+Na rysunku przedstawiono 10 najlepszych kodowań dla wszystkich kombinacji liczby grup i długości zbioru uczącego.
+
+# Problemy porównywanie kodowań
+
+Kodowania mogą różnić się rozłożeniem między grupami tylko jednego aminokwasu lub wszystkich aminokwasów. Należy wprowadzić miarę, która pozwoli na określenie odległości między kodowaniami o różnej liczbie grup.  
+
+Propozycja: liczba przesunięć aminokwasów między grupami w kodowaniu B, aby kodowanie B było identyczne z kodowaniem A.  
+
+Miara jest potrzebna, aby określić cechy łączące najlepsze kodowania.
