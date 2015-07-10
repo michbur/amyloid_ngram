@@ -1,6 +1,5 @@
 library(shiny)
 library(ggplot2)
-library(Cairo)
 load("properties.RData")
 
 shinyServer(function(input, output) {
