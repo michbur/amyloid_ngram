@@ -1,5 +1,5 @@
 library(shiny)
-
+library(reshape2)
 load("properties.RData")
 
 props_order <- c(1, 6, 10, 13, 16, 17, 18, 19, 20, #hydroph
@@ -21,7 +21,10 @@ shinyUI(fluidPage(
     ),
     
     mainPanel(
-      plotOutput("plot", height = 800),
-      tableOutput("value")
+      tabsetPanel(
+        tabPanel("Input table", tableOutput("value")),
+        tabPanel("Barplot", plotOutput("plot", height = 800)),
+        tabPanel("Corplot", plotOutput("corplot", height = 800))
+      )
     )
   )))

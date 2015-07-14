@@ -3,6 +3,7 @@ source("read_data.R")
 source("aa_encodings2.R")
 
 library(dplyr)
+library(reshape2)
 
 plot_values <- prop_MK %>% select(X) %>% unlist %>% c(., 545L:550) %>% slice(data.frame(aa_nprop), .) %>%
   t 
@@ -38,4 +39,30 @@ save(plot_values, mplot_values, plot_id, file = "./property_app/properties.RData
 #   geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) + 
 #   coord_flip() + 
 #   scale_y_reverse(expand = c(0.2, 0))
-p
+
+#PCA
+tmp <- c(17, 18, 19, 20)
+plot_values[, as.numeric(tmp)]
+pca_res <- princomp(plot_values[, as.numeric(tmp)])
+pca_res[{"loadings"}]
+
+
+
+#correlation plot
+
+nms <- names(plot_id)[as.numeric(tmp)]
+br_nms <- sapply(nms, function(single_nm) {
+  len <- nchar(single_nm)
+  space_pos <-  which(strsplit(single_nm, "")[[1]] == " ")
+  break_pos <- space_pos[which.min(abs(len/2 - space_pos))]
+  paste0(substr(single_nm, 1, break_pos - 1), "\n", substr(single_nm, break_pos + 1, len))
+})
+
+corm <- melt(cor(plot_values[, as.numeric(tmp)]))
+corm[["Var1"]] <- factor(corm[["Var1"]], labels = br_nms)
+corm[["Var2"]] <- factor(corm[["Var2"]], labels = br_nms)
+
+ggplot(data = corm, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1,1), name="Correlation\ncoefficient")

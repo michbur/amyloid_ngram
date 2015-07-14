@@ -14,6 +14,9 @@ aa_nprop <- t(apply(cbind(aa_props, tableA[tableA[["X"]] %>% as.character %>% aa
 
 colnames(aa_nprop) <- seqinr::a(colnames(aa_nprop))
 
+#properties below are hydrophobicity scale that should be reversed
+aa_nprop[c(252, 519, 543, 544), ] <- 1 - aa_nprop[c(252, 519, 543, 544), ]
+
 prop_MK <- read.csv2("AA_index_mk2.csv") %>% filter(!is.na(chosen))
 
 years <- prop_MK %>% select(name) %>% unlist %>% as.character %>% sapply(function(i) 
