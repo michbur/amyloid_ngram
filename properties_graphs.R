@@ -46,9 +46,10 @@ plot_values[, as.numeric(tmp)]
 pca_res <- princomp(plot_values[, as.numeric(tmp)])
 pca_res[["loadings"]]
 
-ggplot(data.frame(pca_res[["scores"]]), aes(x = Comp.1, y = Comp.2, colour = Comp.3)) +
-  geom_point(size = 3) +
-  scale_colour_gradient2(low = "red", high = "yellow", mid = "orange")
+ggplot(data.frame(pca_res[["scores"]]), aes(x = Comp.1, y = Comp.2, colour = Comp.3, label = rownames(pca_res[["scores"]]))) +
+  geom_point(size = 5) +
+  scale_colour_gradient2(low = "red", high = "yellow", mid = "orange") +
+  geom_text(size = 5)
 
 #correlation plot
 
