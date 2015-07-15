@@ -24,7 +24,8 @@ shinyUI(fluidPage(
       tabsetPanel(
         tabPanel("Input table", tableOutput("value")),
         tabPanel("Barplot", plotOutput("plot", height = 800)),
-        tabPanel("Corplot", plotOutput("corplot", height = 800))
+        tabPanel("Corplot", plotOutput("corplot", height = 800)),
+        tabPanel("PCAplot", plotOutput("pcaplot", height = 800))
       )
     )
   )))

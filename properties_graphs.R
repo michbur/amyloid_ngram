@@ -44,9 +44,11 @@ save(plot_values, mplot_values, plot_id, file = "./property_app/properties.RData
 tmp <- c(17, 18, 19, 20)
 plot_values[, as.numeric(tmp)]
 pca_res <- princomp(plot_values[, as.numeric(tmp)])
-pca_res[{"loadings"}]
+pca_res[["loadings"]]
 
-
+ggplot(data.frame(pca_res[["scores"]]), aes(x = Comp.1, y = Comp.2, colour = Comp.3)) +
+  geom_point(size = 3) +
+  scale_colour_gradient2(low = "red", high = "yellow", mid = "orange")
 
 #correlation plot
 
@@ -63,6 +65,4 @@ corm[["Var1"]] <- factor(corm[["Var1"]], labels = br_nms)
 corm[["Var2"]] <- factor(corm[["Var2"]], labels = br_nms)
 
 ggplot(data = corm, aes(x=Var1, y=Var2, fill=value)) + 
-  geom_tile() +
-  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
-                       midpoint = 0, limit = c(-1,1), name="Correlation\ncoefficient")
+  geom_tile() 
