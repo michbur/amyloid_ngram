@@ -11,9 +11,6 @@ library(dplyr)
 source("aa_encodings2.R")
 load("amyloid_fold_res2.RData")
 
-
-head(fold_res[[1]][[1]][[1]][[1]][[1]])
-
 len_cv <- lapply(fold_res, function(single_length) {
   rep_cv <- lapply(single_length, function(single_rep) {
     fold_cv <- lapply(single_rep, function(single_fold) {

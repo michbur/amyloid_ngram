@@ -1,0 +1,91 @@
+---
+title: "Raport 4"
+author: "Michal Burdukiewicz, Piotr Sobczyk"
+date: "20 lipca 2015"
+output: 
+  html_document:
+    toc: true
+    theme: united
+---
+
+# Encoding distance
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(xtable)
+
+size_mod <- -5
+cool_theme <- theme(plot.background=element_rect(fill = "transparent",
+                                                 colour = "transparent"),
+                    panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
+                    panel.background = element_rect(fill = "transparent",colour = "black"),
+                    legend.background = element_rect(fill="NA"),
+                    legend.position = "bottom",
+                    axis.text = element_text(size=12 + size_mod),
+                    axis.title.x = element_text(size=16 + size_mod, vjust = -1), 
+                    axis.title.y = element_text(size=16 + size_mod, vjust = 1),
+                    strip.text = element_text(size=17 + size_mod, face = "bold"),
+                    legend.text = element_text(size=13 + size_mod), 
+                    legend.title = element_text(size=17 + size_mod),
+                    plot.title = element_text(size=20 + size_mod))
+source("aa_encodings2.R")
+load("report4.RData")
+
+enc2df <- function(x)
+  data.frame(Names = names(x), Elements = sapply(x, paste0, collapse = ", "))
+
+
+```
+
+
+Encoding distance między kodowaniami A i B to liczba aminokwasów jakie trzeba przenieść w obrębie kodowania A, aby uzyskać kodowanie B.
+
+Na przykład:
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+l1 <- list('1' = c("a", "b", "c"),
+             '2' = c("d", "e"))
+print(xtable(enc2df(l1), "Kodowanie A."), type = "html", include.rownames = FALSE)
+
+l2 <- list('1' = c("a", "b"),
+             '2' = c("d", "e", "c"))
+
+print(xtable(enc2df(l2), "Kodowanie B."), type = "html", include.rownames = FALSE)
+```
+
+Encoding distance między A i B wynosi 1, ponieważ wymaga przeniesienia między grupami tylko jednego elementu (c).
+
+
+```{r, echo = FALSE, message = FALSE, results='asis',fig.height=12,fig.width=12}
+ggplot(meds, aes(x = enc1, y = enc2, fill = ed)) +
+  geom_tile() +
+  scale_fill_gradient2("Encoding distance", mid = "yellow", high = "red") +
+  scale_x_discrete("Encoding 1") +
+  scale_y_discrete("Encoding 2") +
+  cool_theme
+
+```
+
+
+Na powyższej figurze przedstawiono dystance między użytymi kodowaniami. Kodowania 1 i 2, oparte na literaturze, najbardziej odróżniają się od kodowań wykorzystanych w badaniach.
+
+# Encoding distance a AUC
+
+```{r, echo = FALSE, message = FALSE, results='asis',fig.height=15,fig.width=12}
+ggplot(agds, aes(x = enc, y = ed, fill = moAUC, shape = count)) +
+  geom_tile() +
+  geom_point() +
+  scale_shape_manual("Count", values = c(3, 4, 8, 15)) +
+  facet_wrap(~len, ncol = 1) +
+  cool_theme +
+  scale_y_discrete("Encoding distance") + 
+  scale_x_discrete("Encoding") +
+  scale_fill_discrete("AUC of encodings in a given distance")
+
+```
+
+Dla każdego kodowania X inne kodowania podzielono według ich encoding distance w stosunku do kodowania X. Symbolem oznaczono liczbę kodowań o danym encoding distance, a kolorem średnie AUC opartych na nich predykcji.
+
+Warto zauważyć, że dla zbioru treningowego zawierającego peptydy krótsze niż 16 aminokwasów pojawia się dużo więcej "średnich" kodowań (z przedziału (0.7 do 0.8)
