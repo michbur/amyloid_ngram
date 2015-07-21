@@ -44,9 +44,9 @@ enc2df <- function(x)
 ```
 
 
-Encoding distance miêdzy kodowaniami A i B to liczba aminokwasów jakie trzeba przeniœæ w obrêbie kodowania A, aby uzyskaæ kodowanie B.
+Encoding distance miÄ™dzy kodowaniami A i B to liczba aminokwasÃ³w jakie trzeba przeniÅ›Ä‡ w obrÄ™bie kodowania A, aby uzyskaÄ‡ kodowanie B.
 
-Na przyk³ad:
+Na przykÅ‚ad:
 
 ```{r, echo = FALSE, message = FALSE, results='asis'}
 l1 <- list('1' = c("a", "b", "c"),
@@ -59,7 +59,7 @@ l2 <- list('1' = c("a", "b"),
 print(xtable(enc2df(l2), "Kodowanie B."), type = "html", include.rownames = FALSE)
 ```
 
-Encoding distance miêdzy A i B wynosi 1, poniewa¿ wymaga przeniesienia miêdzy grupami tylko jednego elementu (c).
+Encoding distance miÄ™dzy A i B wynosi 1, poniewaÅ¼ wymaga przeniesienia miÄ™dzy grupami tylko jednego elementu (c).
 
 
 ```{r, echo = FALSE, message = FALSE, results='asis',fig.height=12,fig.width=12}
@@ -73,7 +73,7 @@ ggplot(meds, aes(x = enc1, y = enc2, fill = ed)) +
 ```
 
 
-Na powy¿szej figurze przedstawiono dystance miêdzy u¿ytymi kodowaniami. Kodowania 1 i 2, oparte na literaturze, najbardziej odró¿niaj¹ siê od kodowañ wygenerowanych na podstawie cech z bazy AAIndex.
+Na powyÅ¼szej figurze przedstawiono dystance miÄ™dzy uÅ¼ytymi kodowaniami. Kodowania 1 i 2, oparte na literaturze, najbardziej odrÃ³Å¼niajÄ… siÄ™ od kodowaÅ„ wygenerowanych na podstawie cech z bazy AAIndex.
 
 # Encoding distance a AUC
 
@@ -90,14 +90,14 @@ ggplot(agds, aes(x = enc, y = ed, fill = moAUC, shape = count)) +
 
 ```
 
-Dla ka¿dego kodowania X inne kodowania podzielono wed³ug ich encoding distance w stosunku do kodowania X. Symbolem oznaczono liczbê kodowañ o danym encoding distance, a kolorem œrednie AUC opartych na nich predykcji.
+Dla kaÅ¼dego kodowania X inne kodowania podzielono wedÅ‚ug ich encoding distance w stosunku do kodowania X. Symbolem oznaczono liczbÄ™ kodowaÅ„ o danym encoding distance, a kolorem Å›rednie AUC opartych na nich predykcji.
 
-Dla zbioru treningowego zawieraj¹cego peptydy krótsze ni¿ 16 aminokwasów pojawia siê du¿o wiêcej "przeciêtnych" kodowañ (z przedzia³u (0.7 do 0.8)
+Dla zbioru treningowego zawierajÄ…cego peptydy krÃ³tsze niÅ¼ 16 aminokwasÃ³w pojawia siÄ™ duÅ¼o wiÄ™cej "przeciÄ™tnych" kodowaÅ„ (z przedziaÅ‚u (0.7 do 0.8)
 
 ```{r, echo = FALSE, message = FALSE, results='asis'}
 tmp <- res %>% group_by(len) %>% filter(mAUC == max(mAUC)) %>% ungroup
 colnames(tmp) <- c("Training length", "Encoding ID", "Mean AUC", "Mean Specificity", "Mean Sensitivity", "Number of groups")
-print(xtable(tmp, "Kodowania z najwy¿sz¹ œredni¹ wartoœci¹ AUC.", digits = 4), type = "html", include.rownames = FALSE)
+print(xtable(tmp, "Kodowania z najwyÅ¼szÄ… Å›redniÄ… wartoÅ›ciÄ… AUC.", digits = 4), type = "html", include.rownames = FALSE)
 ```
 
 
@@ -116,10 +116,10 @@ ggplot(AUC_dat[AUC_dat[["AUCed"]] != 0, ], aes(x = AUCed, y = mAUC)) +
 
 ```
 
-Oœ X - encoding distance od kodowania z najlepszym AUC.  
-Oœ Y - œrednia wartoœæ AUC dla kodowania.
+OÅ› X - encoding distance od kodowania z najlepszym AUC.  
+OÅ› Y - Å›rednia wartoÅ›Ä‡ AUC dla kodowania.
 
-Œrednia wartoœæ AUC zale¿y od odleg³oœci od kodowania z najlepszym AUC tylko w przypadku d³ugich peptydów w zbiorze ucz¹cym.
+Åšrednia wartoÅ›Ä‡ AUC zaleÅ¼y od odlegÅ‚oÅ›ci od kodowania z najlepszym AUC tylko w przypadku dÅ‚ugich peptydÃ³w w zbiorze uczÄ…cym.
 
 ```{r, echo = FALSE, message = FALSE, results='asis'}
 tmp <- AUC_dat %>% group_by(len) %>% 
@@ -152,13 +152,13 @@ ggplot(ss_dat, aes(x = speced, y = sensed, size = mSpec, colour = mSens, shape =
   scale_shape_manual("AUC", values = c(16, 1))
 ```
 
-Oœ X przedstawia encoding distance od kodowania z najlepsz¹ specificity dla danej d³ugoœci peptydów w zbiorze ucz¹cym, a oœ Y encoding distance od kodowania z najlepsz¹ sensitivity. Kolor i wielkoœæ punktu oznaczaj¹ odpowiednio sensitivity i specificity danego kodowania. Poniewa¿ wiele punktów mo¿e mieæ takie same wspó³rzêdne X i Y, ich po³o¿enie jest losowo roz³o¿one w obrêbie danej lokalizacji oznaczonej czarn¹ lini¹.
+OÅ› X przedstawia encoding distance od kodowania z najlepszÄ… specificity dla danej dÅ‚ugoÅ›ci peptydÃ³w w zbiorze uczÄ…cym, a oÅ› Y encoding distance od kodowania z najlepszÄ… sensitivity. Kolor i wielkoÅ›Ä‡ punktu oznaczajÄ… odpowiednio sensitivity i specificity danego kodowania. PoniewaÅ¼ wiele punktÃ³w moÅ¼e mieÄ‡ takie same wspÃ³Å‚rzÄ™dne X i Y, ich poÅ‚oÅ¼enie jest losowo rozÅ‚oÅ¼one w obrÄ™bie danej lokalizacji oznaczonej czarnÄ… liniÄ….
 
-Klasyfikatory uczone na heksapeptydach charakteryzuj¹ siê najlepsz¹ specificity, a na d³ugich peptydach najlepsz¹ sensitivity.
+Klasyfikatory uczone na heksapeptydach charakteryzujÄ… siÄ™ najlepszÄ… specificity, a na dÅ‚ugich peptydach najlepszÄ… sensitivity.
 
-W przypadku klasyfikatorów uczonych na dekapeptydach, wyró¿nia siê frakcja klasyfikatorów z dobr¹ specificity i sensitivity mimo ich du¿ej odleg³oœci od pocz¹tku uk³adu wspó³rzêdnych. Dodatkowo, grupy klasyfikatorów o identycznym po³o¿eniu dla dekaptydów s¹ niejednorodne.
+W przypadku klasyfikatorÃ³w uczonych na dekapeptydach, wyrÃ³Å¼nia siÄ™ frakcja klasyfikatorÃ³w z dobrÄ… specificity i sensitivity mimo ich duÅ¼ej odlegÅ‚oÅ›ci od poczÄ…tku ukÅ‚adu wspÃ³Å‚rzÄ™dnych. Dodatkowo, grupy klasyfikatorÃ³w o identycznym poÅ‚oÅ¼eniu dla dekaptydÃ³w sÄ… niejednorodne.
 
-Kodowanie z najlepszym AUC zawsze jest blisko pocz¹tku uk³adu wspó³rzêdnych.
+Kodowanie z najlepszym AUC zawsze jest blisko poczÄ…tku ukÅ‚adu wspÃ³Å‚rzÄ™dnych.
 
 ```{r, echo = FALSE, message = FALSE, results='asis',fig.height=15,fig.width=12}
 set.seed(2)
@@ -175,9 +175,9 @@ ggplot(ss_dat, aes(x = speced, y = sensed, colour = bestAUCs, label = enc)) +
 
 ```
 
-Na powy¿szym wykresie kolor nazwy kodowania oznacza jego AUC. >0.9 AUC oznacza, ¿e wartoœæ AUC danego kodowania znajduje siê w kwantylu rzêdu 0.9.
+Na powyÅ¼szym wykresie kolor nazwy kodowania oznacza jego AUC. >0.9 AUC oznacza, Å¼e wartoÅ›Ä‡ AUC danego kodowania znajduje siÄ™ w kwantylu rzÄ™du 0.9.
 
-Dla heksamerów jedne z najlepszych AUC maj¹ równie¿ kodowanie odleg³e od kodowania o najlepszym sensitivity.
+Dla heksamerÃ³w jedne z najlepszych AUC majÄ… rÃ³wnieÅ¼ kodowanie odlegÅ‚e od kodowania o najlepszym sensitivity.
 
 
 
