@@ -52,12 +52,12 @@ shinyServer(function(input, output) {
   
   output$pcaplot <- renderPlot({
     pca_res <- princomp(plot_values[, as.numeric(input$checkProp)])
-    print(data.frame(pca_res[["scores"]]))
-    ggplot(data.frame(pca_res[["scores"]]), aes(x = Comp.1, y = Comp.2, colour = Comp.3, label = rownames(pca_res[["scores"]]))) +
+    ggdat <- cbind(data.frame(pca_res[["scores"]]), aa = rownames(pca_res[["scores"]]))
+    ggplot(ggdat, aes(x = Comp.1, y = Comp.2, colour = Comp.3, label = aa)) +
       geom_point(size = 5) +
       scale_colour_gradient2(low = "red", high = "yellow", mid = "orange") +
       my_theme +
-      geom_text()
+      geom_text(hjust=1.8, vjust=1.8)
   })
   
 })

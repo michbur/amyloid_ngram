@@ -8,6 +8,10 @@ output:
     theme: united
 ---
 
+# Aplikacja
+
+https://michbur.shinyapps.io/propertyapp
+
 # Encoding distance
 
 ```{r, echo = FALSE, message = FALSE, results='asis'}
@@ -40,9 +44,9 @@ enc2df <- function(x)
 ```
 
 
-Encoding distance miÄ™dzy kodowaniami A i B to liczba aminokwasÃ³w jakie trzeba przenieÅ›Ä‡ w obrÄ™bie kodowania A, aby uzyskaÄ‡ kodowanie B.
+Encoding distance miêdzy kodowaniami A i B to liczba aminokwasów jakie trzeba przeniœæ w obrêbie kodowania A, aby uzyskaæ kodowanie B.
 
-Na przykÅ‚ad:
+Na przyk³ad:
 
 ```{r, echo = FALSE, message = FALSE, results='asis'}
 l1 <- list('1' = c("a", "b", "c"),
@@ -55,7 +59,7 @@ l2 <- list('1' = c("a", "b"),
 print(xtable(enc2df(l2), "Kodowanie B."), type = "html", include.rownames = FALSE)
 ```
 
-Encoding distance miÄ™dzy A i B wynosi 1, poniewaÅ¼ wymaga przeniesienia miÄ™dzy grupami tylko jednego elementu (c).
+Encoding distance miêdzy A i B wynosi 1, poniewa¿ wymaga przeniesienia miêdzy grupami tylko jednego elementu (c).
 
 
 ```{r, echo = FALSE, message = FALSE, results='asis',fig.height=12,fig.width=12}
@@ -69,7 +73,7 @@ ggplot(meds, aes(x = enc1, y = enc2, fill = ed)) +
 ```
 
 
-Na powyÅ¼szej figurze przedstawiono dystance miÄ™dzy uÅ¼ytymi kodowaniami. Kodowania 1 i 2, oparte na literaturze, najbardziej odrÃ³Å¼niajÄ… siÄ™ od kodowaÅ„ wykorzystanych w badaniach.
+Na powy¿szej figurze przedstawiono dystance miêdzy u¿ytymi kodowaniami. Kodowania 1 i 2, oparte na literaturze, najbardziej odró¿niaj¹ siê od kodowañ wygenerowanych na podstawie cech z bazy AAIndex.
 
 # Encoding distance a AUC
 
@@ -86,6 +90,94 @@ ggplot(agds, aes(x = enc, y = ed, fill = moAUC, shape = count)) +
 
 ```
 
-Dla kaÅ¼dego kodowania X inne kodowania podzielono wedÅ‚ug ich encoding distance w stosunku do kodowania X. Symbolem oznaczono liczbÄ™ kodowaÅ„ o danym encoding distance, a kolorem Å›rednie AUC opartych na nich predykcji.
+Dla ka¿dego kodowania X inne kodowania podzielono wed³ug ich encoding distance w stosunku do kodowania X. Symbolem oznaczono liczbê kodowañ o danym encoding distance, a kolorem œrednie AUC opartych na nich predykcji.
 
-Warto zauwaÅ¼yÄ‡, Å¼e dla zbioru treningowego zawierajÄ…cego peptydy krÃ³tsze niÅ¼ 16 aminokwasÃ³w pojawia siÄ™ duÅ¼o wiÄ™cej "Å›rednich" kodowaÅ„ (z przedziaÅ‚u (0.7 do 0.8)
+Dla zbioru treningowego zawieraj¹cego peptydy krótsze ni¿ 16 aminokwasów pojawia siê du¿o wiêcej "przeciêtnych" kodowañ (z przedzia³u (0.7 do 0.8)
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+tmp <- res %>% group_by(len) %>% filter(mAUC == max(mAUC)) %>% ungroup
+colnames(tmp) <- c("Training length", "Encoding ID", "Mean AUC", "Mean Specificity", "Mean Sensitivity", "Number of groups")
+print(xtable(tmp, "Kodowania z najwy¿sz¹ œredni¹ wartoœci¹ AUC.", digits = 4), type = "html", include.rownames = FALSE)
+```
+
+
+```{r, echo = FALSE, message = FALSE, results='asis',fig.height=15,fig.width=12, warning=FALSE}
+set.seed(2)
+ggplot(AUC_dat[AUC_dat[["AUCed"]] != 0, ], aes(x = AUCed, y = mAUC)) +
+  geom_boxplot(fill = NA, outlier.size = NA) + 
+  geom_point(aes(x = AUCed, y = mAUC, shape = n, colour = len), 
+             position = position_jitter(0.3, 0), size = 3) +
+  scale_shape_manual("Number of groups", values = c(1, 3, 4, 6)) +
+  facet_wrap(~len, ncol = 1) +
+  cool_theme +
+  scale_x_discrete("Encoding distance (best AUC)") + 
+  scale_y_continuous("Mean AUC") + 
+  scale_colour_discrete("Training length")
+
+```
+
+Oœ X - encoding distance od kodowania z najlepszym AUC.  
+Oœ Y - œrednia wartoœæ AUC dla kodowania.
+
+Œrednia wartoœæ AUC zale¿y od odleg³oœci od kodowania z najlepszym AUC tylko w przypadku d³ugich peptydów w zbiorze ucz¹cym.
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+tmp <- AUC_dat %>% group_by(len) %>% 
+  summarise(cor = cor(as.numeric(as.character(AUCed)), mAUC),
+            p = cor.test(as.numeric(as.character(AUCed)), mAUC)[["p.value"]])
+colnames(tmp) <- c("Training length", "Correlation coefficient", "p-value")
+print(xtable(tmp, "Wyniki testu korelacji Pearsona.", digits = 4), type = "html", include.rownames = FALSE)
+```
+
+# Encoding distance a Sensitivity/Specificity
+
+```{r, echo = FALSE, message = FALSE, results='asis'}
+tmp <- res %>% group_by(len) %>% filter(mSpec == max(mSpec) | mSens == max(mSens))
+colnames(tmp) <- c("Training length", "Encoding ID", "Mean AUC", "Mean Specificity", "Mean Sensitivity", "Number of groups")
+
+print(xtable(tmp, "Kodowania wybrane jako punkty odniesienia.", digits = 4), type = "html", include.rownames = FALSE)
+```
+
+```{r, echo = FALSE, message = FALSE, results='asis',fig.height=15,fig.width=12}
+set.seed(2)
+ggplot(ss_dat, aes(x = speced, y = sensed, size = mSpec, colour = mSens, shape = bestAUC)) +
+  geom_tile(colour = "black", fill = "lightgrey", size = 1) +
+  geom_point(position = position_jitter(0.27, 0.27)) +
+  facet_wrap(~ len, ncol = 1) +
+  scale_colour_gradientn("Mean sensitivity", colours = c("blue", "yellow", "red")) +
+  cool_theme +
+  scale_size_continuous("Mean specificity", range = c(1, 5)) +
+  scale_x_continuous("Encoding distance (best specificity)") + 
+  scale_y_continuous("Encoding distance (best sensitivity)") +
+  scale_shape_manual("AUC", values = c(16, 1))
+```
+
+Oœ X przedstawia encoding distance od kodowania z najlepsz¹ specificity dla danej d³ugoœci peptydów w zbiorze ucz¹cym, a oœ Y encoding distance od kodowania z najlepsz¹ sensitivity. Kolor i wielkoœæ punktu oznaczaj¹ odpowiednio sensitivity i specificity danego kodowania. Poniewa¿ wiele punktów mo¿e mieæ takie same wspó³rzêdne X i Y, ich po³o¿enie jest losowo roz³o¿one w obrêbie danej lokalizacji oznaczonej czarn¹ lini¹.
+
+Klasyfikatory uczone na heksapeptydach charakteryzuj¹ siê najlepsz¹ specificity, a na d³ugich peptydach najlepsz¹ sensitivity.
+
+W przypadku klasyfikatorów uczonych na dekapeptydach, wyró¿nia siê frakcja klasyfikatorów z dobr¹ specificity i sensitivity mimo ich du¿ej odleg³oœci od pocz¹tku uk³adu wspó³rzêdnych. Dodatkowo, grupy klasyfikatorów o identycznym po³o¿eniu dla dekaptydów s¹ niejednorodne.
+
+Kodowanie z najlepszym AUC zawsze jest blisko pocz¹tku uk³adu wspó³rzêdnych.
+
+```{r, echo = FALSE, message = FALSE, results='asis',fig.height=15,fig.width=12}
+set.seed(2)
+ggplot(ss_dat, aes(x = speced, y = sensed, colour = bestAUCs, label = enc)) +
+  geom_tile(colour = "black", fill = "lightgrey", size = 1) +
+  #geom_point(size = 2.5, position = position_jitter(0.27, 0.27)) +
+  geom_text(size = 4, position = position_jitter(0.27, 0.27)) +
+  facet_wrap(~ len, ncol = 1) +
+  #scale_colour_gradientn("Mean AUC", colours = c("blue", "yellow", "red")) +
+  scale_color_manual("Mean AUC", values = c("dodgerblue3", "red")) +
+  cool_theme +
+  scale_x_continuous("Encoding distance (best specificity)") + 
+  scale_y_continuous("Encoding distance (best sensitivity)")
+
+```
+
+Na powy¿szym wykresie kolor nazwy kodowania oznacza jego AUC. >0.9 AUC oznacza, ¿e wartoœæ AUC danego kodowania znajduje siê w kwantylu rzêdu 0.9.
+
+Dla heksamerów jedne z najlepszych AUC maj¹ równie¿ kodowanie odleg³e od kodowania o najlepszym sensitivity.
+
+
+

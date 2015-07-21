@@ -78,9 +78,9 @@ generate_agd <- function(which_len) {
       cbind(enc = rep(i, nrow(.)), .)))
   agd[["ed"]] <- as.factor(agd[["ed"]])
   agd[["count"]] <- cut(agd[["count"]], breaks = c(0, 1, 10, 20, 34))
-#   agd[["moAUC"]] <- cut(agd[["moAUC"]], breaks = c(floor(min(agd[["moAUC"]]) * 100)/100, 
-#                                                    0.7, 0.8, 
-#                                                    ceiling(max(agd[["moAUC"]]) * 100)/100))
+  #   agd[["moAUC"]] <- cut(agd[["moAUC"]], breaks = c(floor(min(agd[["moAUC"]]) * 100)/100, 
+  #                                                    0.7, 0.8, 
+  #                                                    ceiling(max(agd[["moAUC"]]) * 100)/100))
   agd[["moAUC"]] <- cut(agd[["moAUC"]], breaks = c(0.6, 
                                                    0.7, 0.8, 
                                                    0.85))
@@ -96,7 +96,7 @@ meds[["enc1"]] <- as.factor(meds[["enc1"]])
 meds[["enc2"]] <- as.factor(meds[["enc2"]])
 
 
-save(meds, agds, file = "report4.RData")
+
 
 ggplot(agds, aes(x = enc, y = ed, fill = moAUC, shape = count)) +
   geom_tile() +
@@ -108,5 +108,33 @@ ggplot(meds, aes(x = enc1, y = enc2, fill = ed)) +
   geom_tile() +
   scale_fill_gradient2(mid = "yellow", high = "red")
 
+#spec-sens plots
+specs <- res %>% group_by(len) %>% filter(mSpec == max(mSpec)) %>% ungroup %>% select(len, enc)
+senss <- res %>% group_by(len) %>% filter(mSens == max(mSens)) %>% ungroup %>% select(len, enc)
+
+ss_dat <- cbind(do.call(rbind, lapply(specs[["enc"]], function(i)
+  filter(meds, enc1 == i) %>% mutate(enc = enc2, speced = ed) %>% select(enc, speced))),
+  do.call(rbind, lapply(senss[["enc"]], function(i)
+    filter(meds, enc1 == i) %>% mutate(enc = enc2, sensed = ed) %>% select(sensed))),
+  len = unlist(lapply(specs[["len"]], rep, 95)), mAUC = res[, "mAUC"],
+  mSpec = res[, "mSpec"], mSens = res[, "mSens"])
+
+ss_dat <- ss_dat %>% group_by(len) %>% 
+  mutate(bestAUC = ifelse(mAUC == max(mAUC), "Best AUC", ""),
+         bestAUCs = ifelse(mAUC > quantile(mAUC, 0.9), ">0.9 AUC", "<=0.9 AUC")) %>% ungroup
+
+#auc plots
+AUCs <- res %>% group_by(len) %>% filter(mAUC == max(mAUC)) %>% ungroup %>% select(len, enc)
+
+AUC_dat <- cbind(do.call(rbind, lapply(AUCs[["enc"]], function(i)
+  filter(meds, enc1 == i) %>% mutate(enc = enc2, AUCed = ed) %>% select(enc, AUCed))),
+  mAUC = res[, "mAUC"],
+  n = as.factor(res[, "n"]), len = res[, "len"])
+AUC_dat[["AUCed"]] <- as.factor(AUC_dat[["AUCed"]])
+
+AUC_dat %>% group_by(len) %>% 
+  summarise(cor = cor(as.numeric(as.character(AUCed)), mAUC),
+            p = cor.test(as.numeric(as.character(AUCed)), mAUC)[["p.value"]])
 
 
+save(res, meds, agds, ss_dat, AUC_dat, file = "report4.RData")
