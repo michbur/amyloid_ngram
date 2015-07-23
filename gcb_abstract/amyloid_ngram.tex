@@ -1,0 +1,29 @@
+\documentclass[english]{gcb15abstract}
+
+\title{N-gram analysis of amyloid data}
+
+\author{
+Micha\l{} Burdukiewicz\textsuperscript{1}, Piotr Sobczyk\textsuperscript{2}, Pawe\l{} Mackiewicz\textsuperscript{1} and Ma\l{}gorzata Kotulska\textsuperscript{3} \\
+{\normalsize\normalfont\itshape \textsuperscript{1}University of Wroc\l{}aw, Department of Genomics, Poland}\\
+{\normalsize\normalfont\itshape \textsuperscript{2}Wroc\l{}aw University of Technology, Department of Mathematics, Poland}\\
+{\normalsize\normalfont\itshape \textsuperscript{3}Wroc\l{}aw University of Technology, Department of Biomedical Engineering, Poland}\\
+malgorzata.kotulska@pwr.edu.pl
+}
+
+
+
+\begin{document}
+\maketitle 
+
+Amyloids are short proteins associated with the number of clinical disorders, for example Alzheimer's or Creutzfeldt-Jakob’s diseases. Due to the presence of characteristic short sequences of amino acids, called hot-spots, amyloids can create harmful zipper-like β-structures~\cite{breydo_structural_2015}. Although studies investigating properties of amyloidogenic sequences were already conducted, the newly established AmyLoad data base facilities large-scale analysis of amyloids~\cite{wozniak_amyload:_2015}.
+
+To study the data, we use a set of n-gram based methods. N-grams (k-mers) are vectors of n characters derived from input sequences. Originally developed for natural language processing, they are also widely used in genomics, transcriptomics and proteomics. We expect that n-gram analysis, as an addition to commonly acclaimed methods as FISH Amyloid~\cite{gasior_fish_2014}, will shed more light on the putative motifs of hot spots. 
+
+Although n-grams constitute a powerful tool for biological sequence analysis, they suffer greatly from the dimensionality curse. To deal with the abovementioned problem, we we created biogram software~\cite{biogram2015}. Aside from essential  functionalities, like efficient data storage, we also implemented a feature selection method. QuiPT (Quick Permutation Test) uses several filtering criteria such as information gained to choose significant features. To speed up the computation and allow precise estimation of small p-values, QuiPT performs an exact test instead of a large number of permutations. 
+
+Moreover, we aggregate amino acids into bigger groups based on their physicochemical properties important in the aggregation of amyloids. It not only reduces dimensionality of the problem, but preserves relationships between residues. Since it is still unclear which properties are exactly the most important for amylogenicity, we compare classifiers trained on different amino acid aggregations.
+The n-gram model, trained on the data from AmyLoad database, is validated through simple yet accurate amyloid prediction framework using random forests. The preliminary analysis of the amyloidogenic sequences yield not only new insight on the structure of the hot spots, but facilitated prediction of amyloids. The mean AUC of the classifier committee in 5-fold cross‑validation was 0.89.
+
+
+\bibliography{amyloids}
+\end{document}
