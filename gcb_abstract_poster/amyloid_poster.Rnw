@@ -1,0 +1,277 @@
+\documentclass[final]{beamer}
+\usepackage{grffile}
+\mode<presentation>{\usetheme{CambridgeUSPOL}}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{array,booktabs,tabularx}
+\newcolumntype{Z}{>{\centering\arraybackslash}X}
+
+% rysunki
+\usepackage{tikz}
+\usepackage{ifthen}
+\usepackage{xxcolor}
+\usetikzlibrary{arrows}
+\usetikzlibrary[topaths]
+\usetikzlibrary{decorations.pathreplacing}
+%\usepackage{times}\usefonttheme{professionalfonts}  % times is obsolete
+\usefonttheme[onlymath]{serif}
+\boldmath
+\usepackage[orientation=portrait,size=a0,scale=1.4,debug]{beamerposter}                       % e.g. for DIN-A0 poster
+%\usepackage[orientation=portrait,size=a1,scale=1.4,grid,debug]{beamerposter}                  % e.g. for DIN-A1 poster, with optional grid and debug output
+%\usepackage[size=custom,width=200,height=120,scale=2,debug]{beamerposter}                     % e.g. for custom size poster
+%\usepackage[orientation=portrait,size=a0,scale=1.0,printer=rwth-glossy-uv.df]{beamerposter}   % e.g. for DIN-A0 poster with rwth-glossy-uv printer check
+% ...
+%
+
+\usecolortheme{seagull}
+\useinnertheme{rectangles}
+\setbeamercolor{item projected}{bg=darkred}
+% \setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{navigation symbols}{}
+\setbeamercovered{transparent}
+\setbeamercolor{block title}{fg=darkred}
+\setbeamercolor{local structure}{fg=darkred}
+
+\setbeamercolor*{enumerate item}{fg=darkred}
+\setbeamercolor*{enumerate subitem}{fg=darkred}
+\setbeamercolor*{enumerate subsubitem}{fg=darkred}
+
+\setbeamercolor*{itemize item}{fg=darkred}
+\setbeamercolor*{itemize subitem}{fg=darkred}
+\setbeamercolor*{itemize subsubitem}{fg=darkred}
+
+\newlength{\columnheight}
+\setlength{\columnheight}{92cm}
+\renewcommand{\thetable}{}
+\def\andname{,}
+\authornote{}
+
+\renewcommand{\APACrefatitle}[2]{}
+\renewcommand{\bibliographytypesize}{\footnotesize} 
+\renewcommand{\APACrefYearMonthDay}[3]{%
+{\BBOP}{#1}
+{\BBCP}
+}
+
+\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+
+\begin{document}
+
+
+
+<<knitrIntro, echo = FALSE, message=FALSE>>=
+library(xtable)
+library(ggplot2)
+library(reshape2)
+
+poster_theme <- theme(plot.background=element_rect(fill = "transparent",
+                                                   colour = "transparent"),
+                      axis.text.x = element_text(size=16), 
+                      axis.text.y = element_text(size=16),
+                      axis.title.x = element_text(size=19, vjust = -1), 
+                      axis.title.y = element_text(size=19, vjust = 1),
+                      strip.text = element_text(size=19),
+                      legend.text = element_text(size=16), 
+                      legend.title = element_text(size=19),
+                      plot.title = element_text(size=27),
+                      panel.background = element_rect(fill = "transparent",colour = "black"),
+                      legend.direction="horizontal", legend.position = "bottom",
+                      legend.background = element_rect(fill="NA"))
+@
+
+
+\date{}
+\author{Micha\l{}  Burdukiewicz\inst{1}, Piotr Sobczyk\inst{2}, Pawe\l{} Mackiewicz\inst{1}, Stefan R{\"o}diger\inst{3}}
+
+\institute{\textsuperscript{1}University of Wroc\l{}aw, Department of Genomics, Poland 
+
+\vspace{0.5cm}
+
+\textsuperscript{2}Wroc\l{}aw University of Technology, Department of Mathematics, Poland
+
+\vspace{0.5cm}
+
+\textsuperscript{3}Faculty of Natural Sciences, Brandenburg University of Technology 
+Cottbus--Senftenberg, Germany}
+}
+\title{\huge Methods of Comparing Digital PCR Experiments}
+
+\begin{frame}
+\begin{columns}
+\begin{column}{.49\textwidth}
+\begin{beamercolorbox}[center,wd=\textwidth]{postercolumn}
+\begin{minipage}[T]{.95\textwidth}
+\parbox[t][\columnheight]{\textwidth}
+{
+\begin{block}{Introduction}
+The outcome of digital PCR (dPCR) experiments are mean copies per partition ($\lambda$). Results are derived from the measured data, an ordered (in one or two dimensions) sequence of positive partitions. The usual analysis involves assumption the template molecules are Poisson distributed among partitions. On this premise, already proposed approaches, based on the confidence intervals~\citep{dube_mathematical_2008} or uncertainty quantification~\citep{bhat_single_2009}, allow a comparison of experiments. 
+\end{block}
+\vfill
+
+\begin{block}{GLM testing framework}
+Generalized Linear Models (GLM) are linear models for data, where the response variables may have non-normal distributions (as binomially distributed positive partitions in digital PCR experiments). We propose a model reflecting relationships in results of digital PCR as given by:
+\begin{equation}
+\log{Y} = \beta^T X
+\end{equation}
+where $Y$ are counts, $X$ are experiments names (categorical data) and $\beta$ are linear model coefficients for every experiment. Moreover, $\exp{\beta} = \lambda$.   
+Estimated means copies per partitions obtained from the model are compared each other using multiple t-test~\citep{bretz_2010}.
+
+\end{block}
+\vfill
+
+
+\begin{block}{Multiple testing (MT) framework}
+The dPCR experimentes are compared pairwise using the uniformly most powerful (UMP) ratio test~\citep{fay_2010}. Furthermore, computed p-values are adjusted using Benjamini & Hochberg correction~\citep{benjamini_1995} to control family-wise error rate.
+
+The UMP ratio test has following null-hypothesis:
+\begin{equation}
+H_0: \frac{\lambda_1}{\lambda_2} = 1
+\end{equation}
+
+
+The Wilson's confidence intervals~\citep{brown_2001} are calculated independently for every dPCR experiment and adjusted using Dunn~--~\v{S}id\'{a}k correction, where:
+
+\begin{equation}
+\alpha_{\text{adj}} = 1 - (1 - \alpha)^\frac{1}{T}
+\end{equation}
+
+ Such intervals are wider then usual, but ensure that confidence intervals simultaneously contain true value of lambda.
+
+\end{block}
+\vfill
+
+
+\begin{block}{Comparision of frameworks}
+Two approaches presented above were compared in a simulation approach over 150 000 simulated array dPCR experiments. Each simulation contained six reactions. Three of them had roughly the same amount of molecules per plate and other three had experiments with 10 to 50 molecules more.
+Experiments were compared using GLM and MT frameworks.
+
+<<dube_bat, echo = FALSE, message=FALSE,fig.width=14,fig.height=10.5>>=
+load("adpcr_comp.RData")
+
+ggplot(data=madpcr_comp,aes(x = value, fill = method)) +
+  geom_density(alpha = 0.3) + 
+  scale_fill_discrete("Confidence intervals:") + 
+  scale_y_continuous("Density") + 
+  scale_x_continuous("Fraction of wrongly assigned experiments") + 
+  poster_theme
+@
+
+On average, 2.03 and 1.98 reactions were assessed to a wrong group by respectively GLM and MT.
+
+A single GLM comparison took roughly 183 times longer than MT (on average 1.10 seconds versus 0.006 seconds on the Intel i7-2600 processor). The difference growths with the number of experiments and number of partitions (data not shown).
+\end{block}
+\vfill
+
+
+
+
+}
+\end{minipage}
+\end{beamercolorbox}
+\end{column}
+
+
+%new column ------------------------------------------------------    
+
+\begin{column}{.49\textwidth}
+\begin{beamercolorbox}[center,wd=\textwidth]{postercolumn}
+\begin{minipage}[T]{.95\textwidth}  
+\parbox[t][\columnheight]{\textwidth}
+{
+
+
+
+
+\begin{block}{Probability coverage of confidence intervals}
+
+  Average covarage probability is the proportion of the time that the interval contains the true value of $\lambda$.
+  
+  In the example below, we simulated 1\e{6} droplet dPCR experiments (2\e{4} droplets each) for each level of $\lambda$ (1.2\e{7} experiments total). We computed average probability coverage of CI obtained by three methods: Dube's~\citep{dube_mathematical_2008}, Bhat's~\citep{bhat_single_2009} and by MT ($\alpha = 0.95$).
+  
+  To assess simultaneous coverage probability, we randomly divided experiments into 2000 groups (500 experiments each) for each possible value of $\lambda$. We counted frequency of groups in which all confidence intervals contain the true value of $\lambda$.
+  
+  
+<<coverage, echo = FALSE, message=FALSE,fig.width=13,fig.height=10.8>>=
+load("coverage_poster.RData")
+
+
+
+ggplot(m_coverage2, aes(x = prop, y = value, fill = method)) +
+  geom_bar(stat="identity", position = "dodge") +
+  scale_y_continuous("Probability coverage") + 
+  scale_x_discrete(expression(lambda)) +
+  scale_fill_discrete("Confidence intervals:") + 
+  geom_hline(y = 0.95, colour = "black", size = 2, linetype = 5) +
+  facet_wrap(~ coverage, nrow = 2) + 
+  poster_theme
+  @
+
+The dashed black line marks 0.95 border.
+
+<<coverage_table, echo = FALSE, message=FALSE,results='asis'>>=
+dat <- as.data.frame(aggregate(value ~ method + coverage, m_coverage2, mean))
+
+colnames(dat) <- c("Method name", "Type of coverage", "Value")
+print(xtable(dat, align = c("c", "|", "c", "|", "c", "|", "c", "|")), 
+      include.rownames = FALSE)
+  @
+  \end{block}
+  \vfill
+  
+  
+  \begin{block}{Summary}
+  \begin{itemize}
+  \item Both GLM and MT frameworks are able to accurately assess $\lambda$ and on this ground assign dPCR experiments to different groups.
+  \item The MT approach is much faster than GLM and can be used in the analysis of huge droplet dPCR data sets.
+  \item The adjusted confidence intervals computed by MT guarantee stable 0.95 simultaneous coverage probability, which offers more reliable comparision of technical repeats.
+  \end{itemize}
+  \end{block}
+  \vfill 
+  
+  
+  \begin{block}{Avaibility and funding}
+  \footnotesize{
+  pcRuniveRsum: 
+  
+        \url{http://michbur.github.io/pcRuniveRsum/}$\begin{array}{l}
+          \begin{figure}[ht]
+          \centering
+          \scalebox{0.3}{
+            \includegraphics{qr.png}
+          }
+          \end{figure}
+        \end{array}
+        $
+  
+  dpcR R package: 
+  
+  \url{http://cran.r-project.org/web/packages/dpcR/}
+  }
+  
+  This research was partially funded by KNOW Consortium.
+  \end{block}
+  \vfill 
+  
+    \begin{block}{Simulations}
+We performed all in-silico experiments using the novel digital PCR data simulation~\citep{jacobs_2014}.
+\end{block}
+\vfill
+  
+  \begin{block}{Bibliography}
+  \tiny{
+  \bibliographystyle{apalike}
+  \bibliography{dpcrcits}
+  }
+  \end{block}
+  \vfill
+}
+\end{minipage}
+\end{beamercolorbox}
+\end{column}
+\end{columns}  
+\end{frame}
+\end{document}
