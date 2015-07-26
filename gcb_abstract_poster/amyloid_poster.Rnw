@@ -69,7 +69,7 @@ library(ggplot2)
 library(gridExtra)
 library(xtable)
 
-size_mod <- -5
+size_mod <- 0
 cool_theme <- theme(plot.background=element_rect(fill = "transparent",
                                                  colour = "transparent"),
                     panel.grid.major = element_line(colour="lightgrey", linetype = "dashed"),
@@ -83,6 +83,7 @@ cool_theme <- theme(plot.background=element_rect(fill = "transparent",
                     legend.text = element_text(size=13 + size_mod), 
                     legend.title = element_text(size=17 + size_mod),
                     plot.title = element_text(size=20 + size_mod))
+load("poster_data.RData")
 @
 
 
@@ -114,7 +115,19 @@ Stuff
 \end{block}
 \vfill
 
+\begin{block}{AmyLoad database}
 
+<<AmyLoad, echo = FALSE, message=FALSE, fig.width=14>>=
+ggplot(filter(seq_lengths, len < 50), aes(x = len, fill = tar)) +
+  geom_histogram(alpha = 0.5, position = "dodge") +
+  scale_fill_discrete("Amyloid") +
+  scale_x_continuous("Length") +
+  scale_y_continuous("Count") + 
+  cool_theme
+@
+
+\end{block}
+\vfill
 
 
 
