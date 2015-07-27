@@ -15,7 +15,7 @@ seq_lengths <- data.frame(len = c(lengths(seq_pos), lengths(seq_neg)),
                                  rep("no", length(seq_neg))))
 #sequence, length in the invervals
 seq_inter <- data.frame(len = cut(seq_lengths[["len"]], 
-                                  c(min(seq_lengths[["len"]]), 6, 10, 15, max(seq_lengths[["len"]])), 
+                                  c(min(seq_lengths[["len"]]), 5, 6, 10, 15, max(seq_lengths[["len"]])), 
                                   include.lowest = TRUE),
                         tar = seq_lengths[["tar"]])
 

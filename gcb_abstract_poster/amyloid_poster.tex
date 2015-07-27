@@ -159,17 +159,76 @@ The height of the bar is equal to the number of sequences within given length in
 
 \begin{block}{Clustering of amino acids}
 
-contactivity~\citep{wozniak_characteristics_2014}
-
-
 \begin{enumerate}[1.]
-\item 10 physicochemical scale were extracted from AAIndex database~\citep{kawashima_aaindex:_2008} and normalized between normalized between 0 i 1.
+\item Nine scales representing properties important in the amylogenicity: hydrophobicity, size polarity and solvent accessibility from AAIndex database~\citep{kawashima_aaindex:_2008} were chosen. Additionally, two frequencies of forming contact sites~\citep{wozniak_characteristics_2014} were added.
+\item Scales were normalized between 0 i 1.
 \item All combinations of characteristics (only one scale per property) were clustered using Euclidean distance and Ward's method.
-\item Each clustering was divided into 3 to 6 groups.
+\item Each clustering was divided into 3 to 6 groups creating 144 encodings of amino acids.
+\item Redundant 51 encodings (identical to other encodings) were removed.
 \end{enumerate}
 
 \end{block}
 \vfill
+
+
+\begin{block}{Encoding distance}
+
+The encoding distance between \textbf{A} and \textbf{B} is defined as the minimum number of amino acids that have to be moved between subgroups of encoding to make \textbf{A} identical to \textbf{B} (order of subgroups in the encoding and amino acids in a group is unimportant).
+
+\begin{columns}
+\column{.4\textwidth}
+% latex table generated in R 3.2.1 by xtable 1.7-4 package
+% Mon Jul 27 15:21:18 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{ll}
+  \hline
+Group & Elements \\ 
+  \hline
+1 & a, b, c \\ 
+  2 & d, e \\ 
+   \hline
+\end{tabular}
+\caption{Encoding \textbf{A}.} 
+\end{table}
+
+\column{.4\textwidth}
+
+% latex table generated in R 3.2.1 by xtable 1.7-4 package
+% Mon Jul 27 15:21:18 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{ll}
+  \hline
+Group & Elements \\ 
+  \hline
+1 & a, b \\ 
+  2 & d, e, c \\ 
+   \hline
+\end{tabular}
+\caption{Encoding \textbf{B}.} 
+\end{table}
+
+\end{columns}
+
+The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c} must be moved from Group 2 to Group 1).
+
+\end{block}
+\vfill
+
+\begin{block}{Evaluation}
+
+\begin{enumerate}[1.]
+\item Sequences shorter than 6 amino acids were discarded.
+\item From each sequence 5-grams were extracted. In case of positive sequences, all extracted 5-grams were labelled as positive. In case of negative sequences, all extracted 5-grams were marked as negative.
+\item For each encoding three Random Forests~\citep{liaw_classification_2002} were trained on sequences with length respectively a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter.
+\item All classifiers were evaluated in the 5-fold cross-validation. The sequence was labelled as positive if at least one 5-gram was assessed as amylogenic.
+\item The cross-validation was repeated 8 times.
+\end{enumerate}
+
+\end{block}
+\vfill
+
 
 }
 \end{minipage}
