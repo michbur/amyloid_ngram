@@ -80,6 +80,7 @@
 \useinnertheme{rectangles}
 \setbeamercolor{item projected}{bg=darkred}
 % \setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{caption}{\insertcaption} 
 \setbeamertemplate{navigation symbols}{}
 \setbeamercovered{transparent}
 \setbeamercolor{block title}{fg=darkred}
@@ -94,7 +95,7 @@
 \setbeamercolor*{itemize subsubitem}{fg=darkred}
 
 \newlength{\columnheight}
-\setlength{\columnheight}{92cm}
+\setlength{\columnheight}{93cm}
 \renewcommand{\thetable}{}
 \def\andname{,}
 \authornote{}
@@ -102,11 +103,9 @@
 \renewcommand{\APACrefatitle}[2]{}
 \renewcommand{\bibliographytypesize}{\footnotesize} 
 \renewcommand{\APACrefYearMonthDay}[3]{%
-{\BBOP}{#1}
-{\BBCP}
+  {\BBOP}{#1}
+  {\BBCP}
 }
-
-\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
@@ -145,16 +144,32 @@ Stuff
 
 \begin{block}{AmyLoad database}
 
+The sequences used in the study were extracted from AmyLoad database~\citep{wozniak_amyload:_2015}.
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 \includegraphics[width=\maxwidth]{figure/AmyLoad-1} 
 
 \end{knitrout}
 
+The height of the bar is equal to the number of sequences within given length interval in the database. The percentage above the bar represent fraction sequences within given length interval among amyloid and non-amyloid sequences.
+
 \end{block}
 \vfill
 
+\begin{block}{Clustering of amino acids}
 
+contactivity~\citep{wozniak_characteristics_2014}
+
+
+\begin{enumerate}[1.]
+\item 10 physicochemical scale were extracted from AAIndex database~\citep{kawashima_aaindex:_2008} and normalized between normalized between 0 i 1.
+\item All combinations of characteristics (only one scale per property) were clustered using Euclidean distance and Ward's method.
+\item Each clustering was divided into 3 to 6 groups.
+\end{enumerate}
+
+\end{block}
+\vfill
 
 }
 \end{minipage}
@@ -176,7 +191,16 @@ Stuff
 \begin{block}{More stuff}
 Stuff
 \end{block}
-  
+\vfill
+
+\begin{block}{Bibliography}
+  \tiny{
+  \bibliographystyle{apalike}
+  \bibliography{amyloids}
+  }
+  \end{block}
+  \vfill
+
 }
 \end{minipage}
 \end{beamercolorbox}
