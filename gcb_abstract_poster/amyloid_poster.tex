@@ -173,12 +173,12 @@ The height of the bar is equal to the number of sequences within given length in
 
 \begin{block}{Encoding distance}
 
-The encoding distance between \textbf{A} and \textbf{B} is defined as the minimum number of amino acids that have to be moved between subgroups of encoding to make \textbf{A} identical to \textbf{B} (order of subgroups in the encoding and amino acids in a group is unimportant).
+The encoding distance between \textbf{A} and \textbf{B} is defined as the minimum number of amino acids that have to be shifted between subgroups of encoding \textbf{A} to make it identical to \textbf{B} (order of subgroups in the encoding and amino acids in a group is unimportant).
 
 \begin{columns}
 \column{.4\textwidth}
 % latex table generated in R 3.2.1 by xtable 1.7-4 package
-% Mon Jul 27 15:21:18 2015
+% Mon Jul 27 22:43:38 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{ll}
@@ -195,7 +195,7 @@ Group & Elements \\
 \column{.4\textwidth}
 
 % latex table generated in R 3.2.1 by xtable 1.7-4 package
-% Mon Jul 27 15:21:18 2015
+% Mon Jul 27 22:43:38 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{ll}
@@ -203,7 +203,8 @@ Group & Elements \\
 Group & Elements \\ 
   \hline
 1 & a, b \\ 
-  2 & d, e, c \\ 
+  2 & d, e \\ 
+  3 & c \\ 
    \hline
 \end{tabular}
 \caption{Encoding \textbf{B}.} 
@@ -211,7 +212,7 @@ Group & Elements \\
 
 \end{columns}
 
-The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c} must be moved from Group 2 to Group 1).
+The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c} must be moved from Group 3 to Group 1).
 
 \end{block}
 \vfill
@@ -220,7 +221,7 @@ The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c}
 
 \begin{enumerate}[1.]
 \item Sequences shorter than 6 amino acids were discarded.
-\item From each sequence 5-grams were extracted. In case of positive sequences, all extracted 5-grams were labelled as positive. In case of negative sequences, all extracted 5-grams were marked as negative.
+\item From each sequence 5-grams were extracted. All n-grams were labelled as their origin sequence (e.g. 5-grams extracted from amyloid sequence were labelled as positive).
 \item For each encoding three Random Forests~\citep{liaw_classification_2002} were trained on sequences with length respectively a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter.
 \item All classifiers were evaluated in the 5-fold cross-validation. The sequence was labelled as positive if at least one 5-gram was assessed as amylogenic.
 \item The cross-validation was repeated 8 times.

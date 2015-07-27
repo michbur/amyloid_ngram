@@ -149,7 +149,7 @@ The height of the bar is equal to the number of sequences within given length in
 
 \begin{block}{Encoding distance}
 
-The encoding distance between \textbf{A} and \textbf{B} is defined as the minimum number of amino acids that have to be moved between subgroups of encoding to make \textbf{A} identical to \textbf{B} (order of subgroups in the encoding and amino acids in a group is unimportant).
+The encoding distance between \textbf{A} and \textbf{B} is defined as the minimum number of amino acids that have to be shifted between subgroups of encoding \textbf{A} to make it identical to \textbf{B} (order of subgroups in the encoding and amino acids in a group is unimportant).
 
 \begin{columns}
 \column{.4\textwidth}
@@ -159,7 +159,8 @@ enc2df <- function(x)
 l1 <- list('1' = c("a", "b", "c"),
              '2' = c("d", "e"))
 l2 <- list('1' = c("a", "b"),
-             '2' = c("d", "e", "c"))
+             '2' = c("d", "e"),
+            '3' = c("c"))
 
 print(xtable(enc2df(l1), "Encoding \\textbf{A}."), include.rownames = FALSE)
 @
@@ -170,7 +171,7 @@ print(xtable(enc2df(l2), "Encoding \\textbf{B}."), include.rownames = FALSE)
 @
 \end{columns}
 
-The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c} must be moved from Group 2 to Group 1).
+The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c} must be moved from Group 3 to Group 1).
 
 \end{block}
 \vfill
@@ -179,7 +180,7 @@ The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c}
 
 \begin{enumerate}[1.]
 \item Sequences shorter than 6 amino acids were discarded.
-\item From each sequence 5-grams were extracted. In case of positive sequences, all extracted 5-grams were labelled as positive. In case of negative sequences, all extracted 5-grams were marked as negative.
+\item From each sequence 5-grams were extracted. All n-grams were labelled as their origin sequence (e.g. 5-grams extracted from amyloid sequence were labelled as positive).
 \item For each encoding three Random Forests~\citep{liaw_classification_2002} were trained on sequences with length respectively a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter.
 \item All classifiers were evaluated in the 5-fold cross-validation. The sequence was labelled as positive if at least one 5-gram was assessed as amylogenic.
 \item The cross-validation was repeated 8 times.
