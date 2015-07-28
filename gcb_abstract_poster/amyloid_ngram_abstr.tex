@@ -4,26 +4,30 @@
 
 \author{
 Micha\l{} Burdukiewicz\textsuperscript{1}, Piotr Sobczyk\textsuperscript{2}, Pawe\l{} Mackiewicz\textsuperscript{1} and Ma\l{}gorzata Kotulska\textsuperscript{3} \\
-{\normalsize\normalfont\itshape \textsuperscript{1}University of Wroc\l{}aw, Department of Genomics, Poland}\\
-{\normalsize\normalfont\itshape \textsuperscript{2}Wroc\l{}aw University of Technology, Department of Mathematics, Poland}\\
-{\normalsize\normalfont\itshape \textsuperscript{3}Wroc\l{}aw University of Technology, Department of Biomedical Engineering, Poland}\\
+\footnotesize{
+{\normalfont\itshape \textsuperscript{1}University of Wroc\l{}aw, Department of Genomics, Poland}\\
+{\normalfont\itshape \textsuperscript{2}Wroc\l{}aw University of Technology, Department of Mathematics, Poland}\\
+{\normalfont\itshape \textsuperscript{3}Wroc\l{}aw University of Technology, Department of Biomedical Engineering, Faculty of Fundamental Problems of Technology, Poland}\\
 malgorzata.kotulska@pwr.edu.pl
 }
-
+}
 
 
 \begin{document}
 \maketitle 
 
-Amyloids are short proteins associated with the number of clinical disorders, for example Alzheimer's or Creutzfeldt-Jakob’s diseases. Despite being variable in size, amino acid composition and structure, all amyloidogenic sequences form cytotoxic aggregates~\cite{breydo_structural_2015}. The hallmark trait of amyloids is the presence of characteristic short sequences of amino acids, called hot--spots, amyloids can create zipper\mbox{-}\nobreak\hspace{0pt}like $\beta$\mbox{-}\nobreak\hspace{0pt}structures~\cite{fandrich_oligomeric_2012}. Although studies investigating properties of amyloidogenic sequences were already conducted, the newly established AmyLoad data base facilities large-scale analysis of amyloids~\cite{wozniak_amyload:_2015}.
+Amyloids are short proteins associated with a number of clinical disorders, for example Alzheimer's or Creutzfeldt-Jakob's diseases. Despite their variability in size, amino acid composition, most amyloidogenic sequences form cytotoxic aggregates, although there are some biologically functional ~\cite{breydo_structural_2015}. The hallmark trait of amyloids is the presence of characteristic short sequences of amino acids, called hot-spots, amyloids can create zipper\mbox{-}\nobreak\hspace{0pt}like $\beta$\mbox{-}\nobreak\hspace{0pt}structures~\cite{fandrich_oligomeric_2012}. Although studies investigating properties of amyloidogenic sequences have already been conducted, the newly established AmyLoad database facilities large-scale analysis of amyloids~\cite{wozniak_amyload:_2015}.
 
-Among commonly acclaimed methods of predicting amyloids, only FISH Amyloid~\cite{gasior_fish_2014} focuses more deeply on the putative motifs of hot spots. To expand its model by considering longer and more complicated motifs, we used n-gram analysis. N-grams (k-mers) are vectors of $n$ characters derived from input sequences. Although n-grams constitute a powerful tool for biological sequence analysis, they suffer greatly from a curse of dimensionality. The number of possible n-grams is equal to $n^u$, where $u$ is the length of the alphabet (4 in case of nucleic acids and 20 in case of proteins). To deal with the abovementioned problem, we we created \textit{biogram} software~\cite{burdukiewicz_biogram:_2015}. Aside from essential  functionalities, like efficient data storage, we also implemented a feature selection method. QuiPT (Quick Permutation Test) uses several filtering criteria such as information gained to choose significant features. To speed up the computation and precisely estimate small p-values, QuiPT performs an exact test instead of a large number of permutations. 
+Among commonly acclaimed methods of predicting amyloids, FISH Amyloid~\cite{gasior_fish_2014} focuses more on the putative motifs of hot spots. To expand its model by considering longer and more complicated motifs, we used n-gram analysis. N-grams (k-mers) are vectors of $n$ characters derived from input sequences. Although n-grams constitute a powerful tool for biological sequence analysis, they suffer greatly from a curse of large dimensionality. The number of possible n-grams is equal to $n^u$, where $u$ is the length of the alphabet (4 in case of nucleic acids and 20 in case of proteins). To deal with the above mentioned problem, we implemented QuiPT (Quick Permutation Test) in \textit{biogram} software~\cite{burdukiewicz_biogram:_2015}, which performs an exact test instead of a large number of permutations. 
 
-To reduce the dimension of the problem even more, we group amino acids into bigger groups based on their physicochemical properties important in the aggregation of amyloids. Since it is still unclear which properties are exactly the most important for amylogenicity, we compare classifiers trained on different amino acid aggregations. The grid search not only yields the best aggregation method, but also points which physicochemical properties are important for amylogenicity. 
+To reduce the dimension of the problem even more, we grouped amino acids into clusters based on their physicochemical properties potentially important in the amyloid type of aggregation. The features are represented quantitatively and include several scales representing hydrophobicity, size, accessibility derived from AAIndex, and propensity to form contact sites derived in ~\cite{wozniak_characteristics_2014}.
 
-The n-gram model, trained on the data from AmyLoad database, is validated through simple yet accurate amyloid prediction framework using random forests. The preliminary analysis of the amyloidogenic sequences yield not only new insight on the structure of the hot spots, but facilitated prediction of amyloids. The mean AUC of the classifier committee in 5-fold cross‑validation was 0.89.
+The n-gram model, trained on the data from AmyLoad database, is validated through amyloid prediction framework using random forests. The preliminary analysis of the amyloidogenic sequences not only can facilitate prediction of amyloidsyield but gives a new insight into the physicochemical characteristics of the hot spots. The mean AUC of the classifier committee in 5-fold cross-validation was 0.89. The most balanced classifier, regarding the sensitivity $S_n$ and specificity $S_p$, enabled the predictions with $S_n=xx$,$S_p=yy$, and AUC=zz. 
 
 The predictor of amylogenicity, called AmyloGram, is accessible as a web-server (ADRESS).
 
+\scriptsize{
 \bibliography{amyloids}
+}
+}
 \end{document}

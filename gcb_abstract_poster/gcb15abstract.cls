@@ -1,5 +1,5 @@
 % Urspruengliche
-% LaTeX Dokumentenklasse für die LNI Reihe der GI
+% LaTeX Dokumentenklasse f?r die LNI Reihe der GI
 %
 % (C) 2002 Robert Tolksdorf
 % Im Fall von Fragen zu dieser Dokumentenklasse wenden Sie sich bitte
@@ -16,7 +16,7 @@
 
 \newif\ifpdf\ifx\pdfoutput\undefined\pdffalse\else\pdfoutput=1\pdftrue\fi
 
-% Satzspiegelposition gemäß LNI-Herausgeberrichtlinien (Korrektur von Thomas.Kuehne@mcs.vuw.ac.nz)
+% Satzspiegelposition gem?? LNI-Herausgeberrichtlinien (Korrektur von Thomas.Kuehne@mcs.vuw.ac.nz)
 \setlength{\hoffset}{0cm}% correct left margin from 4.4cm to 4.2cm
 \setlength{\voffset}{0.8cm}% correct top margin from 4.53cm to 5.33cm
 
@@ -98,12 +98,12 @@
     \quotation\noindent{\bfseries \abstractname:}%
 }{\endquotation} 
 
-% Überschriften
+% ?berschriften
 \renewcommand{\section}{\@startsection{section}{1}{\z@}%
   {2\baselineskip}{\baselineskip}{\fontsize{12}{14}\fontseries{b}\selectfont}}
 \renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
   {2\baselineskip}{\baselineskip}{\fontsize{10}{12}\fontseries{b}\selectfont}}
-% weitere nicht durch Formatvorlage geklärt
+% weitere nicht durch Formatvorlage gekl?rt
 
 % keine seitennummern
 \pagestyle{empty}
@@ -121,15 +121,15 @@
   \fi}
   \vskip\belowcaptionskip}
 
-% gleichungen mit richtiger einrückung
+% gleichungen mit richtiger einr?ckung
 % fleqn-Option oben
 \setlength{\mathindent}{4ex}
 
-% listings mit richtiger einrückung
+% listings mit richtiger einr?ckung
 \RequirePackage{verbatim}
 \def\verbatim@processline{\hskip4ex\the\verbatim@line\par}
 
-% Fussnoten mit 5cm Linie und richtiger Größe
+% Fussnoten mit 5cm Linie und richtiger Gr??e
 \renewcommand\footnoterule{%
   \kern-3\p@
   \hrule\@width5cm
@@ -139,7 +139,7 @@
     \noindent
     \hb@xt@1.8em{\hss\@makefnmark}{\fontsize{8}{9}\selectfont#1}}
 
-% Gemutmaßte Absatzeinzüge und Abstände
+% Gemutma?te Absatzeinz?ge und Abst?nde
 \parindent0pt
 \parskip 1ex
 
