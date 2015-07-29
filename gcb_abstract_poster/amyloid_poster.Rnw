@@ -8,6 +8,7 @@
 \usepackage{natbib}
 \usepackage{graphicx}
 \usepackage{array,booktabs,tabularx}
+\usepackage{colortbl, xcolor}
 \newcolumntype{Z}{>{\centering\arraybackslash}X}
 
 % rysunki
@@ -46,7 +47,7 @@
 \setbeamercolor*{itemize subsubitem}{fg=darkred}
 
 \newlength{\columnheight}
-\setlength{\columnheight}{93cm}
+\setlength{\columnheight}{96cm}
 \renewcommand{\thetable}{}
 \def\andname{,}
 \authornote{}
@@ -83,6 +84,7 @@ cool_theme <- theme(plot.background=element_rect(fill = "transparent",
                     legend.title = element_text(size=17 + size_mod),
                     plot.title = element_text(size=20 + size_mod))
 load("poster_data.RData")
+load("report4.RData")
 @
 
 
@@ -90,15 +92,17 @@ load("poster_data.RData")
 \author{Micha\l{} Burdukiewicz\inst{1}, Piotr Sobczyk\inst{2}, Pawe\l{} Mackiewicz\inst{1} and Ma\l{}gorzata Kotulska\inst{3}
 }
 
-\institute{\textsuperscript{1}University of Wroc\l{}aw, Department of Genomics, Poland 
 
-\vspace{0.5cm}
+\institute{\small{\textsuperscript{1}University of Wroc\l{}aw, Department of Genomics, Poland 
+
+\vspace{0.3cm}
 
 \textsuperscript{2}Wroc\l{}aw University of Technology, Department of Mathematics, Poland
 
-\vspace{0.5cm}
+\vspace{0.3cm}
 
 \textsuperscript{3}Wroc\l{}aw University of Technology, Department of Biomedical Engineering, Poland}
+}
 }
 \title{\huge N-gram analysis of amyloid data}
 
@@ -109,17 +113,21 @@ load("poster_data.RData")
 \begin{minipage}[T]{.95\textwidth}
 \parbox[t][\columnheight]{\textwidth}
 {
-\begin{block}{Introduction}
-Stuff
+\begin{block}{Aim}
+Investigate putative motifs of hot-spots, short sequences responsible for amyloidogenicity which is associated with a number of clinical disorders, for example Alzheimer's or Creutzfeldt-Jakob's diseases.
 \end{block}
 \vfill
 
+
 \begin{block}{AmyLoad database}
-
-The sequences used in the study were extracted from AmyLoad database~\citep{wozniak_amyload:_2015}.
-
 <<AmyLoad, echo = FALSE, message=FALSE, fig.width=14>>=
-ggplot(seq_inter_ct, aes(x = len, y = Freq, fill = tar, label = paste0(round(prop, 4) * 100, "%"))) +
+totals <- seq_inter_ct %>% group_by(tar) %>% summarize(total = sum(Freq)) %>% select(total) %>% unlist
+@
+
+The sequences used in the study (\Sexpr{totals[1]} non-amyloids and \Sexpr{totals[2]} amyloids) were extracted from AmyLoad database~\citep{wozniak_amyload:_2015}.
+
+<<AmyLoadPlot, echo = FALSE, message=FALSE, fig.width=14>>=
+ggplot(seq_inter_ct, aes(x = len, y = prop, fill = tar, label = paste0(round(prop, 4) * 100, "%"))) +
   geom_bar(position = "dodge", stat = "identity") +
   scale_fill_manual("Amyloid", values = c("tan2", "skyblue")) +
   scale_x_discrete("Length") +
@@ -128,7 +136,6 @@ ggplot(seq_inter_ct, aes(x = len, y = Freq, fill = tar, label = paste0(round(pro
   cool_theme #+ theme(legend.position = "right")
 @
 
-The height of the bar is equal to the number of sequences within given length interval in the database. The percentage above the bar represent fraction sequences within given length interval among amyloid and non-amyloid sequences.
 
 \end{block}
 \vfill
@@ -136,8 +143,7 @@ The height of the bar is equal to the number of sequences within given length in
 \begin{block}{Clustering of amino acids}
 
 \begin{enumerate}[1.]
-\item Nine scales representing properties important in the amylogenicity: hydrophobicity, size polarity and solvent accessibility from AAIndex database~\citep{kawashima_aaindex:_2008} were chosen. Additionally, two frequencies of forming contact sites~\citep{wozniak_characteristics_2014} were added.
-\item Scales were normalized between 0 i 1.
+\item Nine scales representing properties important in the amylogenicity: hydrophobicity, size polarity and solvent accessibility from AAIndex database~\citep{kawashima_aaindex:_2008} were chosen. Additionally, two frequencies of forming contact sites~\citep{wozniak_characteristics_2014} were added. Scales were normalized between 0 i 1.
 \item All combinations of characteristics (only one scale per property) were clustered using Euclidean distance and Ward's method.
 \item Each clustering was divided into 3 to 6 groups creating 144 encodings of amino acids.
 \item Redundant 51 encodings (identical to other encodings) were removed.
@@ -146,6 +152,18 @@ The height of the bar is equal to the number of sequences within given length in
 \end{block}
 \vfill
 
+\begin{block}{Evaluation}
+
+\begin{enumerate}[1.]
+\item Sequences shorter than 6 amino acids were discarded.
+\item From each sequence 5-grams were extracted. All n-grams were labelled as their sequence of the origin (e.g. 5-grams extracted from amyloid sequence were labelled as positive).
+\item For each encoding features were filtered by the QuiPT and used to train the Random Forests~\citep{liaw_classification_2002}. The procedure was performed on three traning sets: a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter creating three classifiers.
+\item All classifiers were evaluated in the 5-fold cross-validation. The sequence was labelled as positive if at least one 5-gram was assessed as amylogenic.
+\item The cross-validation was repeated 8 times.
+\end{enumerate}
+
+\end{block}
+\vfill
 
 \begin{block}{Encoding distance}
 
@@ -176,18 +194,6 @@ The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c}
 \end{block}
 \vfill
 
-\begin{block}{Evaluation}
-
-\begin{enumerate}[1.]
-\item Sequences shorter than 6 amino acids were discarded.
-\item From each sequence 5-grams were extracted. All n-grams were labelled as their origin sequence (e.g. 5-grams extracted from amyloid sequence were labelled as positive).
-\item For each encoding three Random Forests~\citep{liaw_classification_2002} were trained on sequences with length respectively a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter.
-\item All classifiers were evaluated in the 5-fold cross-validation. The sequence was labelled as positive if at least one 5-gram was assessed as amylogenic.
-\item The cross-validation was repeated 8 times.
-\end{enumerate}
-
-\end{block}
-\vfill
 
 
 }
@@ -207,8 +213,31 @@ The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c}
 
 
 
-\begin{block}{More stuff}
-Stuff
+\begin{block}{Specificity versus sensitivity}
+<<specSensTab, echo = FALSE, message=FALSE, results='asis'>>=
+tmp <- res %>% group_by(len) %>% filter(mSpec == max(mSpec) | mSens == max(mSens))
+colnames(tmp) <- c("Training length", "Encoding ID", "AUC", "Specificity", "Sensitivity", "Number of groups")
+
+rws <- seq(1, nrow(tmp) - 1, by = 2)
+col <- rep("\\rowcolor[gray]{0.75}", length(rws))
+
+print(xtable(tmp, "Encodings with the best sensitivity and specificity for each training set type.", digits = 4), include.rownames = FALSE, booktabs = TRUE, add.to.row = list(pos = as.list(rws), command = col))
+@
+
+<<specSensPlot, echo = FALSE, message=FALSE, fig.width=14, fig.height=18>>=
+set.seed(2)
+ggplot(ss_dat, aes(x = speced, y = sensed, size = mSpec, colour = mSens, shape = bestAUC)) +
+  geom_tile(colour = "black", fill = "lightgrey", size = 1) +
+  geom_point(position = position_jitter(0.27, 0.27)) +
+  facet_wrap(~ len, ncol = 1) +
+  scale_colour_gradientn("Mean sensitivity", colours = c("blue", "yellow", "red")) +
+  cool_theme +
+  scale_size_continuous("Mean specificity", range = c(1, 5)) +
+  scale_x_continuous("Encoding distance (best specificity)") + 
+  scale_y_continuous("Encoding distance (best sensitivity)") +
+  scale_shape_manual("AUC", values = c(16, 1))
+@
+
 \end{block}
 \vfill
 

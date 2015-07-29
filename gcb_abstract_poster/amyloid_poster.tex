@@ -57,6 +57,7 @@
 \usepackage{natbib}
 \usepackage{graphicx}
 \usepackage{array,booktabs,tabularx}
+\usepackage{colortbl, xcolor}
 \newcolumntype{Z}{>{\centering\arraybackslash}X}
 
 % rysunki
@@ -95,7 +96,7 @@
 \setbeamercolor*{itemize subsubitem}{fg=darkred}
 
 \newlength{\columnheight}
-\setlength{\columnheight}{93cm}
+\setlength{\columnheight}{96cm}
 \renewcommand{\thetable}{}
 \def\andname{,}
 \authornote{}
@@ -118,15 +119,17 @@
 \author{Micha\l{} Burdukiewicz\inst{1}, Piotr Sobczyk\inst{2}, Pawe\l{} Mackiewicz\inst{1} and Ma\l{}gorzata Kotulska\inst{3}
 }
 
-\institute{\textsuperscript{1}University of Wroc\l{}aw, Department of Genomics, Poland 
 
-\vspace{0.5cm}
+\institute{\small{\textsuperscript{1}University of Wroc\l{}aw, Department of Genomics, Poland 
+
+\vspace{0.3cm}
 
 \textsuperscript{2}Wroc\l{}aw University of Technology, Department of Mathematics, Poland
 
-\vspace{0.5cm}
+\vspace{0.3cm}
 
 \textsuperscript{3}Wroc\l{}aw University of Technology, Department of Biomedical Engineering, Poland}
+}
 }
 \title{\huge N-gram analysis of amyloid data}
 
@@ -137,22 +140,23 @@
 \begin{minipage}[T]{.95\textwidth}
 \parbox[t][\columnheight]{\textwidth}
 {
-\begin{block}{Introduction}
-Stuff
+\begin{block}{Aim}
+Investigate putative motifs of hot-spots, short sequences responsible for amyloidogenicity which is associated with a number of clinical disorders, for example Alzheimer's or Creutzfeldt-Jakob's diseases.
 \end{block}
 \vfill
 
+
 \begin{block}{AmyLoad database}
 
-The sequences used in the study were extracted from AmyLoad database~\citep{wozniak_amyload:_2015}.
+
+The sequences used in the study (1044 non-amyloids and 421 amyloids) were extracted from AmyLoad database~\citep{wozniak_amyload:_2015}.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=\maxwidth]{figure/AmyLoad-1} 
+\includegraphics[width=\maxwidth]{figure/AmyLoadPlot-1} 
 
 \end{knitrout}
 
-The height of the bar is equal to the number of sequences within given length interval in the database. The percentage above the bar represent fraction sequences within given length interval among amyloid and non-amyloid sequences.
 
 \end{block}
 \vfill
@@ -160,8 +164,7 @@ The height of the bar is equal to the number of sequences within given length in
 \begin{block}{Clustering of amino acids}
 
 \begin{enumerate}[1.]
-\item Nine scales representing properties important in the amylogenicity: hydrophobicity, size polarity and solvent accessibility from AAIndex database~\citep{kawashima_aaindex:_2008} were chosen. Additionally, two frequencies of forming contact sites~\citep{wozniak_characteristics_2014} were added.
-\item Scales were normalized between 0 i 1.
+\item Nine scales representing properties important in the amylogenicity: hydrophobicity, size polarity and solvent accessibility from AAIndex database~\citep{kawashima_aaindex:_2008} were chosen. Additionally, two frequencies of forming contact sites~\citep{wozniak_characteristics_2014} were added. Scales were normalized between 0 i 1.
 \item All combinations of characteristics (only one scale per property) were clustered using Euclidean distance and Ward's method.
 \item Each clustering was divided into 3 to 6 groups creating 144 encodings of amino acids.
 \item Redundant 51 encodings (identical to other encodings) were removed.
@@ -170,6 +173,18 @@ The height of the bar is equal to the number of sequences within given length in
 \end{block}
 \vfill
 
+\begin{block}{Evaluation}
+
+\begin{enumerate}[1.]
+\item Sequences shorter than 6 amino acids were discarded.
+\item From each sequence 5-grams were extracted. All n-grams were labelled as their sequence of the origin (e.g. 5-grams extracted from amyloid sequence were labelled as positive).
+\item For each encoding features were filtered by the QuiPT and used to train the Random Forests~\citep{liaw_classification_2002}. The procedure was performed on three traning sets: a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter creating three classifiers.
+\item All classifiers were evaluated in the 5-fold cross-validation. The sequence was labelled as positive if at least one 5-gram was assessed as amylogenic.
+\item The cross-validation was repeated 8 times.
+\end{enumerate}
+
+\end{block}
+\vfill
 
 \begin{block}{Encoding distance}
 
@@ -178,7 +193,7 @@ The encoding distance between \textbf{A} and \textbf{B} is defined as the minimu
 \begin{columns}
 \column{.4\textwidth}
 % latex table generated in R 3.2.1 by xtable 1.7-4 package
-% Mon Jul 27 22:43:38 2015
+% Wed Jul 29 15:53:48 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{ll}
@@ -195,7 +210,7 @@ Group & Elements \\
 \column{.4\textwidth}
 
 % latex table generated in R 3.2.1 by xtable 1.7-4 package
-% Mon Jul 27 22:43:38 2015
+% Wed Jul 29 15:53:48 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{ll}
@@ -217,18 +232,6 @@ The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c}
 \end{block}
 \vfill
 
-\begin{block}{Evaluation}
-
-\begin{enumerate}[1.]
-\item Sequences shorter than 6 amino acids were discarded.
-\item From each sequence 5-grams were extracted. All n-grams were labelled as their origin sequence (e.g. 5-grams extracted from amyloid sequence were labelled as positive).
-\item For each encoding three Random Forests~\citep{liaw_classification_2002} were trained on sequences with length respectively a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter.
-\item All classifiers were evaluated in the 5-fold cross-validation. The sequence was labelled as positive if at least one 5-gram was assessed as amylogenic.
-\item The cross-validation was repeated 8 times.
-\end{enumerate}
-
-\end{block}
-\vfill
 
 
 }
@@ -248,8 +251,33 @@ The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c}
 
 
 
-\begin{block}{More stuff}
-Stuff
+\begin{block}{Specificity versus sensitivity}
+% latex table generated in R 3.2.1 by xtable 1.7-4 package
+% Wed Jul 29 15:53:48 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{llrrrl}
+  \toprule
+Training length & Encoding ID & AUC & Specificity & Sensitivity & Number of groups \\ 
+  \midrule
+6 & 6 & 0.7955 & 0.8221 & 0.6181 & 3 \\ 
+   \rowcolor[gray]{0.75}6 & 45 & 0.8183 & 0.9014 & 0.5038 & 4 \\ 
+  $<$11 & 2 & 0.6615 & 0.4304 & 0.8307 & 4 \\ 
+   \rowcolor[gray]{0.75}$<$11 & 15 & 0.8088 & 0.8329 & 0.6060 & 3 \\ 
+  $<$16 & 16 & 0.8162 & 0.7477 & 0.7374 & 3 \\ 
+   \rowcolor[gray]{0.75}$<$16 & 87 & 0.8320 & 0.5186 & 0.9195 & 6 \\ 
+   \bottomrule
+\end{tabular}
+\caption{Encodings with the best sensitivity and specificity for each training set type.} 
+\end{table}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/specSensPlot-1} 
+
+\end{knitrout}
+
 \end{block}
 \vfill
 
