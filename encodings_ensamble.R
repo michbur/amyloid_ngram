@@ -122,11 +122,19 @@ res2 <- combined %>% group_by(repetition, fold) %>%
   mutate(auc1=unlist(HMeasure(real_labels, bestSpec)[["metrics"]])[3],
          auc2=unlist(HMeasure(real_labels, bestSens)[["metrics"]])[3],
          auc3=unlist(HMeasure(real_labels, consensus1)[["metrics"]])[3],
-         auc4=unlist(HMeasure(real_labels, consensus2)[["metrics"]])[3]) %>%
+         auc4=unlist(HMeasure(real_labels, consensus2)[["metrics"]])[3],
+         sens1=unlist(HMeasure(real_labels, consensus1)[["metrics"]])[11],
+         sens2=unlist(HMeasure(real_labels, consensus2)[["metrics"]])[11],
+         spec1=unlist(HMeasure(real_labels, consensus1)[["metrics"]])[12],
+         spec2=unlist(HMeasure(real_labels, consensus2)[["metrics"]])[12]) %>%
   summarize(mAUCbSpec = mean(auc1), mAUCbSens = mean(auc2),
-            mAUCcons1 = mean(auc3), mAUCcons2 = mean(auc4))
+            mAUCcons1 = mean(auc3), mAUCcons2 = mean(auc4),
+            mSens1 = mean(sens1), mSens2 = mean(sens2),
+            mSpec1 = mean(spec1), mSpec2 = mean(spec2))
 
 colMeans(res2)
+#repetition       fold  mAUCbSpec  mAUCbSens  mAUCcons1  mAUCcons2     mSens1     mSens2     mSpec1     mSpec2 
+#4.5000000  3.0000000  0.8183293  0.8319812  0.8911696  0.8918681  0.7473246  0.7473246  0.8684705  0.8684705 
 
 #' one specific repetition and fold
 #' it shows that no matter which measure we pick, ensamble works better than
