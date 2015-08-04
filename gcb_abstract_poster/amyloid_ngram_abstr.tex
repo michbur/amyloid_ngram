@@ -20,11 +20,12 @@ Amyloids are short proteins associated with a number of clinical disorders, for 
 
 Among commonly acclaimed methods of predicting amyloids, FISH Amyloid~\cite{gasior_fish_2014} focuses more on the putative motifs of hot spots. To expand its model by considering longer and more complicated motifs, we used n-gram analysis. N-grams (k-mers) are vectors of $n$ characters derived from input sequences. The number of possible n-grams is equal to $n^u$, where $u$ is the length of the alphabet (4 in case of nucleic acids and 20 in case of proteins). To deal with the dimensionality of the problem, we implemented QuiPT (Quick Permutation Test) in \textit{biogram} software~\cite{burdukiewicz_biogram:_2015}, which performs an exact test instead of a large number of permutations. 
 
-To reduce the dimension even more, we grouped amino acids into clusters based on their physicochemical properties potentially important in the amyloid type of aggregation. The features include several scales quantitatively representing hydrophobicity, size and accessibility derived from AAIndex database, and propensity of amino acids to form contact sites derived in ~\cite{wozniak_characteristics_2014}.
+To reduce the dimension even more, we grouped amino acids into clusters based on their physicochemical properties potentially important in the amyloid type of aggregation. The features include several scales quantitatively representing hydrophobicity, size and accessibility derived from AAIndex database, and propensity of amino acids to form contact sites derived in~\cite{wozniak_characteristics_2014}.
 
 The n-gram model, trained on the data from AmyLoad database, is validated through amyloid prediction framework using random forests. The preliminary analysis of the amyloidogenic sequences not only facilitates prediction of amyloids but also gives a new insight into the physicochemical characteristics of the hot spots. The mean AUC of the classifier committee in 5-fold cross-validation was 0.89. The most balanced classifier, regarding its sensitivity $S_n$ and specificity $S_p$, enabled the predictions with $S_n=0.75$, $S_p=0.87$, and $\textrm{AUC}=0.89$. 
 
-The predictor of amylogenicity, called AmyloGram, is accessible as a web-server (ADRESS).
+The address of amylogenicity predictor (AmyloGram):  
+\url{www.smorfland.uni.wroc.pl/amylogram}.
 
 \scriptsize{
 \bibliography{amyloids}
