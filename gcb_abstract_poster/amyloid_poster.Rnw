@@ -60,7 +60,7 @@
 }
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+
 
 
 
@@ -81,6 +81,7 @@ cool_theme <- theme(plot.background=element_rect(fill = "transparent",
                     axis.title.x = element_text(size=16 + size_mod, vjust = -1), 
                     axis.title.y = element_text(size=16 + size_mod, vjust = 1),
                     strip.text = element_text(size=17 + size_mod, face = "bold"),
+                    strip.background = element_rect(fill="lightsteelblue", colour = "black"),
                     legend.text = element_text(size=13 + size_mod), 
                     legend.title = element_text(size=17 + size_mod),
                     plot.title = element_text(size=20 + size_mod))
@@ -109,13 +110,18 @@ load("report4.RData")
 
 \begin{frame}
 \begin{columns}
-\begin{column}{.49\textwidth}
+\begin{column}{.50\textwidth}
 \begin{beamercolorbox}[center,wd=\textwidth]{postercolumn}
 \begin{minipage}[T]{.95\textwidth}
 \parbox[t][\columnheight]{\textwidth}
 {
 \begin{block}{Aim}
-Investigate putative motifs of hot-spots, short sequences responsible for amyloidogenicity which is associated with a number of clinical disorders, for example Alzheimer's or Creutzfeldt-Jakob's diseases.
+Investigate and predict sequences responsible for amyloidogenicity, the cause of various clinical disorders (e.g. Alzheimer's or Creutzfeldt-Jakob's diseases).
+\end{block}
+\vfill
+
+\begin{block}{Introduction}
+All amyloidogenic sequences (amyloids), despite their variability in size and amino acid composition, form mostly cytotoxic aggregates~\citep{breydo_structural_2015}. The hallmark trait of amyloids is the presence of hot-spots, short sequences of amino acids that play key role in the aggregation process~\citep{fandrich_oligomeric_2012}.
 \end{block}
 \vfill
 
@@ -130,9 +136,9 @@ The sequences used in the study (\Sexpr{totals[1]} non-amyloids and \Sexpr{total
 <<AmyLoadPlot, echo = FALSE, message=FALSE, fig.width=14>>=
 ggplot(seq_inter_ct, aes(x = len, y = prop, fill = tar, label = paste0(round(prop, 4) * 100, "%"))) +
   geom_bar(position = "dodge", stat = "identity") +
-  scale_fill_manual("Amyloid", values = c("tan2", "skyblue")) +
+  scale_fill_manual("Amyloid", values = c("skyblue", "tan2")) +
   scale_x_discrete("Length") +
-  scale_y_continuous("Count") + 
+  scale_y_continuous("Frequency") + 
   geom_text(position = position_dodge(width = 0.9), vjust=-0.25) +
   cool_theme #+ theme(legend.position = "right")
 @
@@ -144,8 +150,8 @@ ggplot(seq_inter_ct, aes(x = len, y = prop, fill = tar, label = paste0(round(pro
 \begin{block}{Clustering of amino acids}
 
 \begin{enumerate}[1.]
-\item Nine scales representing properties important in the amylogenicity: hydrophobicity, size polarity and solvent accessibility from AAIndex database~\citep{kawashima_aaindex:_2008} were chosen. Additionally, two frequencies of forming contact sites~\citep{wozniak_characteristics_2014} were added. Scales were normalized between 0 i 1.
-\item All combinations of characteristics (only one scale per property) were clustered using Euclidean distance and Ward's method.
+\item Nine scales representing properties important in the amylogenicity: hydrophobicity, size polarity and solvent accessibility from AAIndex database~\citep{kawashima_aaindex:_2008} were chosen. Additionally, two frequencies of forming contact sites~\citep{wozniak_characteristics_2014} were added. All scales were normalized.
+\item All combinations of characteristics (each time selecting only one scale per the property) were clustered using Euclidean distance and Ward's method.
 \item Each clustering was divided into 3 to 6 groups creating 144 encodings of amino acids.
 \item Redundant 51 encodings (identical to other encodings) were removed.
 \end{enumerate}
@@ -158,8 +164,8 @@ ggplot(seq_inter_ct, aes(x = len, y = prop, fill = tar, label = paste0(round(pro
 \begin{enumerate}[1.]
 \item Sequences shorter than 6 amino acids were discarded.
 \item From each sequence 5-grams were extracted. All n-grams were labelled as their sequence of the origin (e.g. 5-grams extracted from amyloid sequence were labelled as positive).
-\item For each encoding features were filtered by the QuiPT and used to train the Random Forests~\citep{liaw_classification_2002}. The procedure was performed on three traning sets: a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter creating three classifiers.
-\item All classifiers were evaluated in the 5-fold cross-validation. The sequence was labelled as positive if at least one 5-gram was assessed as amylogenic.
+\item For each encoding features were filtered by the QuiPT and used to train the Random Forests~\citep{liaw_classification_2002}. This procedure was performed independently on three training sets: a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter creating three classifiers.
+\item All classifiers were evaluated in the 5-fold cross-validation. The sequence was labelled as positive (amylogenic), if at least one 5-gram was assessed as amylogenic.
 \item The cross-validation was repeated 8 times.
 \end{enumerate}
 
@@ -180,13 +186,18 @@ l1 <- list('1' = c("a", "b", "c"),
 l2 <- list('1' = c("a", "b"),
              '2' = c("d", "e"),
             '3' = c("c"))
-
-print(xtable(enc2df(l1), "Encoding \\textbf{A}."), include.rownames = FALSE)
+tmp <- enc2df(l1)
+rws <- seq(1, nrow(tmp) - 1, by = 2)
+col <- rep("\\rowcolor[gray]{0.75}", length(rws))
+print(xtable(tmp, "Encoding \\textbf{A}.", align = "cc|l"), include.rownames = FALSE, booktabs = TRUE, add.to.row = list(pos = as.list(rws), command = col))
 @
 \column{.4\textwidth}
 
 <<encodingDistanceB, echo = FALSE, message=FALSE, results='asis'>>=
-print(xtable(enc2df(l2), "Encoding \\textbf{B}."), include.rownames = FALSE)
+tmp <- enc2df(l2)
+rws <- seq(1, nrow(tmp) - 1, by = 2)
+col <- rep("\\rowcolor[gray]{0.75}", length(rws))
+print(xtable(tmp, "Encoding \\textbf{B}.", align = "cc|l"), include.rownames = FALSE, booktabs = TRUE, add.to.row = list(pos = as.list(rws), command = col))
 @
 \end{columns}
 
@@ -205,7 +216,7 @@ The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c}
 
 %new column ------------------------------------------------------    
 
-\begin{column}{.49\textwidth}
+\begin{column}{.50\textwidth}
 \begin{beamercolorbox}[center,wd=\textwidth]{postercolumn}
 \begin{minipage}[T]{.95\textwidth}  
 \parbox[t][\columnheight]{\textwidth}
@@ -219,24 +230,26 @@ The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c}
 tmp <- res %>% group_by(len) %>% filter(mSpec == max(mSpec) | mSens == max(mSens))
 colnames(tmp) <- c("Training length", "Encoding ID", "AUC", "Specificity", "Sensitivity", "Number of groups")
 
+tmp <- tmp[, c(1, 6, 2L:5)]
+
 rws <- seq(1, nrow(tmp) - 1, by = 2)
 col <- rep("\\rowcolor[gray]{0.75}", length(rws))
 
-print(xtable(tmp, "Encodings with the best sensitivity and specificity for each training set type.", digits = 4), include.rownames = FALSE, booktabs = TRUE, add.to.row = list(pos = as.list(rws), command = col))
+print(xtable(tmp, "Encodings with the best sensitivity and specificity for each training set type.", digits = 4, align = "cc|c|c|c|c|c"), include.rownames = FALSE, booktabs = TRUE, add.to.row = list(pos = as.list(rws), command = col))
 @
 
 <<specSensPlot, echo = FALSE, message=FALSE, fig.width=14, fig.height=18>>=
-set.seed(2)
-ggplot(ss_dat, aes(x = speced, y = sensed, size = mSpec, colour = mSens, shape = bestAUC)) +
-  geom_tile(colour = "black", fill = "lightgrey", size = 1) +
-  geom_point(position = position_jitter(0.27, 0.27)) +
-  facet_wrap(~ len, ncol = 1) +
-  scale_colour_gradientn("Mean sensitivity", colours = c("blue", "yellow", "red")) +
-  cool_theme +
-  scale_size_continuous("Mean specificity", range = c(1, 5)) +
-  scale_x_continuous("Encoding distance (best specificity)") + 
-  scale_y_continuous("Encoding distance (best sensitivity)") +
-  scale_shape_manual("AUC", values = c(16, 1))
+# set.seed(2)
+# ggplot(ss_dat, aes(x = speced, y = sensed, size = mSpec, colour = mSens, shape = bestAUC)) +
+#   geom_tile(colour = "black", fill = "lightgrey", size = 1) +
+#   geom_point(position = position_jitter(0.27, 0.27)) +
+#   facet_wrap(~ len, ncol = 1) +
+#   scale_colour_gradientn("Mean sensitivity", colours = c("blue", "yellow", "red")) +
+#   cool_theme +
+#   scale_size_continuous("Mean specificity", range = c(1, 5)) +
+#   scale_x_continuous("Encoding distance (best specificity)") + 
+#   scale_y_continuous("Encoding distance (best sensitivity)") +
+#   scale_shape_manual("AUC", values = c(16, 1))
 @
 
 \end{block}
