@@ -132,9 +132,12 @@ res2 <- combined %>% group_by(repetition, fold) %>%
             mSens1 = mean(sens1), mSens2 = mean(sens2),
             mSpec1 = mean(spec1), mSpec2 = mean(spec2))
 
-colMeans(res2)
-#repetition       fold  mAUCbSpec  mAUCbSens  mAUCcons1  mAUCcons2     mSens1     mSens2     mSpec1     mSpec2 
-#4.5000000  3.0000000  0.8183293  0.8319812  0.8911696  0.8918681  0.7473246  0.7473246  0.8684705  0.8684705 
+res2 %>% group_by(repetition) %>% summarise(mAUC = mean(mAUCcons1),
+                                            mSens = mean(mSens1),
+                                            mSpec = mean(mSpec1)) %>% colMeans
+
+#repetition       mAUC      mSens      mSpec 
+#4.5000000  0.8911696  0.7473246  0.8684705 
 
 #' one specific repetition and fold
 #' it shows that no matter which measure we pick, ensamble works better than
