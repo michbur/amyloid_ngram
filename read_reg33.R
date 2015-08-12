@@ -27,7 +27,17 @@ all_names <- unlist(lapply(1L:length(r33_raw[[1]]), function(i) {
   }
 }))
 
-write.csv2(data.frame(name = all_names, rep33 = sapply(seq_list, paste0, collapse = "")), file = "rep33vsAmyLoad.csv",
-           row.names = FALSE, quote = FALSE)
+# write.csv2(data.frame(name = all_names, rep33 = sapply(seq_list, paste0, collapse = "")), file = "rep33vsAmyLoad.csv",
+#            row.names = FALSE, quote = FALSE)
+# 
+# write.fasta(lapply(seq_list, paste0, collapse = ""), all_names, "reg33.fasta")
+compr <- read.csv2("rep33vsAmyLoad.csv", row.names = NULL, stringsAsFactors = FALSE)
 
-write.fasta(lapply(seq_list, paste0, collapse = ""), all_names, "reg33.fasta")
+
+mutate(compr, SI = apply(compr, 1, function(i) 
+  if(i[3] == "brak") {
+    0
+  } else {
+    LCS(strsplit(i[2], "")[[1]], strsplit(i[3], "")[[1]])[["QSI"]]
+  }
+)) %>% write.csv2(file = "porownanierep33iAmyLoad.csv", row.names = FALSE, quote = FALSE)
