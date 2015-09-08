@@ -64,7 +64,7 @@
 
 
 
-<<knitrIntro, echo = FALSE, message=FALSE>>=
+<<knitrIntro, echo = FALSE, message=FALSE,warning=FALSE>>=
 library(dplyr)
 library(ggplot2)
 library(gridExtra)
@@ -134,11 +134,12 @@ totals <- seq_inter_ct %>% group_by(tar) %>% summarize(total = sum(Freq)) %>% se
 The sequences used in the study (\Sexpr{totals[1]} non-amyloids and \Sexpr{totals[2]} amyloids) were extracted from AmyLoad database~\citep{wozniak_amyload:_2015}.
 
 <<AmyLoadPlot, echo = FALSE, message=FALSE, fig.width=14>>=
-ggplot(seq_inter_ct, aes(x = len, y = prop, fill = tar, label = paste0(round(prop, 4) * 100, "%"))) +
+#ggplot(seq_inter_ct, aes(x = len, y = prop, fill = tar, label = paste0(round(prop, 4) * 100, "%"))) +
+ggplot(seq_inter_ct, aes(x = len, y = Freq, fill = tar, label = Freq)) +
   geom_bar(position = "dodge", stat = "identity") +
   scale_fill_manual("Amyloid", values = c("skyblue", "tan2")) +
-  scale_x_discrete("Length") +
-  scale_y_continuous("Frequency") + 
+  scale_x_discrete("Sequence length") +
+  scale_y_continuous("Number of sequences") + 
   geom_text(position = position_dodge(width = 0.9), vjust=-0.25) +
   cool_theme #+ theme(legend.position = "right")
 @
@@ -165,8 +166,7 @@ ggplot(seq_inter_ct, aes(x = len, y = prop, fill = tar, label = paste0(round(pro
 \item Sequences shorter than 6 amino acids were discarded.
 \item From each sequence overlapping 5-grams were extracted. All n-grams were labelled as their sequence of the origin (e.g. all 5-grams extracted from amyloid sequence were labelled as positive).
 \item For each encoding features were filtered by the QuiPT and used to train the Random Forests~\citep{liaw_classification_2002}. This procedure was performed independently on three training sets: a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter creating three classifiers.
-\item All classifiers were evaluated in the 5-fold cross-validation. The sequence was labelled as positive (amylogenic), if at least one 5-gram was assessed as amylogenic.
-\item The cross-validation was repeated 8 times.
+\item All classifiers were evaluated in the 5-fold cross-validation eight times. The sequence was labelled as positive (amylogenic), if at least one 5-gram was assessed as amylogenic.
 \end{enumerate}
 
 \end{block}
@@ -240,21 +240,7 @@ print(xtable(tmp, "Encodings with the best sensitivity and specificity for each 
 
 The best specificity encoding (training length 6, 4 groups, encoding ID 45) and the best sensitivity (training length $<$16, 6 groups, encoding ID 87) seem to have the different areas of the competence.
 
-The committee of the best specificity and best sensitivity classifiers has overall $0.8911$ AUC, $0.7473$ sensitivity and $0.08684$ specificity.
-
-<<specSensPlot, echo = FALSE, message=FALSE, fig.width=14, fig.height=18>>=
-# set.seed(2)
-# ggplot(ss_dat, aes(x = speced, y = sensed, size = mSpec, colour = mSens, shape = bestAUC)) +
-#   geom_tile(colour = "black", fill = "lightgrey", size = 1) +
-#   geom_point(position = position_jitter(0.27, 0.27)) +
-#   facet_wrap(~ len, ncol = 1) +
-#   scale_colour_gradientn("Mean sensitivity", colours = c("blue", "yellow", "red")) +
-#   cool_theme +
-#   scale_size_continuous("Mean specificity", range = c(1, 5)) +
-#   scale_x_continuous("Encoding distance (best specificity)") + 
-#   scale_y_continuous("Encoding distance (best sensitivity)") +
-#   scale_shape_manual("AUC", values = c(16, 1))
-@
+The committee of the best specificity and best sensitivity classifiers has overall $0.8911$ AUC, $0.7473$ sensitivity and $0.8684$ specificity.
 
 \end{block}
 \vfill

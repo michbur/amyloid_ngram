@@ -33,6 +33,7 @@ all_names <- unlist(lapply(1L:length(r33_raw[[1]]), function(i) {
 # write.fasta(lapply(seq_list, paste0, collapse = ""), all_names, "reg33.fasta")
 compr <- read.csv2("rep33vsAmyLoad.csv", row.names = NULL, stringsAsFactors = FALSE)
 
+library(qualV)
 
 mutate(compr, SI = apply(compr, 1, function(i) 
   if(i[3] == "brak") {

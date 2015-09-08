@@ -185,8 +185,7 @@ The sequences used in the study (1044 non-amyloids and 421 amyloids) were extrac
 \item Sequences shorter than 6 amino acids were discarded.
 \item From each sequence overlapping 5-grams were extracted. All n-grams were labelled as their sequence of the origin (e.g. all 5-grams extracted from amyloid sequence were labelled as positive).
 \item For each encoding features were filtered by the QuiPT and used to train the Random Forests~\citep{liaw_classification_2002}. This procedure was performed independently on three training sets: a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter creating three classifiers.
-\item All classifiers were evaluated in the 5-fold cross-validation. The sequence was labelled as positive (amylogenic), if at least one 5-gram was assessed as amylogenic.
-\item The cross-validation was repeated 8 times.
+\item All classifiers were evaluated in the 5-fold cross-validation eight times. The sequence was labelled as positive (amylogenic), if at least one 5-gram was assessed as amylogenic.
 \end{enumerate}
 
 \end{block}
@@ -199,7 +198,7 @@ The encoding distance between \textbf{A} and \textbf{B} is defined as the minimu
 \begin{columns}
 \column{.4\textwidth}
 % latex table generated in R 3.2.1 by xtable 1.7-4 package
-% Sun Aug 09 10:22:05 2015
+% Tue Sep 08 17:56:32 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{c|l}
@@ -216,7 +215,7 @@ Group & Elements \\
 \column{.4\textwidth}
 
 % latex table generated in R 3.2.1 by xtable 1.7-4 package
-% Sun Aug 09 10:22:05 2015
+% Tue Sep 08 17:56:32 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{c|l}
@@ -259,7 +258,7 @@ The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c}
 
 \begin{block}{Specificity versus sensitivity}
 % latex table generated in R 3.2.1 by xtable 1.7-4 package
-% Sun Aug 09 10:22:05 2015
+% Tue Sep 08 17:56:32 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{c|c|c|c|c|c}
@@ -280,9 +279,7 @@ Training length & Number of groups & Encoding ID & AUC & Specificity & Sensitivi
 
 The best specificity encoding (training length 6, 4 groups, encoding ID 45) and the best sensitivity (training length $<$16, 6 groups, encoding ID 87) seem to have the different areas of the competence.
 
-The committee of the best specificity and best sensitivity classifiers has overall $0.8911$ AUC, $0.7473$ sensitivity and $0.08684$ specificity.
-
-
+The committee of the best specificity and best sensitivity classifiers has overall $0.8911$ AUC, $0.7473$ sensitivity and $0.8684$ specificity.
 
 \end{block}
 \vfill
