@@ -2,6 +2,7 @@ library(seqinr)
 library(randomForest)
 library(dplyr)
 library(biogram)
+library(hmeasure)
 
 source("aa_encodings2.R") #creates encodings for data
 
@@ -74,19 +75,100 @@ neg_classifier <- function(pos_dat, neg_dat, aa_group) {
   pos_fil <- filter_length(pos_dat, 15)
   neg_fil <- filter_length(neg_dat, 15)
   
-  all_ft <- do.call(rbind, flist2matrix(c(pos_fil, neg_fil)) %>% 
-                      create_gl() %>% get_bitrigrams(aa_group = aa_group))
+  pos_ft <- do.call(rbind, flist2matrix(pos_fil) %>% 
+                      create_gl() %>% 
+                      get_bitrigrams(aa_group = aa_group))
   
-  test_bis <- test_features(target = c(rep(1, length(pos_fil)), rep(0, length(neg_fil))),
+  neg_ft <- do.call(rbind, flist2matrix(neg_fil) %>% 
+                      create_gl() %>% 
+                      get_bitrigrams(aa_group = aa_group))
+  all_ft <- rbind(pos_ft, neg_ft)
+  
+  test_bis <- test_features(target = c(rep(1, nrow(pos_ft)), rep(0, nrow(neg_ft))),
                             features = all_ft, adjust = NULL)
   imp_bigrams <- cut(test_bis, breaks = c(0, 0.05, 1))[[1]]
   
-  list(model = randomForest(x = all_ft[, imp_bigrams], as.factor(c(rep("pos", length(pos_fil)), 
-                                                                   rep("neg", length(neg_fil))))),
+  list(model = randomForest(x = all_ft[, imp_bigrams], as.factor(c(rep("pos", nrow(pos_ft)), 
+                                                                   rep("neg", nrow(neg_ft))))),
        imps <- imp_bigrams)
 }
 
+# training two models --------------------------------
 pos_rf <- pos_classifier(pos_train, neg_train, aa_groups[[45]])
 neg_rf <- neg_classifier(pos_train, neg_train, aa_groups[[87]])
 
 save(pos_rf, neg_rf, file = "tmp_res.RData")
+
+# read test data --------------------------------
+
+all_reg <- readLines("reg33_full.txt")
+all_reg_id <- matrix(1L:length(all_reg), ncol = 3, byrow = TRUE)
+
+
+real_labels <- do.call(rbind, lapply(1L:nrow(all_reg_id), function(i) {
+  prot_seq <- all_reg[all_reg_id[i, 2]] %>%
+    strsplit(split = "") %>%
+    unlist
+  amyl <- rep(0, length(prot_seq))
+  
+  amyl_regs <- all_reg[all_reg_id[i, 3]] %>%
+    strsplit(split = " ") %>%
+    unlist %>% 
+    as.numeric %>%
+    matrix(nrow = 2) %>%
+    apply(2, function(j) j[1]:j[2] + 1) %>%
+    unlist %>%
+    as.vector
+  #-1 because reg33 counts 0, 1
+  amyl[amyl_regs - 1] <- 1
+  
+  res <- data.frame(id = rep(i, length(prot_seq)), prot_seq = prot_seq, amyl = amyl)
+  colnames(res) <- c("id", "prot_seq", "amyl")
+  res
+}))
+
+
+test_pos_data <- all_reg[all_reg_id[, 2]] %>%
+  strsplit(split = "") %>%
+  flist2matrix %>%
+  create_gl %>% 
+  get_bitrigrams(aa_group = aa_groups[[45]]) %>%
+  do.call(rbind, .) 
+
+pos_pred <- predict(pos_rf[[1]], test_pos_data[, pos_rf[[2]]], type = "prob")[, 2]
+
+test_neg_data <- all_reg[all_reg_id[, 2]] %>%
+  strsplit(split = "") %>%
+  flist2matrix %>%
+  create_gl %>% 
+  get_bitrigrams(aa_group = aa_groups[[87]]) %>%
+  do.call(rbind, .) 
+
+neg_pred <- predict(neg_rf[[1]], test_neg_data[, neg_rf[[2]]], type = "prob")[, 2]
+
+mean_pred <- all_reg[all_reg_id[, 2]] %>%
+  strsplit(split = "") %>%
+  flist2matrix %>%
+  create_gl %>%
+  do.call(rbind, .) %>%
+  data.frame %>%
+  select(id) %>%
+  cbind(., pred = neg_pred)
+
+
+
+biogram_res <- unlist(lapply(levels(mean_pred[["id"]]), function(single_protein) {
+  hexapreds <- filter(mean_pred, id == single_protein) %>% 
+    select(pred) %>% 
+    unlist 
+  
+  sapply(1L:(length(hexapreds) + 5), function(i) {
+    range_low <- ifelse(i - 1 < 1, 1, i - 1)
+    range_up <- ifelse(i + 1 > length(hexapreds), length(hexapreds), i + 1)
+    mean(hexapreds[range_low:range_up])
+  })
+}))
+
+bench_res <- cbind(bench_res, pred = biogram_res)
+
+HMeasure(bench_res[["amyl"]], bench_res[["pred"]])[["metrics"]]
