@@ -153,7 +153,7 @@ mean_pred <- all_reg[all_reg_id[, 2]] %>%
   do.call(rbind, .) %>%
   data.frame %>%
   select(id) %>%
-  cbind(., pred = neg_pred)
+  cbind(., pred = (neg_pred + pos_pred)/2)
 
 
 
@@ -163,12 +163,13 @@ biogram_res <- unlist(lapply(levels(mean_pred[["id"]]), function(single_protein)
     unlist 
   
   sapply(1L:(length(hexapreds) + 5), function(i) {
-    range_low <- ifelse(i - 1 < 1, 1, i - 1)
-    range_up <- ifelse(i + 1 > length(hexapreds), length(hexapreds), i + 1)
-    mean(hexapreds[range_low:range_up])
+    range_low <- ifelse(i - 5 < 1, 1, i - 5)
+    range_up <- ifelse(i + 5 > length(hexapreds), length(hexapreds), i + 5)
+    print(max(hexapreds[range_low:range_up]))
+    max(hexapreds[range_low:range_up])
   })
 }))
 
-bench_res <- cbind(bench_res, pred = biogram_res)
+bench_res <- cbind(real_labels, pred = biogram_res)
 
 HMeasure(bench_res[["amyl"]], bench_res[["pred"]])[["metrics"]]
