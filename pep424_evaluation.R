@@ -7,6 +7,8 @@ library(hmeasure)
 source("aa_encodings2.R") #creates encodings for data
 
 pep424_tab <- read.table("pep424_evaluation.txt", sep = "\t")
+levels(pep424_tab[[3]]) <- c(0, 0, 1, 1)
+
 
 pep424_prots <- lapply(as.character(pep424_tab[[2]]) %>% strsplit(split = ""), function(i)
   i[i != " "])
@@ -27,14 +29,15 @@ get_train_seqs <- function(file_name, pattern_vector) {
 seq_pos <- get_train_seqs("gcb_abstract_poster/amyloid_pos_full.fasta", sapply(pep424_prots, paste0, collapse = ""))
 seq_neg <- get_train_seqs("gcb_abstract_poster/amyloid_neg_full.fasta", sapply(pep424_prots, paste0, collapse = ""))
 
+min_subseq_length <- 5
 
 filter_length <- function(seq, max_length) {
-  seq[lengths(seq) <= max_length & lengths(seq) > 5]
+  seq[lengths(seq) <= max_length & lengths(seq) > min_subseq_length - 1]
 }
 
 create_gl <- function(seq)
   lapply(1L:nrow(seq), function(i) {
-    res <- do.call(rbind, strsplit(decode_ngrams(seq2ngrams(seq[i, ][!is.na(seq[i, ])], 6, a()[-1])), ""))
+    res <- do.call(rbind, strsplit(decode_ngrams(seq2ngrams(seq[i, ][!is.na(seq[i, ])], min_subseq_length, a()[-1])), ""))
     cbind(res, id = paste0("P", rep(i, nrow(res))))
   })
 
@@ -42,7 +45,7 @@ get_bitrigrams <- function(seq, aa_group)
   lapply(seq, function(single_protein) {
     bitrigrams <- as.matrix(count_multigrams(ns = c(1, rep(2, 4), rep(3, 3)), 
                                              ds = list(0, 0, 1, 2, 3, c(0, 0), c(0, 1), c(1, 0)),
-                                             seq = degenerate(single_protein[, -7], aa_group),
+                                             seq = degenerate(single_protein[, -(min_subseq_length + 1)], aa_group),
                                              u = as.character(1L:length(aa_group))))
     
     bitrigrams <- bitrigrams > 0
@@ -51,28 +54,6 @@ get_bitrigrams <- function(seq, aa_group)
     bitrigrams
   })
 
-filter_length <- function(seq, max_length) {
-  seq[lengths(seq) <= max_length & lengths(seq) > 5]
-}
-
-create_gl <- function(seq)
-  lapply(1L:nrow(seq), function(i) {
-    res <- do.call(rbind, strsplit(decode_ngrams(seq2ngrams(seq[i, ][!is.na(seq[i, ])], 6, a()[-1])), ""))
-    cbind(res, id = paste0("P", rep(i, nrow(res))))
-  })
-
-get_bitrigrams <- function(seq, aa_group) 
-  lapply(seq, function(single_protein) {
-    bitrigrams <- as.matrix(count_multigrams(ns = c(1, rep(2, 4), rep(3, 3)), 
-                                             ds = list(0, 0, 1, 2, 3, c(0, 0), c(0, 1), c(1, 0)),
-                                             seq = degenerate(single_protein[, -7], aa_group),
-                                             u = as.character(1L:length(aa_group))))
-    
-    bitrigrams <- bitrigrams > 0
-    storage.mode(bitrigrams) <- "integer"
-    
-    bitrigrams
-  })
 
 # fasta list to matrix
 flist2matrix <- function(x) {
@@ -85,7 +66,7 @@ flist2matrix <- function(x) {
 make_classifier <- function(pos_dat, neg_dat, aa_group, max_lenth) {
   pos_fil <- filter_length(pos_dat, max_lenth)
   neg_fil <- filter_length(neg_dat, max_lenth)
-  
+
   pos_ft <- do.call(rbind, flist2matrix(pos_fil) %>% 
                       create_gl() %>% 
                       get_bitrigrams(aa_group = aa_group))
@@ -109,7 +90,7 @@ make_classifier <- function(pos_dat, neg_dat, aa_group, max_lenth) {
 pos_rf <- make_classifier(seq_pos, seq_neg, aa_groups[[45]], 6)
 neg_rf <- make_classifier(seq_pos, seq_neg, aa_groups[[87]], 15)
 
-test_pos_data <- pep424_prots[lengths(pep424_prots) > 5] %>%
+test_pos_data <- pep424_prots[lengths(pep424_prots) > min_subseq_length] %>%
   flist2matrix %>%
   create_gl %>% 
   get_bitrigrams(aa_group = aa_groups[[45]]) %>%
@@ -117,7 +98,7 @@ test_pos_data <- pep424_prots[lengths(pep424_prots) > 5] %>%
 
 pos_pred <- predict(pos_rf[[1]], test_pos_data[, pos_rf[[2]]], type = "prob")[, 2]
 
-test_neg_data <- pep424_prots[lengths(pep424_prots) > 5] %>%
+test_neg_data <- pep424_prots[lengths(pep424_prots) > min_subseq_length] %>%
   flist2matrix %>%
   create_gl %>% 
   get_bitrigrams(aa_group = aa_groups[[87]]) %>%
@@ -127,7 +108,10 @@ neg_pred <- predict(neg_rf[[1]], test_neg_data[, neg_rf[[2]]], type = "prob")[, 
 
 final_pred <- (pos_pred + neg_pred)/2
 
-long_lengths <- lengths(pep424_prots)[lengths(pep424_prots) > 5]
-unlist(lapply(1L:length(long_lengths), function(i) rep(i, long_lengths[i] - 5)))
+long_lengths <- lengths(pep424_prots)[lengths(pep424_prots) > min_subseq_length]
+prot_preds <- data.frame(id = unlist(lapply(1L:length(long_lengths), function(i) 
+  rep(i, long_lengths[i] - min_subseq_length + 1))), pred = final_pred) %>% 
+  group_by(id) %>% summarise(pred = max(pred)) %>% select(pred) %>%
+  unlist
 
-HMeasure(real_labels, final_pred)[["metrics"]]
+HMeasure(as.numeric(as.character(pep424_tab[[3]]))[lengths(pep424_prots) > min_subseq_length], prot_preds)[["metrics"]]
