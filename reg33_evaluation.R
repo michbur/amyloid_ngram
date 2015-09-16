@@ -24,13 +24,16 @@ pos_remove <- which(pos_pasted %in% doubles)
 pos_train <- seq_pos[-pos_remove]
 neg_train <- read.fasta("gcb_abstract_poster/amyloid_neg_full.fasta", seqtype = "AA")
 
+#hexamers here
+min_subseq_length <- 6
+
 filter_length <- function(seq, max_length) {
-  seq[lengths(seq) <= max_length & lengths(seq) > 5]
+  seq[lengths(seq) <= max_length & lengths(seq) > min_subseq_length - 1]
 }
 
 create_gl <- function(seq)
   lapply(1L:nrow(seq), function(i) {
-    res <- do.call(rbind, strsplit(decode_ngrams(seq2ngrams(seq[i, ][!is.na(seq[i, ])], 6, a()[-1])), ""))
+    res <- do.call(rbind, strsplit(decode_ngrams(seq2ngrams(seq[i, ][!is.na(seq[i, ])], min_subseq_length, a()[-1])), ""))
     cbind(res, id = paste0("P", rep(i, nrow(res))))
   })
 
@@ -38,7 +41,7 @@ get_bitrigrams <- function(seq, aa_group)
   lapply(seq, function(single_protein) {
     bitrigrams <- as.matrix(count_multigrams(ns = c(1, rep(2, 4), rep(3, 3)), 
                                              ds = list(0, 0, 1, 2, 3, c(0, 0), c(0, 1), c(1, 0)),
-                                             seq = degenerate(single_protein[, -7], aa_group),
+                                             seq = degenerate(single_protein[, -(min_subseq_length + 1)], aa_group),
                                              u = as.character(1L:length(aa_group))))
     
     bitrigrams <- bitrigrams > 0
@@ -46,6 +49,7 @@ get_bitrigrams <- function(seq, aa_group)
     
     bitrigrams
   })
+
 
 # fasta list to matrix
 flist2matrix <- function(x) {
@@ -55,25 +59,9 @@ flist2matrix <- function(x) {
     c(i, rep(NA, max_len - length(i)))))
 }
 
-pos_classifier <- function(pos_dat, neg_dat, aa_group) {
-  pos_fil <- filter_length(pos_dat, 6)
-  neg_fil <- filter_length(neg_dat, 6)
-  
-  all_ft <- do.call(rbind, flist2matrix(c(pos_fil, neg_fil)) %>% 
-                      create_gl() %>% get_bitrigrams(aa_group = aa_group))
-  
-  test_bis <- test_features(target = c(rep(1, length(pos_fil)), rep(0, length(neg_fil))),
-                            features = all_ft, adjust = NULL)
-  imp_bigrams <- cut(test_bis, breaks = c(0, 0.05, 1))[[1]]
-  
-  list(model = randomForest(x = all_ft[, imp_bigrams], as.factor(c(rep("pos", length(pos_fil)), 
-                                                                   rep("neg", length(neg_fil))))),
-       imps <- imp_bigrams)
-}
-
-neg_classifier <- function(pos_dat, neg_dat, aa_group) {
-  pos_fil <- filter_length(pos_dat, 15)
-  neg_fil <- filter_length(neg_dat, 15)
+make_classifier <- function(pos_dat, neg_dat, aa_group, max_lenth) {
+  pos_fil <- filter_length(pos_dat, max_lenth)
+  neg_fil <- filter_length(neg_dat, max_lenth)
   
   pos_ft <- do.call(rbind, flist2matrix(pos_fil) %>% 
                       create_gl() %>% 
@@ -93,11 +81,12 @@ neg_classifier <- function(pos_dat, neg_dat, aa_group) {
        imps <- imp_bigrams)
 }
 
-# training two models --------------------------------
-pos_rf <- pos_classifier(pos_train, neg_train, aa_groups[[45]])
-neg_rf <- neg_classifier(pos_train, neg_train, aa_groups[[87]])
 
-save(pos_rf, neg_rf, file = "tmp_res.RData")
+
+pos_rf <- make_classifier(seq_pos, seq_neg, aa_groups[[45]], 6)
+neg_rf <- make_classifier(seq_pos, seq_neg, aa_groups[[87]], 15)
+
+
 
 # read test data --------------------------------
 
