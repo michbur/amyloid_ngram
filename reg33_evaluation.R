@@ -78,7 +78,7 @@ make_classifier <- function(pos_dat, neg_dat, aa_group, max_lenth) {
   
   list(model = randomForest(x = all_ft[, imp_bigrams], as.factor(c(rep("pos", nrow(pos_ft)), 
                                                                    rep("neg", nrow(neg_ft))))),
-       imps <- imp_bigrams)
+       imps = imp_bigrams)
 }
 
 
