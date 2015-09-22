@@ -13,6 +13,9 @@ levels(pep424_tab[[3]]) <- c(0, 1, 0, 1)
 pep424_prots <- lapply(as.character(pep424_tab[[2]]) %>% strsplit(split = ""), function(i)
   i[i != " "])
 
+# write pasta files with seqs
+write.fasta(pep424_prots, names = as.character(pep424_tab[[1]]), file.out = "pep424.fasta")
+
 
 #reads data and removes seqs already present in test set
 get_train_seqs <- function(file_name, pattern_vector) {
@@ -29,7 +32,7 @@ get_train_seqs <- function(file_name, pattern_vector) {
 seq_pos <- get_train_seqs("gcb_abstract_poster/amyloid_pos_full.fasta", sapply(pep424_prots, paste0, collapse = ""))
 seq_neg <- get_train_seqs("gcb_abstract_poster/amyloid_neg_full.fasta", sapply(pep424_prots, paste0, collapse = ""))
 
-min_subseq_length <- 5
+min_subseq_length <- 4
 
 filter_length <- function(seq, max_length) {
   seq[lengths(seq) <= max_length & lengths(seq) > min_subseq_length - 1]
@@ -114,4 +117,16 @@ prot_preds <- data.frame(id = unlist(lapply(1L:length(long_lengths), function(i)
   group_by(id) %>% summarise(pred = max(pred)) %>% select(pred) %>%
   unlist
 
-HMeasure(as.numeric(as.character(pep424_tab[[3]]))[lengths(pep424_prots) > min_subseq_length], prot_preds)[["metrics"]]
+#real labels
+real_labels <- as.numeric(as.character(pep424_tab[[3]]))[lengths(pep424_prots) > min_subseq_length]
+
+
+#fold amyloid preds
+foldAmyloid_data <- readLines("FoldAmyloid_pred.txt")
+foldAmyloid_preds <- grepl("1", 
+                           foldAmyloid_data[grep("Options: Scale = Expected number of contacts 8A", 
+                                                 foldAmyloid_data) + 1])
+
+
+HMeasure(real_labels, data.frame(FoldAmyloid = foldAmyloid_preds, 
+                                 AmyloGram = prot_preds))[["metrics"]]
