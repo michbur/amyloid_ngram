@@ -7,7 +7,7 @@ library(hmeasure)
 source("aa_encodings2.R") #creates encodings for data
 
 pep424_tab <- read.table("pep424_evaluation.txt", sep = "\t")
-levels(pep424_tab[[3]]) <- c(0, 1, 0, 1)
+levels(pep424_tab[[3]]) <- c(0, 0, 1, 1)
 
 
 pep424_prots <- lapply(as.character(pep424_tab[[2]]) %>% strsplit(split = ""), function(i)
