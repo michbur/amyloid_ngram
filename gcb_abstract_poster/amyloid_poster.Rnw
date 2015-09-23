@@ -148,6 +148,8 @@ ggplot(seq_inter_ct, aes(x = len, y = Freq, fill = tar, label = Freq)) +
 \end{block}
 \vfill
 
+
+
 \begin{block}{Clustering of amino acids}
 
 \begin{enumerate}[1.]
@@ -162,11 +164,15 @@ ggplot(seq_inter_ct, aes(x = len, y = Freq, fill = tar, label = Freq)) +
 
 \begin{block}{Evaluation}
 
+\begin{figure}
+\includegraphics[width=\maxwidth]{ngram_scheme}
+\end{figure}
+
 \begin{enumerate}[1.]
 \item Sequences shorter than 6 amino acids were discarded.
-\item From each sequence overlapping 5-grams were extracted. All n-grams were labelled as their sequence of the origin (e.g. all 5-grams extracted from amyloid sequence were labelled as positive).
-\item For each encoding features were filtered by the QuiPT and used to train the Random Forests~\citep{liaw_classification_2002}. This procedure was performed independently on three training sets: a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter creating three classifiers.
-\item All classifiers were evaluated in the 5-fold cross-validation eight times. The sequence was labelled as positive (amylogenic), if at least one 5-gram was assessed as amylogenic.
+\item From each sequence overlapping windows of length 6 were extracted. All windows were labelled as their sequence of the origin, e.g. all windows extracted from amyloid sequence were labelled as positive (see Figure A and B).
+\item For each window, 1-, 2- and 3-grams (both discontinous and continous) were extracted (see Figure B). For each encoding, the encoded n-grams were filtered by the QuiPT and used to train the Random Forests~\citep{liaw_classification_2002}. This procedure was performed independently on three training sets: a) 6 amino acids, b) 10 amino acids or shorter, c) 15 amino acids or shorter creating three classifiers.
+\item All classifiers were evaluated in the 5-fold cross-validation eight times. The sequence was labelled as positive (amylogenic), if at least one window was assessed as amylogenic.
 \end{enumerate}
 
 \end{block}
