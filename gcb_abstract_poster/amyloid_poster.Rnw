@@ -178,6 +178,22 @@ ggplot(seq_inter_ct, aes(x = len, y = Freq, fill = tar, label = Freq)) +
 \end{block}
 \vfill
 
+
+}
+\end{minipage}
+\end{beamercolorbox}
+\end{column}
+
+
+%new column ------------------------------------------------------    
+
+\begin{column}{.50\textwidth}
+\begin{beamercolorbox}[center,wd=\textwidth]{postercolumn}
+\begin{minipage}[T]{.95\textwidth}  
+\parbox[t][\columnheight]{\textwidth}
+{
+
+
 \begin{block}{Encoding distance}
 
 The encoding distance between \textbf{A} and \textbf{B} is defined as the minimum number of amino acids that have to be shifted between subgroups of encoding \textbf{A} to make it identical to \textbf{B} (order of subgroups in the encoding and amino acids in a group is unimportant).
@@ -211,24 +227,6 @@ The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c}
 
 \end{block}
 \vfill
-
-
-
-}
-\end{minipage}
-\end{beamercolorbox}
-\end{column}
-
-
-%new column ------------------------------------------------------    
-
-\begin{column}{.50\textwidth}
-\begin{beamercolorbox}[center,wd=\textwidth]{postercolumn}
-\begin{minipage}[T]{.95\textwidth}  
-\parbox[t][\columnheight]{\textwidth}
-{
-
-
 
 
 \begin{block}{Specificity versus sensitivity}
