@@ -17,6 +17,8 @@ pep424_prots <- lapply(as.character(pep424_tab[[2]]) %>% strsplit(split = ""), f
 write.fasta(pep424_prots[lengths(pep424_prots) > 5], 
             names = as.character(pep424_tab[[1]]), file.out = "pep424.fasta")
 
+write.fasta(pep424_prots[lengths(pep424_prots) > 5], 
+            names = paste0("prot", 1L:sum(lengths(pep424_prots) > 5)), file.out = "pep424_better_names.fasta")
 
 #reads data and removes seqs already present in test set
 get_train_seqs <- function(file_name, pattern_vector) {
@@ -128,6 +130,18 @@ foldAmyloid_preds <- grepl("1",
                            foldAmyloid_data[grep("Options: Scale = Expected number of contacts 8A", 
                                                  foldAmyloid_data) + 1])
 
+#PASTA 2.0 preds
+file_names <- list.files("./pasta2_preds/")[grepl("fasta.seq.best_pairings_list.dat", list.files("./pasta2_preds/"))]
 
-HMeasure(real_labels, data.frame(FoldAmyloid = foldAmyloid_preds, 
-                                 AmyloGram = prot_preds))[["metrics"]]
+pasta2_prot_id <- as.numeric(sapply(strsplit(file_names, ".", fixed = TRUE), function(i) substr(i[1], 5, nchar(i[1]))))
+
+pasta2_preds <- sapply(file_names, function(i) {
+  all_lines <- readLines(paste0("./pasta2_preds/", i))
+  as.numeric(strsplit(strsplit(all_lines, "PASTA energy ")[[1]][2], "*[ ]")[[1]][1])
+}) < -4
+
+
+
+HMeasure(real_labels, data.frame(AmyloGram = prot_preds,
+                                 PASTA2 = pasta2_preds[order(pasta2_prot_id)],
+                                 FoldAmyloid = foldAmyloid_preds))[["metrics"]][, c("AUC", "Sens", "Spec")]
