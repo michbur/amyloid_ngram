@@ -19,36 +19,37 @@ flist2matrix <- function(x) {
     c(i, rep(NA, max_len - length(i)))))
 }
 
-get_freqs <- function(aa_group_id) {
-  totals <- rbind(flist2matrix(seq_pos) %>% 
+get_freqs <- function(aa_group_id, n = 1) {
+  rbind(flist2matrix(seq_pos) %>% 
                     degenerate(element_groups = aa_group_id) %>%
-                    count_ngrams(n = 1, u = 1L:length(aa_group_id)) %>%
+                    count_ngrams(n = n, u = 1L:length(aa_group_id)) %>%
                     as.matrix %>%
                     data.frame %>%
                     cbind(., tar = "yes"),
                   flist2matrix(seq_neg) %>% 
                     degenerate(element_groups = aa_group_id) %>%
-                    count_ngrams(n = 1, u = 1L:length(aa_group_id)) %>%
+                    count_ngrams(n = n, u = 1L:length(aa_group_id)) %>%
                     as.matrix %>%
                     data.frame %>%
                     cbind(., tar = "no")) %>%
-    melt %>% group_by(tar, variable) %>% summarise(freq = sum(value))
-  
-  totals[totals[["tar"]] == "pos", "freq"] <- totals[totals[["tar"]] == "pos", "freq"]/sum(totals[totals[["tar"]] == "pos", "freq"])
-  totals[totals[["tar"]] == "neg", "freq"] <- totals[totals[["tar"]] == "neg", "freq"]/sum(totals[totals[["tar"]] == "neg", "freq"])
-  totals
+    melt %>% group_by(tar, variable) %>% summarise(freq = sum(value)) %>% ungroup %>% 
+    group_by(tar) %>% mutate(freq = freq/sum(freq)) %>% data.frame
 }
 
-amylo_freq <- rbind(cbind(get_freqs(aa_groups[[45]]), enc = "Best specificity"),
-                    cbind(get_freqs(aa_groups[[87]]), enc = "Best sensitivity"))
-levels(amylo_freq[["variable"]]) <- c("I", "II", "III", "IV", "V", "VI")
+amylo_freq <- rbind(cbind(get_freqs(aa_groups[[45]]), enc = "Best specificity", n = 1),
+                    cbind(get_freqs(aa_groups[[87]]), enc = "Best sensitivity", n = 1),
+                    cbind(get_freqs(aa_groups[[45]], n= 2), enc = "Best specificity", n = 2),
+                    cbind(get_freqs(aa_groups[[87]], n= 2), enc = "Best sensitivity", n = 2))
 
-save(amylo_freq, spec, sens, file = "biogram_presentation_specsens.RData")
+levels(amylo_freq[["variable"]]) <- decode_ngrams(sapply(levels(amylo_freq[["variable"]]), function(i) substr(i, 2, nchar(i))))
+
+
+save(amylo_freq, spec, sens, file = "./gcb_abstract_poster/specsens.RData")
 
 ggplot(amylo_freq, aes(x = variable, y = freq, fill = tar, colour = tar)) +
   geom_bar(stat = "identity", position = "dodge") + 
   scale_y_continuous("Frequency") +
   scale_x_discrete("Group ID\n") +
   scale_fill_discrete("Amyloid") +
-  facet_wrap(~ enc, scales = "free_x") +
+  facet_wrap( ~ enc, scales = "free") +
   guides(colour = FALSE) 

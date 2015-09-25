@@ -72,7 +72,7 @@ flist2matrix <- function(x) {
 make_classifier <- function(pos_dat, neg_dat, aa_group, max_lenth) {
   pos_fil <- filter_length(pos_dat, max_lenth)
   neg_fil <- filter_length(neg_dat, max_lenth)
-
+  
   pos_ft <- do.call(rbind, flist2matrix(pos_fil) %>% 
                       create_gl() %>% 
                       get_bitrigrams(aa_group = aa_group))
@@ -142,6 +142,8 @@ pasta2_preds <- sapply(file_names, function(i) {
 
 
 
-HMeasure(real_labels, data.frame(AmyloGram = prot_preds,
-                                 PASTA2 = pasta2_preds[order(pasta2_prot_id)],
-                                 FoldAmyloid = foldAmyloid_preds))[["metrics"]][, c("AUC", "Sens", "Spec")]
+metrics <- HMeasure(real_labels, data.frame(AmyloGram = prot_preds,
+                                            PASTA2 = pasta2_preds[order(pasta2_prot_id)],
+                                            FoldAmyloid = foldAmyloid_preds))[["metrics"]][, c("AUC", "Sens", "Spec")]
+
+save(metrics, file = "gcb_abstract_poster/metrics.RData")

@@ -136,18 +136,22 @@
 
 \begin{frame}
 \begin{columns}
-\begin{column}{.50\textwidth}
+\begin{column}{.485\textwidth}
 \begin{beamercolorbox}[center,wd=\textwidth]{postercolumn}
 \begin{minipage}[T]{.95\textwidth}
 \parbox[t][\columnheight]{\textwidth}
 {
 \begin{block}{Aim}
-Investigate and predict sequences responsible for amyloidogenicity, the cause of various clinical disorders (e.g. Alzheimer's or Creutzfeldt-Jakob's diseases).
+Investigate features responsible for amyloidogenicity, the cause of various clinical disorders (e.g. Alzheimer's or Creutzfeldt-Jakob's diseases). The features are defines as countinous and discontinous subsequences of amino acids (n-grams).
 \end{block}
 \vfill
 
 \begin{block}{Introduction}
 All amyloidogenic sequences (amyloids), despite their variability in size and amino acid composition, form mostly cytotoxic aggregates~\citep{breydo_structural_2015}. The hallmark trait of amyloids is the presence of hot-spots, short sequences of amino acids that play key role in the aggregation process~\citep{fandrich_oligomeric_2012}.
+
+\medskip
+
+The n-gram encoding of sequences creates high-dimensional data sets. We filtered significant features using the \textbf{Qui}ck \textbf{P}ermutation \textbf{T}est (\textbf{QuiPT}) and information gain criterion with significance level $0.95$~\citep{burdukiewicz}.
 \end{block}
 \vfill
 
@@ -174,8 +178,7 @@ The sequences used in the study (1044 non-amyloids and 421 amyloids) were extrac
 \begin{enumerate}[1.]
 \item Nine scales representing properties important in the amylogenicity: hydrophobicity, size polarity and solvent accessibility from AAIndex database~\citep{kawashima_aaindex:_2008} were chosen. Additionally, two frequencies of forming contact sites~\citep{wozniak_characteristics_2014} were added. All scales were normalized.
 \item All combinations of characteristics (each time selecting only one scale per the property) were clustered using Euclidean distance and Ward's method.
-\item Each clustering was divided into 3 to 6 groups creating 144 encodings of amino acids.
-\item Redundant 51 encodings (identical to other encodings) were removed.
+\item Each clustering was divided into 3 to 6 groups creating 144 encodings of amino acids. Redundant 51 encodings (identical to other encodings) were removed.
 \end{enumerate}
 
 \end{block}
@@ -198,6 +201,7 @@ The sequences used in the study (1044 non-amyloids and 421 amyloids) were extrac
 \vfill
 
 
+
 }
 \end{minipage}
 \end{beamercolorbox}
@@ -206,87 +210,183 @@ The sequences used in the study (1044 non-amyloids and 421 amyloids) were extrac
 
 %new column ------------------------------------------------------    
 
-\begin{column}{.50\textwidth}
+\begin{column}{.525\textwidth}
 \begin{beamercolorbox}[center,wd=\textwidth]{postercolumn}
 \begin{minipage}[T]{.95\textwidth}  
 \parbox[t][\columnheight]{\textwidth}
 {
 
 
-\begin{block}{Encoding distance}
+%' \begin{block}{Encoding distance}
+%' 
+%' The encoding distance between \textbf{A} and \textbf{B} is defined as the minimum number of amino acids that have to be shifted between subgroups of encoding \textbf{A} to make it identical to \textbf{B} (order of subgroups in the encoding and amino acids in a group is unimportant).
+%' 
+%' \begin{columns}
+%' \column{.4\textwidth}
+%' <<encodingDistanceA, echo = FALSE, message=FALSE, results='asis'>>=
+%' enc2df <- function(x)
+%'   data.frame(Group = names(x), Elements = sapply(x, paste0, collapse = ", "))
+%' l1 <- list('1' = c("a", "b", "c"),
+%'              '2' = c("d", "e"))
+%' l2 <- list('1' = c("a", "b"),
+%'              '2' = c("d", "e"),
+%'             '3' = c("c"))
+%' tmp <- enc2df(l1)
+%' rws <- seq(1, nrow(tmp) - 1, by = 2)
+%' col <- rep("\\rowcolor[gray]{0.75}", length(rws))
+%' print(xtable(tmp, "Encoding \\textbf{A}.", align = "cc|l"), include.rownames = FALSE, booktabs = TRUE, add.to.row = list(pos = as.list(rws), command = col))
+%' @
+%' \column{.4\textwidth}
+%' 
+%' <<encodingDistanceB, echo = FALSE, message=FALSE, results='asis'>>=
+%' tmp <- enc2df(l2)
+%' rws <- seq(1, nrow(tmp) - 1, by = 2)
+%' col <- rep("\\rowcolor[gray]{0.75}", length(rws))
+%' print(xtable(tmp, "Encoding \\textbf{B}.", align = "cc|l"), include.rownames = FALSE, booktabs = TRUE, add.to.row = list(pos = as.list(rws), command = col))
+%' @
+%' \end{columns}
+%' 
+%' The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c} must be moved from Group 3 to Group 1).
+%' 
+%' \end{block}
+%' \vfill
 
-The encoding distance between \textbf{A} and \textbf{B} is defined as the minimum number of amino acids that have to be shifted between subgroups of encoding \textbf{A} to make it identical to \textbf{B} (order of subgroups in the encoding and amino acids in a group is unimportant).
-
-\begin{columns}
-\column{.4\textwidth}
+\begin{block}{Cross-validation results}
 % latex table generated in R 3.2.2 by xtable 1.7-4 package
-% Wed Sep 23 14:25:36 2015
+% Fri Sep 25 19:21:35 2015
 \begin{table}[ht]
 \centering
-\begin{tabular}{c|l}
+\caption{Encodings with the best sensitivity and specificity for each training set type.} 
+\begin{tabular}{c|c|c|c|c}
   \toprule
-Group & Elements \\ 
+Training length & Number of groups & Encoding ID & Sensitivity & Specificity \\ 
   \midrule
-1 & a, b, c \\ 
-   \rowcolor[gray]{0.75}2 & d, e \\ 
+6 & 4 & 45 & 0.5038 & 0.9014 \\ 
+   \rowcolor[gray]{0.75}$<$16 & 6 & 87 & 0.9195 & 0.5186 \\ 
    \bottomrule
 \end{tabular}
-\caption{Encoding \textbf{A}.} 
+\end{table}
+
+
+
+\end{block}
+\vfill
+
+
+\begin{block}{The best encodings}
+\begin{columns}
+\column{.4\textwidth}
+
+\begin{table}[ht]
+\centering
+\caption{The best specificity encoding.} 
+\begin{tabular}{r | l}
+\toprule
+ID & Amino acids \\ 
+\midrule
+I & H, M \\ 
+\rowcolor[gray]{0.85}II & F, W, Y \\ 
+III &  C, I, L, V \\ 
+\rowcolor[gray]{0.85}IV &  A, D, E, G, K, N, P, Q, R, S, T \\ 
+\bottomrule
+\end{tabular}
+\label{tab:best}
 \end{table}
 
 \column{.4\textwidth}
 
-% latex table generated in R 3.2.2 by xtable 1.7-4 package
-% Wed Sep 23 14:25:36 2015
 \begin{table}[ht]
 \centering
-\begin{tabular}{c|l}
-  \toprule
-Group & Elements \\ 
-  \midrule
-1 & a, b \\ 
-   \rowcolor[gray]{0.75}2 & d, e \\ 
-  3 & c \\ 
-   \bottomrule
+\caption{The best sensitivity encoding.} 
+\begin{tabular}{r | l}
+\toprule
+ID & Amino acids \\ 
+\midrule
+I & A, T \\ 
+\rowcolor[gray]{0.85}II & D, E, N \\ 
+III & G, P, S \\ 
+\rowcolor[gray]{0.85}IV &  F, W, Y \\ 
+V & H, K, Q, R \\ 
+\rowcolor[gray]{0.85}VI &  C, I, L, M, V \\ 
+\bottomrule
 \end{tabular}
-\caption{Encoding \textbf{B}.} 
+\label{tab:best}
 \end{table}
 
 \end{columns}
 
-The encoding distance between \textbf{A} and \textbf{B} is 1 (element \textit{c} must be moved from Group 3 to Group 1).
+All 1-grams were considered as significant features by QuiPT.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/specSensPlot-1} 
+
+\end{knitrout}
+
+Considering the hydrophobic 1-grams, only aromatic residues differ amyloid and non-amyloid sequences.
 
 \end{block}
 \vfill
 
+%' \begin{block}{2-gram frequencies in sequences}
+%' 
+%' <<specSensPlot2, echo = FALSE, message=FALSE, fig.height=8, fig.width=14>>=
+%' #ggplot(seq_inter_ct, aes(x = len, y = prop, fill = tar, label = paste0(round(prop, 4) * 100, "%"))) +
+%' load("specsens.RData")
+%' ggplot(filter(amylo_freq, n == 2), aes(x = variable, y = freq, fill = tar, colour = tar)) +
+%'   geom_bar(stat = "identity", position = "dodge") + 
+%'   scale_y_continuous("Frequency") +
+%'   scale_x_discrete("Group ID\n") + 
+%'   scale_fill_manual("Amyloid", values = c("no" = "skyblue", "yes" = "tan2")) +
+%'   scale_colour_manual("Amyloid", values = c("no" = "skyblue", "yes" = "tan2")) +
+%'   facet_wrap(~ enc, scales = "free_x", ncol = 1) +
+%'   guides(colour = FALSE) +
+%'   cool_theme
+%' @
+%' 
+%' \end{block}
+%' \vfill
 
-\begin{block}{Specificity versus sensitivity}
+\begin{block}{AmyloGram}
+The best specificity encoding (training sequence maximum length 6, 4 groups) and the best sensitivity (training sequence maximum length $<$16, 6 groups) seem to have the different areas of the competence.
+
+AmyloGram, the committee of the best specificity and best sensitivity classifiers, has overall $0.8911$ AUC, $0.7473$ sensitivity and $0.8684$ specificity.
+\end{block}
+\vfill
+
+\begin{block}{Comparison with other software}
+We used established \textit{pep424} benchmark data set~\citep{walsh_pasta_2014} to compare AmyloGram with top-performing  predictors of amyloidogenicity (default settings used).
+
 % latex table generated in R 3.2.2 by xtable 1.7-4 package
-% Wed Sep 23 14:25:36 2015
+% Fri Sep 25 19:21:35 2015
 \begin{table}[ht]
 \centering
-\begin{tabular}{c|c|c|c|c|c}
+\caption{Results of benchmark.} 
+\begin{tabular}{c|c|c|c}
   \toprule
-Training length & Number of groups & Encoding ID & AUC & Specificity & Sensitivity \\ 
+Predictor name & AUC & Sensitivity & Specificity \\ 
   \midrule
-6 & 3 & 6 & 0.7955 & 0.8221 & 0.6181 \\ 
-   \rowcolor[gray]{0.75}6 & 4 & 45 & 0.8183 & 0.9014 & 0.5038 \\ 
-  $<$11 & 4 & 2 & 0.6615 & 0.4304 & 0.8307 \\ 
-   \rowcolor[gray]{0.75}$<$11 & 3 & 15 & 0.8088 & 0.8329 & 0.6060 \\ 
-  $<$16 & 3 & 16 & 0.8162 & 0.7477 & 0.7374 \\ 
-   \rowcolor[gray]{0.75}$<$16 & 6 & 87 & 0.8320 & 0.5186 & 0.9195 \\ 
+AmyloGram & 0.8426 & 0.8054 & 0.7222 \\ 
+   \rowcolor[gray]{0.75}PASTA2 & 0.7920 & 0.7248 & 0.8593 \\ 
+  FoldAmyloid & 0.7351 & 0.7517 & 0.7185 \\ 
    \bottomrule
 \end{tabular}
-\caption{Encodings with the best sensitivity and specificity for each training set type.} 
 \end{table}
 
 
-The best specificity encoding (training length 6, 4 groups, encoding ID 45) and the best sensitivity (training length $<$16, 6 groups, encoding ID 87) seem to have the different areas of the competence.
-
-The committee of the best specificity and best sensitivity classifiers has overall $0.8911$ AUC, $0.7473$ sensitivity and $0.8684$ specificity.
-
+Since AmyloGram model assumes 6 amino acids as the minimum length of amyloid sequence, the five short sequences ($1.18\%$) were removed from data set.
 \end{block}
 \vfill
+
+\begin{block}{Summary and availability}
+AmyloGram is a model-independent predictor of amylogenicity. Instead, it provides insight on the structural features present in the hot-spots. Moreover, AmyloGram is also able to recognise amylogenic seuquences better than existing predictors.
+
+\medskip
+
+AmyloGram web-server: \url{smorfland.uni.wroc.pl/amylogram}.
+\end{block}
+\vfill
+
 
 \begin{block}{Bibliography}
   \tiny{
