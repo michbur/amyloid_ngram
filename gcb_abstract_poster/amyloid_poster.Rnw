@@ -191,7 +191,7 @@ ggplot(seq_inter_ct, aes(x = len, y = Freq, fill = tar, label = Freq)) +
 
 %new column ------------------------------------------------------    
 
-\begin{column}{.525\textwidth}
+\begin{column}{.51\textwidth}
 \begin{beamercolorbox}[center,wd=\textwidth]{postercolumn}
 \begin{minipage}[T]{.95\textwidth}  
 \parbox[t][\columnheight]{\textwidth}
@@ -262,9 +262,9 @@ print(xtable(tmp, "Encodings with the best sensitivity and specificity for each 
 ID & Amino acids \\ 
 \midrule
 I & H, M \\ 
-\rowcolor[gray]{0.85}II & F, W, Y \\ 
+\rowcolor[gray]{0.75}II & F, W, Y \\ 
 III &  C, I, L, V \\ 
-\rowcolor[gray]{0.85}IV &  A, D, E, G, K, N, P, Q, R, S, T \\ 
+\rowcolor[gray]{0.75}IV &  A, D, E, G, K, N, P, Q, R, S, T \\ 
 \bottomrule
 \end{tabular}
 \label{tab:best}
@@ -280,11 +280,11 @@ III &  C, I, L, V \\
 ID & Amino acids \\ 
 \midrule
 I & A, T \\ 
-\rowcolor[gray]{0.85}II & D, E, N \\ 
+\rowcolor[gray]{0.75}II & D, E, N \\ 
 III & G, P, S \\ 
-\rowcolor[gray]{0.85}IV &  F, W, Y \\ 
+\rowcolor[gray]{0.75}IV &  F, W, Y \\ 
 V & H, K, Q, R \\ 
-\rowcolor[gray]{0.85}VI &  C, I, L, M, V \\ 
+\rowcolor[gray]{0.75}VI &  C, I, L, M, V \\ 
 \bottomrule
 \end{tabular}
 \label{tab:best}
@@ -364,7 +364,7 @@ Since AmyloGram model assumes 6 amino acids as the minimum length of amyloid seq
 \vfill
 
 \begin{block}{Summary and availability}
-AmyloGram is a model-independent predictor of amylogenicity. Instead, it provides insight on the structural features present in the hot-spots. Moreover, AmyloGram is also able to recognise amylogenic seuquences better than existing predictors.
+AmyloGram is a model-independent predictor of amylogenicity. Instead, it provides insight on the structural features present in the hot-spots. Moreover, AmyloGram recognises amylogenic sequences better than existing predictors.
 
 \medskip
 
