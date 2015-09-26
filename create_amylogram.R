@@ -60,10 +60,36 @@ make_classifier <- function(pos_dat, neg_dat, aa_group, max_lenth) {
   
   list(model = randomForest(x = all_ft[, imp_bigrams], as.factor(c(rep("pos", nrow(pos_ft)), 
                                                                    rep("neg", nrow(neg_ft))))),
-       imps = imp_bigrams)
+       imps = imp_bigrams,
+       aa_group = aa_group)
 }
 
 
 
 pos_rf <- make_classifier(seq_pos, seq_neg, aa_groups[[45]], 6)
 neg_rf <- make_classifier(seq_pos, seq_neg, aa_groups[[87]], 15)
+
+save(neg_rf, pos_rf, file = "AmyloGram_committee.RData")
+
+#only single seq
+predict_single_classifier <- function(classifier, new_data) {
+  dat <- do.call(rbind, flist2matrix(new_data) %>% 
+            create_gl() %>% 
+            get_bitrigrams(aa_group = classifier[["aa_group"]]))
+  predict(classifier[["model"]], dat[, classifier[["imps"]]], type = "prob")[, "pos"]
+}
+
+single_seq <- seq_pos[[1]]
+
+predict_classifier <- function(seqs) 
+  sapply(seqs, function(single_seq) {
+    if(length(single_seq) < 6) {
+      NA
+    } else {
+      max((predict_single_classifier(pos_rf, single_seq) +
+             predict_single_classifier(neg_rf, single_seq))/2)
+    }
+  })
+    
+
+predict_classifier(seq_neg[1L:10])
