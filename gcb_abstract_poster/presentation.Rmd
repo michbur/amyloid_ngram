@@ -22,8 +22,9 @@ library(rbokeh)
 library(reshape2)
 library(DiagrammeR)
 
-load("poster_data.RData")
 load("report4.RData")
+load("poster_data.RData")
+
 
 size_mod <- -4
 cool_theme <- theme(plot.background=element_rect(fill = "transparent",
@@ -231,24 +232,26 @@ Sekwencje (`r totals[1]` nie-amyloid and `r totals[2]` amyloid) pobrano z bazy A
  - Każde grupowanie było podzielone na od trzech do sześciu kodowań tworząc 144 kodowania.
  - Redundatne 51 kodowań (identycznych z innymi kodowaniami) zostało usuniętych.
 
-## Grupowanie aminokwasów
-```{r echo=FALSE,message=FALSE,results='asis'}
-mermaid("
-graph LR
-A1(Hydrofobowość)-->B[Grupowanie]
-A2(Rozmiar)-->B[Grupowanie]
-A3(Polarność)-->B[Grupowanie]
-A4(Dostępność dla <br/> rozpuszczalnika)-->B[Grupowanie]
-A5(Kontaktywność)-->B[Grupowanie]
-B==>C{Podział grupowań <br/> na kodowania}
-
-")
-```
-
-
 ## Uczenie
 
  - Odrzucono sekwencje krótsze niż 6 aminokwasów.
- - Dla każdej sekwencji odczytano nachodzące okna o długości 6.
+ - Dla każdej sekwencji odczytano zachodzące okna o długości 6. Każde okno zostało oznaczone tak samo jak sekwencja z której zostało wybrane.
+ - Z każdego okna wybrano 1-, 2- i 3-gramy (zarówno ciągłe jak i z przerwami). Dla każdego kodowania osobno, n-gramy przefiltrowano używając metody QuiPT i wykorzystano do uczenia lasów losowych [@liaw_classification_2002]. 
+ - Procedurę wykonano trzykrotnie na trzech zbiorach uczących: sekwencje o długości 6 aminokwasów, krótsze niż 11 aminokwasów i krótsze niż 15 aminokwasów. 
+
+## Uczenie
+
+Tu obrazek
+
+## Wyniki walidacji krzyżowej
+
+```{r echo=FALSE,message=FALSE,results='asis'}
+colnames(res) <- c("Zbiór uczący", "Encoding ID", "AUC", "Specyficzność", "Czułość", "Liczba grup")
+
+res <- res[, c(1, 6, 2, 5, 4)]
+
+datatable(res, filter = "top", options = list(searching = TRUE)) %>% formatRound(4L:7, 4)
+```
+
 
 ## References
