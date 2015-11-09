@@ -4,7 +4,7 @@ author: "Michal Burdukiewicz, Piotr Sobczyk, Paweł Mackiewicz, Małgorzata Kotu
 date: "9 listopada 2015"
 output:
   ioslides_presentation:
-    self_contained: no
+    widescreen: yes
   slidy_presentation: default
 bibliography: amyloids.bib
 ---
