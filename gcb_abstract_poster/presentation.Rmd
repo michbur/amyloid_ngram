@@ -1,12 +1,19 @@
 ---
 title: "Analiza n-gramowa amyloid"
-author: "Michal Burdukiewicz, Piotr Sobczyk"
+author: "Michal Burdukiewicz, Piotr Sobczyk, Paweł Mackiewicz, Małgorzata Kotulska"
 date: "9 listopada 2015"
-output: 
+output:
   ioslides_presentation:
     self_contained: no
+  slidy_presentation: default
 bibliography: amyloids.bib
 ---
+
+## Amyloidy
+
+Białka amyloidogenne zawierają *hot-spots*, krótkie sekwencje aminokwasów, które powodują agregowanie białek w zazwyczaj cytotoksyczne kompleksy [@fandrich_oligomeric_2012]. 
+
+Agregaty amyloid są przyczyną różnych zaburzeń (m.in. choroby Alzheimera, Creutzfelda-Jacoba). Mimo podobieństw w procesie agregacji, białka amyloidogenne są zróżnicowane pod względem długości i składu aminokwasowego [@breydo_structural_2015].
 
 ## n-gramy (k-mery)
 
@@ -14,7 +21,7 @@ bibliography: amyloids.bib
 library(ggplot2)
 library(grid)
 library(biogram)
-#library(knitr)
+library(knitr)
 library(DT)
 library(seqinr) 
 library(dplyr)
@@ -24,6 +31,8 @@ library(DiagrammeR)
 
 load("report4.RData")
 load("poster_data.RData")
+load("specsens.RData")
+load("metrics.RData")
 
 
 size_mod <- -4
@@ -202,9 +211,7 @@ $$
 gdzie $N_{T_P > T_R}$ to liczba losowań, kiedy $T_P$ (permutowana statystyka testowa) miała wartość 
 krytyczniejszą niż $T_R$ (statystyka testowa dla niespermutowanych danych).
 
-## Test permutacyjny
-
-Powyższy test permutacyjny jest równoważny dwustronnemu dokładnemu testowi Fishera. Ponieważ nasze wektory związane z n-gramami są bardzo rzadkie (wiele zer), to uzyskujemy bardzo istotne przyspieszenie i poprawę jakości obliczanych p-wartości.
+Powyższy test permutacyjny jest równoważny dwustronnemu dokładnemu testowi Fishera. Ponieważ nasze wektory związane z n-gramami są bardzo rzadkie (wiele zer), uzyskujemy istotne przyspieszenie i poprawę jakości obliczanych p-wartości.
 
 
 ## Baza AmyLoad
@@ -223,7 +230,7 @@ ggplot(seq_inter_ct_pl, aes(x = len, y = Freq, fill = tar, label = Freq)) +
   cool_theme + theme(legend.position = "bottom")
 ```
 
-Sekwencje (`r totals[1]` nie-amyloid and `r totals[2]` amyloid) pobrano z bazy AmyLoad [@wozniak_amyload:_2015].
+Sekwencje (`r totals[1]` nie-amyloid i `r totals[2]` amyloid) pobrano z bazy AmyLoad [@wozniak_amyload:_2015].
 
 ## Grupowanie aminokwasów
 
@@ -232,26 +239,123 @@ Sekwencje (`r totals[1]` nie-amyloid and `r totals[2]` amyloid) pobrano z bazy A
  - Każde grupowanie było podzielone na od trzech do sześciu kodowań tworząc 144 kodowania.
  - Redundatne 51 kodowań (identycznych z innymi kodowaniami) zostało usuniętych.
 
-## Uczenie
+## Przygotowanie danych
 
  - Odrzucono sekwencje krótsze niż 6 aminokwasów.
  - Dla każdej sekwencji odczytano zachodzące okna o długości 6. Każde okno zostało oznaczone tak samo jak sekwencja z której zostało wybrane.
- - Z każdego okna wybrano 1-, 2- i 3-gramy (zarówno ciągłe jak i z przerwami). Dla każdego kodowania osobno, n-gramy przefiltrowano używając metody QuiPT i wykorzystano do uczenia lasów losowych [@liaw_classification_2002]. 
- - Procedurę wykonano trzykrotnie na trzech zbiorach uczących: sekwencje o długości 6 aminokwasów, krótsze niż 11 aminokwasów i krótsze niż 15 aminokwasów. 
+ - Z każdego okna wybrano 1-, 2- i 3-gramy (zarówno ciągłe jak i z przerwami). 
+
+## Przygotowanie danych
+
+<img src="ngram_scheme.png" alt="ngram_scheme" height="520" width="820">
 
 ## Uczenie
 
-Tu obrazek
+ - Dla każdego kodowania osobno, n-gramy przefiltrowano używając metody QuiPT i wykorzystano do uczenia lasów losowych [@liaw_classification_2002]. 
+ - Procedurę powtórzono na trzech zbiorach uczących: sekwencje o długości 6 aminokwasów, krótsze niż 11 aminokwasów i krótsze niż 15 aminokwasów. 
 
 ## Wyniki walidacji krzyżowej
 
 ```{r echo=FALSE,message=FALSE,results='asis'}
-colnames(res) <- c("Zbiór uczący", "Encoding ID", "AUC", "Specyficzność", "Czułość", "Liczba grup")
+res2 <- mutate(res, mAUCc = cut(mAUC, breaks = seq(min(mAUC), max(mAUC), length.out = 6), include.lowest = TRUE, right = TRUE)) %>%
+  mutate(best_enc = factor(mSpec == max(mSpec) | mSens == max(mSens)))
 
-res <- res[, c(1, 6, 2, 5, 4)]
+colnames(res) <- c("Zbiór uczący", "ID kodowania", "AUC", "Specyficzność", "Czułość", "Liczba grup")
 
-datatable(res, filter = "top", options = list(searching = TRUE)) %>% formatRound(4L:7, 4)
+res <- res[, c(1, 6, 2, 3, 5, 4)]
+
+datatable(res, filter = "top", options = list(searching = TRUE), rownames = FALSE) %>% formatRound(4L:7, 4)
 ```
 
+## Wyniki walidacji krzyżowej
+
+```{r echo=FALSE,message=FALSE}
+levels(res2[["best_enc"]]) <- c("Kodowanie", "Najlepsze kodowanie")
+levels(res2[["len"]]) <- c("6", "Mniej niż 11", "Mniej niż 16")
+
+figure(width = 800, tools = c("pan", "wheel_zoom", "reset"),
+       ylab = "Czułość", xlab = "Specyficzność") %>%
+  ly_points(mSpec, mSens, color = best_enc, data = res2, hover = c(len, n, enc, mAUC, mSens, mSpec))
+``` 
+
+
+## Najlepsze kodowania
+
+```{r echo=FALSE,message=FALSE}
+enc2df <- function(x) {
+  gr_names <- if(is.null(names(x))) {
+    1L:length(x)
+  } else {
+    names(x)
+  }
+  data.frame(Group = gr_names, Elements = sapply(x, paste0, collapse = ", "))
+}
+
+#best specificity
+bspec <- list(c("H", "M"),
+              c("F", "W", "Y"),
+              c("C", "I", "L", "V"),
+              c("A"," D", "E", "G", "K", "N", "P", "Q", "R", "S", "T"))
+
+#best sensitivity
+bsens <- list(c("A", "T"), 
+              c("D", "E", "N"),
+              c("G", "P", "S"),
+              c("F", "W", "Y"),
+              c("H", "K", "Q", "R"),
+              c("C", "I", "L", "M", "V"))
+
+both_enc <- cbind(enc2df(bsens), rbind(enc2df(bspec), data.frame(Group = c("-", "-"), Elements = c("-", "-")))[, -1])
+both_enc[[1]] <- c("I", "II", "III", "IV", "V", "VI")
+colnames(both_enc) <- c("Grupa", "Najlepsza specyficzność", "Najlepsza czułość")
+kable(both_enc)
+
+``` 
+
+## Najlepsze kodowania
+
+```{r echo=FALSE,message=FALSE}
+
+tmp <- filter(amylo_freq, n == 1)
+tmp <- droplevels(tmp)
+#print(levels(tmp[["variable"]]))
+levels(tmp[["variable"]]) <- c("I", "II", "III", "IV", "V", "VI")
+levels(tmp[["enc"]]) <- c("Najlepsza specyficzność", "Najlepsza czułość")
+levels(tmp[["tar"]]) <- c("nie", "tak")
+ggplot(tmp, aes(x = variable, y = freq, fill = tar, colour = tar)) +
+  geom_bar(stat = "identity", position = "dodge") + 
+  scale_y_continuous("Częstość") +
+  scale_x_discrete("ID grupy\n") + 
+  scale_fill_manual("Amyloid", values = c("nie" = "skyblue", "tak" = "tan2")) +
+  scale_colour_manual("Amyloid", values = c("nie" = "skyblue", "tak" = "tan2")) +
+  facet_wrap(~ enc, scales = "free_x", ncol = 2) +
+  guides(colour = FALSE) +
+  cool_theme
+``` 
+
+## Komitet klasyfikatorów
+
+Dwaj najlepsze kodowania (najlepsza specyficzność i najlepsza czułość) mają różne obszary kompetencji
+
+AmyloGram, komitet dwóch wymienionych klasyfikatorów, ma AUC $0.8911$, czułość $0.7473$ i specyficzność $0.8684$.
+
+
+## Porównanie z innymi klasyfikatorami
+
+Wykorzystano zbiór danych **pep424** [@walsh_pasta_2014] do porównania AmyloGramu z najlepszymi predyktorami amyloidogenności.
+
+```{r echo=FALSE,message=FALSE}
+
+metrics <- cbind(rownames(metrics), metrics)
+colnames(metrics) <- c("Nazwa predyktora", "AUC", "Czułość", "Specyficzność")
+
+kable(metrics, row.names = FALSE, digits = 4)
+``` 
+
+## Podsumowanie
+
+AmyloGram pozwala nie tylko na przewidywanie potencjalnych hot-spots, ale równie na analizę cech świadczących o amyloidogenności.
+
+biogram - pakiet **R** do analizy n-gramowej: https://cran.r-project.org/package=biogram
 
 ## References
